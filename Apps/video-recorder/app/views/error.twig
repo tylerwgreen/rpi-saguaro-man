@@ -1,0 +1,15 @@
+{% extends 'layout.twig' %}
+{% block title %}Error{% endblock %}
+{% set page = 'error' %}
+
+{% block body %}
+	<div class="top">
+		<h1><i class="icon-error"></i></h1>
+	</div>
+	<div class="middle">
+		<h2>{{error}}</h2>
+	</div>
+	<div class="bottom">
+		<p><a class="btn" href="/">Home</p>
+	</div>
+{% endblock %}

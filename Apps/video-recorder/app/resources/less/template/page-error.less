@@ -1,0 +1,46 @@
+#page-error{
+	text-align:center;
+	background-color:@red-dark;
+	.top{
+		.clearfix();
+		h1{
+			height:160px;
+			i{
+				position:relative;
+				top:20px;
+				font-size:150px;
+				color:@red;
+			}
+		}
+	}
+	.middle{
+		.clearfix();
+		h2{
+			@height:160px;
+			line-height:@height;
+			height:@height;
+			font-size:30px;
+			color:@red-light;
+		}
+	}
+	.bottom{
+		.clearfix();
+		p{
+			@height:160px;
+			line-height:@height;
+			height:@height;
+			margin:0;
+			padding:0;
+			a{
+				@btn-height:60px;
+				width:100px;
+				height:@btn-height;
+				line-height:@btn-height;
+				font-size:20px;
+				margin:50px auto 0 auto;
+				background-color:@red;
+				.rounded(30px);
+			}
+		}
+	}
+}
