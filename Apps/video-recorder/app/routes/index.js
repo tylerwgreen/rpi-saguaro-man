@@ -6,21 +6,22 @@ router.get('/', function(req, res, next){
 	// var err = new Error('Not Found');
 	// res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 	// next(err);
-	res.render('index', {
-		title: 'Express'
-	});
+	res.render('index');
 });
 router.get('/info', function(req, res, next){
 	res.render('info');
 });
-router.get('/error', function(req, res, next){
+/* router.get('/error', function(req, res, next){
 	throw new Error();
-});
-router.post('/record', function(req, res, next){
-	/* var consent = (req.params.consent == 'true');
+}); */
+router.get('/record/:consent', function(req, res, next){
+	var consent = (req.params.consent == 'true');
 	if(!consent)
-		throw new Error('No consent!') */
-	// console.log(consent);
+		throw new Error('No consent!')
+	console.log('consent', consent);
+	res.render('record');
+});
+router.post('/camera/preview/start', function(req, res, next){
 	// var error	= true;
 	var error	= false;
 	if(error){
@@ -35,23 +36,24 @@ router.post('/record', function(req, res, next){
 			}
 		});
 	}
-	
-	// res.json({
-		// data:	{
-			/* {
-				a:		1,
-				foo:	'bar',
-				bar:	[
-					1,
-					2,
-					3,
-					4,
-				]
-			}, */
-			// null,
-			// 3
-		// }
-	// });
+});
+router.post('/camera/preview/stop', function(req, res, next){
+	res.json({
+		data:	{
+		}
+	});
+});
+router.post('/camera/record/start', function(req, res, next){
+	res.json({
+		data:	{
+		}
+	});
+});
+router.post('/camera/record/stop', function(req, res, next){
+	res.json({
+		data:	{
+		}
+	});
 });
 
 module.exports = router;

@@ -1,0 +1,47 @@
+#page-record{
+	position:relative;
+	#video-wrap{
+		position:absolute;
+		width:@projector-width;
+		height:@projector-height;
+		margin-top:50px;
+		img#video-preview{
+			// hide no img
+			&:not([src]){
+				display:none;
+			}
+			border:none;
+			border:0;
+			width:@projector-width;
+			height:@projector-height;
+		}
+	}
+	#recording-icon-wrap{
+		position:absolute;
+		top:0;
+		left:0;
+		margin-left:10px;
+		i{
+			color:@red;
+			font-size:50px;
+		}
+	}
+	#countdown{
+		position:absolute;
+		top:0;
+		right:0;
+		margin-right:10px;
+		font-size:25px;
+		line-height:50px;
+	}
+	#home-btn-wrap{
+		position:absolute;
+		top: 10px;
+		left: 355px;
+		@height:40px;
+		height:@height;
+		p{
+			.home-button();
+		}
+	}
+}

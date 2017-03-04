@@ -3,11 +3,11 @@
 {% set page = 'home' %}
 
 {% block body %}
-	<div id="title-wrap" class="top">
+	<div class="top">
 		<h1>Video Recorder</h1>
 	</div>
 	<div class="middle">
-		<div id="consent-btn-wrap" class="btn-wrap consented">
+		<div class="btn-wrap consented">
 			<a id="consent-btn" class="btn" href="/record/true">
 				<div class="icon-wrap">
 					<i class="icon-video"></i>
@@ -17,7 +17,7 @@
 				</div>
 			</a>
 		</div>
-		<div id="no-consent-btn-wrap" class="btn-wrap noconsent">
+		<div class="btn-wrap noconsent">
 			<a id="no-consent-btn" class="btn" href="/record/false">
 				<div class="icon-wrap">
 					<i class="icon-video"></i>
@@ -28,7 +28,7 @@
 			</a>
 		</div>
 	</div>
-	<div id="info-btn-wrap" class="bottom">
+	<div class="bottom">
 		<p><a class="btn" href="/info"><i class="icon-info"></i>Info</p>
 	</div>
 {% endblock %}

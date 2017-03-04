@@ -16,7 +16,7 @@
 	.middle{
 		.clearfix();
 		h2{
-			@height:160px;
+			@height:280px;
 			line-height:@height;
 			height:@height;
 			font-size:30px;
@@ -24,23 +24,11 @@
 		}
 	}
 	.bottom{
+		@height:40px;
+		height:@height;
 		.clearfix();
 		p{
-			@height:160px;
-			line-height:@height;
-			height:@height;
-			margin:0;
-			padding:0;
-			a{
-				@btn-height:60px;
-				width:100px;
-				height:@btn-height;
-				line-height:@btn-height;
-				font-size:20px;
-				margin:50px auto 0 auto;
-				background-color:@red;
-				.rounded(30px);
-			}
+			.home-button();
 		}
 	}
 }

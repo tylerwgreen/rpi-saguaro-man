@@ -1,22 +1,13 @@
 #page-home{
-	@transition-speed:0.5s;
-	#title-wrap{
-		position:relative;
-		top:0;
-		.transition(@transition-speed);
-		&.hidden{
-			top:-40px;
-		}
-		&.top{
-			@height:40px;
-			height:@height;
-			.clearfix();
-			h1{
-				line-height:@height;
-				text-align:center;
-				color:@white;
-				font-size:25px;
-			}
+	.top{
+		@height:40px;
+		height:@height;
+		.clearfix();
+		h1{
+			line-height:@height;
+			text-align:center;
+			color:@white;
+			font-size:25px;
 		}
 	}
 	.middle{
@@ -25,13 +16,7 @@
 		.btn-wrap{
 			width:400px;
 			float:left;
-			position:relative;
-			.transition(@transition-speed);
 			&.consented{
-				left:0;
-				&.hidden{
-					left:-400px;
-				}
 				a{
 					background-color:@green;
 					.icon-wrap{
@@ -47,10 +32,6 @@
 				}
 			}
 			&.noconsent{
-				left:0;
-				&.hidden{
-					left:400px;
-				}
 				a{
 					background-color:@red;
 					.icon-wrap{
@@ -100,32 +81,11 @@
 		}
 	}
 	.bottom{
-		.clearfix();
 		@height:40px;
 		height:@height;
-		position:relative;
-		top:0;
-		&.hidden{
-			top:40px;
-		}
-		.transition(@transition-speed);
+		.clearfix();
 		p{
-			line-height:@height;
-			a{
-				@btn-height:30px;
-				width:90px;
-				height:@btn-height;
-				margin:0 auto;
-				line-height:@btn-height;
-				font-size:20px;
-				background-color:@grey;
-				.rounded(15px);
-				i{
-					position:relative;
-					top:3px;
-					margin-right:5px;
-				}
-			}
+			.home-button();
 		}
 	}
 }

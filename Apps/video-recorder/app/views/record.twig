@@ -1,0 +1,18 @@
+{% extends 'layout.twig' %}
+{% block title %}Record{% endblock %}
+{% set page = 'record' %}
+
+{% block body %}
+	<div id="video-wrap">
+		<img id="video-preview" src="/img/horizontal.jpg"/>
+	</div>
+	<div id="recording-icon-wrap"><i class="icon-video"></i></div>
+	<div id="countdown">NaN</div>
+	<div id="home-btn-wrap">
+		<p><a class="btn" href="/">Home</p>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	<script src="/js/record.js"></script>
+{% endblock %}
