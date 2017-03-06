@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo vim /home/pi/saguaro-man/startup

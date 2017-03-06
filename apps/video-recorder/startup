@@ -1,0 +1,15 @@
+#!/bin/bash
+
+APP_DIR=/home/pi/saguaro-man/apps/video-recorder
+LOG_FILE=$APP_DIR/logs/startup.log
+echo "Logging to: $LOG_FILE"
+echo "killing node"
+killall node 2>> $LOG_FILE
+echo "killing chrome"
+killall chromium-browser 2>> $LOG_FILE
+echo "starting node"
+# add & to the end of your command to tell bash to fork the process off in the background
+node $APP_DIR/app.js 2>> $LOG_FILE &
+echo "starting chrome"
+echo "please wait..."
+chromium-browser -incognito --kiosk 127.0.0.1:5000 2>> $LOG_FILE
