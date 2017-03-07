@@ -1,12 +1,19 @@
 jQuery(function($){
 	var app	= {
+		debug:	true,
 		params:	{
 			ajaxBase:	'http://127.0.0.1:5000/',
 			errorURL:	'http://127.0.0.1:5000/error',
 			homeURL:	'http://127.0.0.1:5000/',
 			preview:	{
+				duration:	3,		// seconds
 				countdown:	{
-					duration:	3,		// seconds
+					interval:	1000,
+				}
+			},
+			record:		{
+				duration:	7,		// seconds
+				countdown:	{
 					interval:	1000,
 				}
 			}
@@ -25,7 +32,7 @@ jQuery(function($){
 			init:		function(){
 				console.log('ui.init');
 				this.icon		= $('.icon-video');
-				this.countdown	= $('#countdown').text(app.params.preview.countdown.duration);
+				this.countdown	= $('#countdown');
 				this.preview	= $('#video-preview');
 			},
 			events:	{
@@ -38,41 +45,34 @@ jQuery(function($){
 		preview:	{
 			start:	function(){
 				console.log('preview.start');
-				$.post(app.params.ajaxBase + 'camera/preview/start')
+				app.preview.countdown.start();
+				$.post(app.params.ajaxBase + 'camera/preview/start/' + app.params.preview.duration)
 					.done(function(data, textStatus, jqXHR){
-						console.log('success',		'success');
-						console.log('data',			data);
-						console.log('textStatus',	textStatus);
-						console.log('jqXHR',		jqXHR);
-						app.preview.countdown.start();
-						/* setInterval(function() {
-							
-						}, app.params.preview.duration); */
+						if(app.debug){
+							console.log('success',		'success');
+							console.log('data',			data);
+							console.log('textStatus',	textStatus);
+							console.log('jqXHR',		jqXHR);
+						}
+						// app.record.start();
 					})
 					.fail(function(jqXHR, textStatus, errorThrown){
-						console.error('error',			'error');
-						console.error('jqXHR',			jqXHR);
-						console.error('textStatus',		textStatus);
-						console.error('errorThrown',	errorThrown);
-						app.error('preview start failed');
-						// if(
-								// typeof jqXHR.responseJSON			!== 'undefined'
-							// &&	typeof jqXHR.responseJSON.errors	!== 'undefined'
-						// ){
-						// }
+						if(app.debug){
+							console.error('error',			'error');
+							console.error('jqXHR',			jqXHR);
+							console.error('textStatus',		textStatus);
+							console.error('errorThrown',	errorThrown);
+						}
+						app.error(errorThrown);
 					});
-			},
-			stop:	function(){
-				console.log('preview.stop');
-				window.location.replace(app.params.homeURL);
-				// app.error('oops');
 			},
 			countdown:	{
 				counter:	null,
 				count:		null,
 				start:		function(){
 					console.log('preview.countdown.start');
-					app.preview.countdown.count		= app.params.preview.countdown.duration;
+					app.ui.events.updateCountdown(app.params.preview.duration);
+					app.preview.countdown.count		= app.params.preview.duration;
 					app.preview.countdown.counter	= setInterval(
 						app.preview.countdown.update,
 						app.params.preview.countdown.interval
@@ -88,21 +88,61 @@ jQuery(function($){
 				stop:		function(){
 					console.log('preview.countdown.stop');
 					clearInterval(app.preview.countdown.counter);
-					app.preview.stop();
 				}
 			}
 		},
 		record:		{
 			start:	function(){
-				console.log('preview.start');
+				console.log('record.start');
+				app.record.countdown.start();
+				$.post(app.params.ajaxBase + 'camera/record/start/' + app.params.record.duration)
+					.done(function(data, textStatus, jqXHR){
+						if(app.debug){
+							console.log('success',		'success');
+							console.log('data',			data);
+							console.log('textStatus',	textStatus);
+							console.log('jqXHR',		jqXHR);
+						}
+						app.record.start();
+					})
+					.fail(function(jqXHR, textStatus, errorThrown){
+						if(app.debug){
+							console.error('error',			'error');
+							console.error('jqXHR',			jqXHR);
+							console.error('textStatus',		textStatus);
+							console.error('errorThrown',	errorThrown);
+						}
+						app.error(errorThrown);
+					});
 			},
-			stop:	function(){
-				console.log('preview.stop');
+			countdown:	{
+				counter:	null,
+				count:		null,
+				start:		function(){
+					console.log('record.countdown.start');
+					app.record.countdown.count		= app.params.preview.countdown.duration;
+					app.record.countdown.counter	= setInterval(
+						app.preview.countdown.update,
+						app.params.preview.countdown.interval
+					);
+				},
+				update:		function(){
+					console.log('preview.countdown.update');
+					app.preview.countdown.count	= app.preview.countdown.count - 1;
+					app.ui.events.updateCountdown(app.preview.countdown.count);
+					if(app.preview.countdown.count <= 0)
+						app.preview.countdown.stop();
+				},
+				stop:		function(){
+					console.log('preview.countdown.stop');
+					clearInterval(app.preview.countdown.counter);
+				}
 			}
 		},
 		error:		function(msg){
-			console.log(msg);
-			window.location.replace(app.params.errorURL);
+			alert(msg);
+			// console.log(msg);
+			// window.location.replace(app.params.errorURL);
 		}
 		/* home: {
 			init:	function(){

@@ -13,3 +13,4 @@ node $APP_DIR/app.js 2>> $LOG_FILE &
 echo "starting chrome"
 echo "please wait..."
 chromium-browser -incognito --kiosk 127.0.0.1:5000 2>> $LOG_FILE
+#chromium-browser 127.0.0.1:5000 2>> $LOG_FILE
