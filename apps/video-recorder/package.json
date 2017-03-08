@@ -18,7 +18,6 @@
 		"grunt":				"~1.0.1",
 		"grunt-contrib-less":	"~1.4.0",
 		"grunt-contrib-watch":	"~1.0.0",
-		"twig":					"~0.10.3",
 		"raspicam":				"0.2.13"
 	}
 }

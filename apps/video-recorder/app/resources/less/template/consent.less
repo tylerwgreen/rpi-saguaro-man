@@ -1,22 +1,36 @@
-#page-home{
-	.top{
-		@height:40px;
+#consent-wrap{
+	z-index:1000;
+	@transition-speed:0.3s;
+	#title-wrap{
+		@height:55px;
 		height:@height;
 		.clearfix();
 		h1{
 			line-height:@height;
 			text-align:center;
 			color:@white;
-			font-size:25px;
+			font-size:30px;
+		}
+		position:relative;
+		top:0;
+		.transition(@transition-speed);
+		&.hidden{
+			top:-55px;
 		}
 	}
-	.middle{
+	#consent-btns-wrap{
 		.clearfix();
-		height:400px;
+		height:370px;
 		.btn-wrap{
 			width:400px;
 			float:left;
+			position:relative;
+			.transition(@transition-speed);
 			&.consented{
+				left:0;
+				&.hidden{
+					left:-400px;
+				}
 				a{
 					background-color:@green;
 					.icon-wrap{
@@ -32,6 +46,10 @@
 				}
 			}
 			&.noconsent{
+				left:0;
+				&.hidden{
+					left:400px;
+				}
 				a{
 					background-color:@red;
 					.icon-wrap{
@@ -50,11 +68,10 @@
 				&.btn{
 					width:360px;
 					height:360px;
-					margin:20px auto;
+					margin:5px auto;
 					.rounded(15px);
 				}
 				.icon-wrap{
-					text-align:center;
 					height:220px;
 					i{
 						position:relative;
@@ -65,10 +82,11 @@
 				.text-wrap{
 					@height:140px;
 					height:@height;
-					margin-left:-45px;
 					p{
 						line-height:@height;
 						font-size:20px;
+						text-align:left;
+						padding-left:90px;
 						i{
 							position:relative;
 							top:17px;
@@ -80,12 +98,19 @@
 			}
 		}
 	}
-	.bottom{
-		@height:40px;
-		height:@height;
+	#info-btn-wrap{
 		.clearfix();
+		@height:55px;
+		height:@height;
+		position:relative;
+		top:0;
+		&.hidden{
+			top:55px;
+		}
+		.transition(@transition-speed);
 		p{
-			.home-button();
+			margin-top:10px;
+			.basic-btn();
 		}
 	}
 }

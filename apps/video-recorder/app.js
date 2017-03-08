@@ -10,16 +10,10 @@ var rfs		= require('rotating-file-stream')
 var paths	= {
 	app:	'/app/',
 	models:	'/app/models/',
-	// routes:	'/app/routes/',
 	views:	'/app/views/',
 	logs:	'/logs/',
 	web:	'/web/',
 }
-
-/**
- * Load routes
- */
-// var index = require(path.join(__dirname, paths.routes, 'index'));
 
 /**
  * Load models
@@ -33,8 +27,8 @@ var Camera	= require(path.join(__dirname, paths.models, 'camera'));
 // var debug		= true
 var port		= 5000
 var logger		= {
-	// debug:		true,
-	debug:		false,
+	debug:		true,
+	// debug:		false,
 	format:		'combined',	// DEFAULT - Standard Apache combined log output.
 	// format:		'tiny',		// The minimal output.
 	// format:		'dev',		// Concise output colored by response status for development use.
@@ -60,12 +54,6 @@ var logger		= {
 var app = express();
 
 /**
- * Views
- */
-app.set('views', path.join(__dirname, paths.views));
-app.set('view engine', 'twig');
-
-/**
  * Middleware
  */
 // ensure log directory exists
@@ -82,17 +70,7 @@ app.use(morgan(logger.format, logger.options))
 // static files
 app.use(express.static(path.join(__dirname, paths.web)));
 app.get('/', function(req, res, next){
-	res.render('index');
-});
-app.get('/info', function(req, res, next){
-	res.render('info');
-});
-app.get('/record/:consent', function(req, res, next){
-	var consent = (req.params.consent == 'true');
-	if(!consent)
-		throw new Error('No consent!')
-	console.log('consent', consent);
-	res.render('record');
+	res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 });
 app.post('/camera/preview/start/:duration', function(req, res, next){
 	console.log(req.params.duration);
@@ -110,42 +88,13 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 		}
 	});
 	Camera.preview.start();
-	// new Error('/camera/preview - done');
-	
-	// var error	= true;
-	// var error	= false;
-	/* if(error){
-		res.status(500);
-		res.json({
-			errors:	{
-			}
-		});
-	}else{ */
-	// throw new Error('/camera/preview');
-/* 	res.json({
-		data:	{
-		}
-	}); */
-	/* } */
 });
-/* router.post('/camera/preview/stop', function(req, res, next){
-	res.json({
-		data:	{
-		}
-	});
-}); */
 app.post('/camera/record/start/:duration', function(req, res, next){
 	res.json({
 		data:	{
 		}
 	});
 });
-/* router.post('/camera/record/stop', function(req, res, next){
-	res.json({
-		data:	{
-		}
-	});
-}); */
 
 /**
  * 404's - forward to error handler
@@ -160,22 +109,16 @@ app.use(function(req, res, next){
  * Error handler
  */
 app.use(function(err, req, res, next){
-	// set locals, only providing error in development
-	// res.locals.message	= err.message || 'Unknown error';
-	// res.locals.error	= req.app.get('env') === 'development' ? err : {};
 	console.error('Error: ' + err.message, err);
-	// console.error(err);
-	// res.end('Error: ' + err.message);
-	// res.sendFile(path.join(__dirname, paths.views, 'error.html'));
 	res.status(err.status || 500);
+	var msg = err.message || 'Unknown error';
 	// for json errors
 	if(req.xhr) {
-		res.send({ error: 'Something failed!' })
+		res.send({
+			error: msg
+		})
 	}else{
-		// next(err);
-		res.render('error', {
-			error: err.message || 'Unknown error'
-		});
+		res.send('Error: ' + msg);
 	}
 });
 

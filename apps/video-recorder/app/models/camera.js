@@ -17,8 +17,8 @@ var Camera = {
 		init:		function(){
 			console.log('Camera.params.init');
 			this.camera.defaultConfig.preview =
-					((this.display.width	- this.preview.width)	/ 2)	+ ','
-				// +	((this.display.height	- this.preview.height)	/ 2)	+ ','
+					// ((this.display.width	- this.preview.width)	/ 2)	+ ','
+				+	((this.display.height	- this.preview.height)	/ 2)	+ ','
 				+	(this.display.height	- this.preview.height)			+ ','
 				+	this.preview.width										+ ','
 				+	this.preview.height;

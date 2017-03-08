@@ -4,14 +4,9 @@
 	// cursor:none;
 }
 body{
-	background-color:@black;
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-	overflow:hidden;
-	width:@display-width;
-	height:@display-height;
-	margin:0 auto;
-	overflow:hidden;
 	color:@white;
+	background-color:@black-dark;
 	a{
 		color:@white;
 		&:link,
@@ -26,5 +21,14 @@ body{
 			display:block;
 			text-align:center;
 		}
+	}
+	#body-wrap{
+		width:@display-width;
+		height:@display-height;
+		margin:0 auto;
+		overflow:hidden;
+		overflow:hidden;
+		background-color:@black;
+		position:relative;
 	}
 }
