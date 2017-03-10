@@ -76,7 +76,15 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 	console.log(req.params.duration);
 	if(typeof req.params.duration === 'undefined')
 		new Error('Missing required param: duration');
-	Camera.init();
+	var timer = setTimeout(function(){
+		clearTimeout(timer);
+		res.json({
+			data:	{
+				success:	true
+			}
+		});
+	}, req.params.duration * 1000);
+	/* Camera.init();
 	Camera.preview.init({
 		duration:	req.params.duration,
 		successCB:	function(){
@@ -87,13 +95,36 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 			});
 		}
 	});
-	Camera.preview.start();
+	Camera.preview.start(); */
 });
-app.post('/camera/record/start/:duration', function(req, res, next){
-	res.json({
-		data:	{
+app.post('/camera/record/start/:duration/:consent', function(req, res, next){
+	console.log(req.params.duration);
+	console.log(req.params.consent);
+	if(typeof req.params.duration === 'undefined')
+		new Error('Missing required param: duration');
+	if(typeof req.params.consent === 'undefined')
+		new Error('Missing required param: consent');
+	var timer = setTimeout(function(){
+		clearTimeout(timer);
+		res.json({
+			data:	{
+				success:	true
+			}
+		});
+	}, req.params.duration * 1000);
+	/* Camera.init();
+	Camera.record.init({
+		consent:	req.params.consent,
+		duration:	req.params.duration,
+		successCB:	function(){
+			res.json({
+				data:	{
+					success:	true,
+				}
+			});
 		}
 	});
+	Camera.record.start(); */
 });
 
 /**

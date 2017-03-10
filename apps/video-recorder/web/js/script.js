@@ -33,6 +33,14 @@ jQuery(function($){
 			// app.error.ui.hide();
 			app.consent.ui.show();
 		},
+		quit:	function(){
+			console.log('quit');
+			// app.finish.quit();
+			app.record.quit();
+			// app.consent.quit();
+			// app.info.quit();
+			// app.error.quit();
+		},
 		consent:	{
 			init:	function(){
 				console.log('consent.init');
@@ -80,35 +88,36 @@ jQuery(function($){
 			events:	{
 				recordConsent:		function(event){
 					console.log('consent.events.recordConsent');
-					event.preventDefault();
-					event.stopPropagation();
+					app.util.cancelDefaultEvent(event);
 					app.consent.ui.hide();
 					app.record.preview(true);
 				},
 				recordNoConsent:	function(event){
 					console.log('consent.events.recordNoConsent');
-					event.preventDefault();
-					event.stopPropagation();
+					app.util.cancelDefaultEvent(event);
 					app.consent.ui.hide();
 					app.record.preview(false);
 				},
 				showInfo:			function(event){
 					console.log('consent.events.showInfo');
-					event.preventDefault();
-					event.stopPropagation();
+					app.util.cancelDefaultEvent(event);
 					app.info.events.show();
 				},
 			}
 		},
 		record:		{
-			consent:	null,
+consent:	null,
 			init:	function(){
 				console.log('record.init');
 				this.ui.init();
 			},
 			reset:	function(){
 				console.log('record.reset');
+				this.quit();
 				this.events.hide();
+			},
+			quit:	function(){
+				console.log('record.quit');
 				app.record.countdown.reset();
 			},
 			ui:	{
@@ -185,38 +194,69 @@ jQuery(function($){
 					app.error.raise('NO CONSENT!');
 					return;
 				}
-app.record.consent	= consent;
+// app.record.consent	= consent;
 				app.record.events.show();
 				app.record.ui.icon.preview();
 				app.record.ui.info.update('Preview');
 				app.record.ui.feedback.update('Express yourself!');
-				app.record.countdown.start(app.params.record.previewDuration
-,app.record.record
-				);
+				app.record.countdown.start(app.params.record.previewDuration);
+				$.post(app.params.ajaxBase + 'camera/preview/start/' + app.params.record.previewDuration)
+					.done(function(data, textStatus, jqXHR){
+						console.log('success',		'success');
+						console.log('data',			data);
+						console.log('textStatus',	textStatus);
+						console.log('jqXHR',		jqXHR);
+						if(app.util.isValidJqXHR(jqXHR)){
+							app.record.record(consent);
+						}else{
+							app.error.raise('Invalid jqXHR');
+						}
+					})
+					.fail(function(jqXHR, textStatus, errorThrown){
+						console.error('error',			'error');
+						console.error('jqXHR',			jqXHR);
+						console.error('textStatus',		textStatus);
+						console.error('errorThrown',	errorThrown);
+						app.error.raise(new Error(errorThrown));
+					});
 			},
-			record:		function(){
-				console.log('record.record');
+			record:		function(consent){
+				console.log('record.record', consent);
 				app.record.ui.icon.recording();
 				app.record.ui.info.update('Recording');
 				app.record.ui.feedback.update('Radically express yourself!');
-				app.record.countdown.start(app.params.record.recordDuration
-,app.finish.prompt
-				);
+				app.record.countdown.start(app.params.record.recordDuration);
+				$.post(app.params.ajaxBase + 'camera/record/start/' + app.params.record.recordDuration + '/' + consent)
+					.done(function(data, textStatus, jqXHR){
+						console.log('success',		'success');
+						console.log('data',			data);
+						console.log('textStatus',	textStatus);
+						console.log('jqXHR',		jqXHR);
+						if(app.util.isValidJqXHR(jqXHR)){
+							app.finish.prompt();
+						}else{
+							app.error.raise('Invalid jqXHR');
+						}
+					})
+					.fail(function(jqXHR, textStatus, errorThrown){
+						console.error('error',			'error');
+						console.error('jqXHR',			jqXHR);
+						console.error('textStatus',		textStatus);
+						console.error('errorThrown',	errorThrown);
+						app.error.raise(new Error(errorThrown));
+					});
 			},
-			reRecord:	{
+			/* reRecord:	{
 			},
 			delete:		{
-			},
+			}, */
 			countdown:	{
 				counter:	null,
 				count:		null,
-				start:		function(duration
-,callback
-				){
+				start:		function(duration){
 					console.log('record.countdown.start', duration);
 					app.record.events.updateCountdown(duration);
 					app.record.countdown.count		= duration;
-app.record.countdown.callback		= callback;
 					app.record.countdown.counter	= setInterval(
 						app.record.countdown.update,
 						app.params.record.countdown.interval
@@ -232,12 +272,12 @@ app.record.countdown.callback		= callback;
 				stop:		function(){
 					console.log('record.countdown.stop');
 					clearInterval(app.record.countdown.counter);
-app.record.countdown.callback();
 				},
 				reset:		function(){
+					console.log('record.countdown.reset');
+					clearInterval(app.record.countdown.counter);
 					app.record.countdown.counter	= null;
 					app.record.countdown.count		= null;
-					clearInterval(app.record.countdown.counter);
 				}
 			},
 		},
@@ -283,8 +323,7 @@ app.record.countdown.callback();
 				},
 				done:	function(event){
 					console.log('finish.events.done', event);
-					event.preventDefault();
-					event.stopPropagation();
+					app.util.cancelDefaultEvent(event);
 					app.reset();
 				}
 			}
@@ -332,8 +371,7 @@ app.record.countdown.callback();
 				},
 				back:	function(event){
 					console.log('info.events.back');
-					event.preventDefault();
-					event.stopPropagation();
+					app.util.cancelDefaultEvent(event);
 					app.reset();
 				}
 			}
@@ -375,8 +413,7 @@ app.record.countdown.callback();
 			events:	{
 				reset:	function(event){
 					console.log('error.events.reset');
-					event.preventDefault();
-					event.stopPropagation();
+					app.util.cancelDefaultEvent(event);
 					app.reset();
 				},
 				show:	function(msg){
@@ -392,8 +429,31 @@ app.record.countdown.callback();
 			raise:	function(msg){
 				console.error('error.raise', msg);
 				this.events.show(msg);
+				app.quit();
 			}
 		},
+		util:	{
+			isValidJqXHR:	function(jqXHR){
+				console.log('util.isValidJqXHR', jqXHR);
+				return (
+					typeof jqXHR.responseJSON	!== 'undefined'
+					&&	(
+							typeof jqXHR.responseJSON.errors	!== 'undefined'
+						||	(
+								typeof	jqXHR.responseJSON.data			!== 'undefined'
+							&&	typeof	jqXHR.responseJSON.data.success !== 'undefined'
+							&& 			jqXHR.responseJSON.data.success	== true
+						)
+					)
+				) ? true : false;
+			},
+			cancelDefaultEvent:	function(event){
+				if(typeof event !== 'undefined'){
+					event.preventDefault();
+					event.stopPropagation();
+				}
+			}
+		}
 		/* start:	function(){
 			console.log('record.start');
 			app.record.countdown.start();
