@@ -1,20 +1,25 @@
 # Saguaro Man
 ##Raspberry Pi project
 ###Video Recorder
+
 - Records slow motion black and white video
+
 ##Setup
 ###Desktop Icons
 [How To](http://www.raspberry-projects.com/pi/pi-operating-systems/raspbian/gui/desktop-shortcuts)
 ##Auto Start
 [How To](https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=163316)
 ```
-$ ~/.config/lxsession/LXDE-pi/autostart
+~/.config/lxsession/LXDE-pi/autostart
 #@xscreensaver -no-splash # comment this line out to disable screensaver
 @xset s off
 @xset -dpms
 @xset s noblank
 @/home/pi/saguaro-man/startup
 ```
+Create symbolic link in
+```
+ls -s ~/saguaro-man/desktop/name-of-file.desktop ~/Desktop/name-of-file.desktop
 ###Remove Bloatware
 [How To](http://raspi.tv/2016/how-to-free-up-some-space-on-your-raspbian-sd-card-remove-wolfram-libreoffice)
 ```
