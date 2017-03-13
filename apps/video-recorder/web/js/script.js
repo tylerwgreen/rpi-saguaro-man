@@ -88,25 +88,24 @@ jQuery(function($){
 			events:	{
 				recordConsent:		function(event){
 					console.log('consent.events.recordConsent');
-					app.util.cancelDefaultEvent(event);
+					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
 					app.record.preview(true);
 				},
 				recordNoConsent:	function(event){
 					console.log('consent.events.recordNoConsent');
-					app.util.cancelDefaultEvent(event);
+					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
 					app.record.preview(false);
 				},
 				showInfo:			function(event){
 					console.log('consent.events.showInfo');
-					app.util.cancelDefaultEvent(event);
+					app.utils.cancelDefaultEvent(event);
 					app.info.events.show();
 				},
 			}
 		},
 		record:		{
-consent:	null,
 			init:	function(){
 				console.log('record.init');
 				this.ui.init();
@@ -121,24 +120,24 @@ consent:	null,
 				app.record.countdown.reset();
 			},
 			ui:	{
-				recordWrap:				null,
-				recordIcon:				null,
-				infoText:			null,
+				recordWrap:		null,
+				recordIcon:		null,
+				infoText:		null,
 				countdownText:	null,
-				feedbackText:		null,
+				feedbackText:	null,
 				init:	function(){
 					console.log('record.ui.init');
-					this.recordWrap				= $('#record-wrap');
+					this.recordWrap		= $('#record-wrap');
 					// this.recordInfoWrap			= $('#record-info-wrap');
 					// this.recordIconWrap			= $('#record-icon-wrap');
-					this.recordIcon				= $('#record-icon');
+					this.recordIcon		= $('#record-icon');
 					// this.recordInfoTextWrap		= $('#record-info-text-wrap');
-					this.infoText			= $('#record-info-text');
+					this.infoText		= $('#record-info-text');
 					// this.recordCountdownWrap	= $('#record-countdown-wrap');
 					this.countdownText	= $('#record-countdown-text');
 					// this.videoPlaceholder	= $('#record-video-placeholder');
 					// this.recordFeedbackTextWrap	= $('#record-feedback-text-wrap');
-					this.feedbackText		= $('#record-feedback-text');
+					this.feedbackText	= $('#record-feedback-text');
 				},
 				icon:	{
 					preview:	function(){
@@ -189,12 +188,6 @@ consent:	null,
 				}
 			},
 			preview:	function(consent){
-				console.log('record.preview', consent);
-				if(!consent){
-					app.error.raise('NO CONSENT!');
-					return;
-				}
-// app.record.consent	= consent;
 				app.record.events.show();
 				app.record.ui.icon.preview();
 				app.record.ui.info.update('Preview');
@@ -206,7 +199,7 @@ consent:	null,
 						console.log('data',			data);
 						console.log('textStatus',	textStatus);
 						console.log('jqXHR',		jqXHR);
-						if(app.util.isValidJqXHR(jqXHR)){
+						if(app.utils.isValidJqXHR(jqXHR)){
 							app.record.record(consent);
 						}else{
 							app.error.raise('Invalid jqXHR');
@@ -232,7 +225,7 @@ consent:	null,
 						console.log('data',			data);
 						console.log('textStatus',	textStatus);
 						console.log('jqXHR',		jqXHR);
-						if(app.util.isValidJqXHR(jqXHR)){
+						if(app.utils.isValidJqXHR(jqXHR)){
 							app.finish.prompt();
 						}else{
 							app.error.raise('Invalid jqXHR');
@@ -323,7 +316,7 @@ consent:	null,
 				},
 				done:	function(event){
 					console.log('finish.events.done', event);
-					app.util.cancelDefaultEvent(event);
+					app.utils.cancelDefaultEvent(event);
 					app.reset();
 				}
 			}
@@ -371,7 +364,7 @@ consent:	null,
 				},
 				back:	function(event){
 					console.log('info.events.back');
-					app.util.cancelDefaultEvent(event);
+					app.utils.cancelDefaultEvent(event);
 					app.reset();
 				}
 			}
@@ -413,7 +406,7 @@ consent:	null,
 			events:	{
 				reset:	function(event){
 					console.log('error.events.reset');
-					app.util.cancelDefaultEvent(event);
+					app.utils.cancelDefaultEvent(event);
 					app.reset();
 				},
 				show:	function(msg){
@@ -432,9 +425,9 @@ consent:	null,
 				app.quit();
 			}
 		},
-		util:	{
+		utils:	{
 			isValidJqXHR:	function(jqXHR){
-				console.log('util.isValidJqXHR', jqXHR);
+				console.log('utils.isValidJqXHR', jqXHR);
 				return (
 					typeof jqXHR.responseJSON	!== 'undefined'
 					&&	(
@@ -454,211 +447,6 @@ consent:	null,
 				}
 			}
 		}
-		/* start:	function(){
-			console.log('record.start');
-			app.record.countdown.start();
-			$.post(app.params.ajaxBase + 'camera/record/start/' + app.params.record.duration)
-				.done(function(data, textStatus, jqXHR){
-					if(app.debug){
-						console.log('success',		'success');
-						console.log('data',			data);
-						console.log('textStatus',	textStatus);
-						console.log('jqXHR',		jqXHR);
-					}
-					app.record.start();
-				})
-				.fail(function(jqXHR, textStatus, errorThrown){
-					if(app.debug){
-						console.error('error',			'error');
-						console.error('jqXHR',			jqXHR);
-						console.error('textStatus',		textStatus);
-						console.error('errorThrown',	errorThrown);
-					}
-					app.error(errorThrown);
-				});
-		}, */
-		/* record:	function(consented){
-			console.log('consent.events.record', consented);
-			app.consent.ui.hide();
-			if(!consented)
-				app.error.raise('No consent!');
-			var timer = setTimeout(function(){
-				app.consent.ui.show();
-				clearTimeout(timer);
-			}, 500);
-			$.post(app.params.ajaxBase + 'record', {
-				foo:	'bar'
-			})
-				.done(function(data, textStatus, jqXHR){
-					console.log('success',		'success');
-					console.log('data',			data);
-					console.log('textStatus',	textStatus);
-					console.log('jqXHR',		jqXHR);
-					setTimeout(function() {
-						app.consent.ui.show();
-					}, 1000);
-				})
-				.fail(function(jqXHR, textStatus, errorThrown){
-					console.error('error',			'error');
-					console.error('jqXHR',			jqXHR);
-					console.error('textStatus',		textStatus);
-					console.error('errorThrown',	errorThrown);
-					window.location.replace(app.params.errorURL);
-					// if(
-							// typeof jqXHR.responseJSON			!== 'undefined'
-						// &&	typeof jqXHR.responseJSON.errors	!== 'undefined'
-					// ){
-					// }
-				});
-		} */
-		/* preview:	{
-			start:	function(){
-				console.log('preview.start');
-				app.preview.countdown.start();
-				$.post(app.params.ajaxBase + 'camera/preview/start/' + app.params.preview.duration)
-					.done(function(data, textStatus, jqXHR){
-						if(app.debug){
-							console.log('success',		'success');
-							console.log('data',			data);
-							console.log('textStatus',	textStatus);
-							console.log('jqXHR',		jqXHR);
-						}
-						// app.record.start();
-					})
-					.fail(function(jqXHR, textStatus, errorThrown){
-						if(app.debug){
-							console.error('error',			'error');
-							console.error('jqXHR',			jqXHR);
-							console.error('textStatus',		textStatus);
-							console.error('errorThrown',	errorThrown);
-						}
-						app.error(errorThrown);
-					});
-			},
-			countdown:	{
-				counter:	null,
-				count:		null,
-				start:		function(){
-					console.log('preview.countdown.start');
-					app.ui.events.updateCountdown(app.params.preview.duration);
-					app.preview.countdown.count		= app.params.preview.duration;
-					app.preview.countdown.counter	= setInterval(
-						app.preview.countdown.update,
-						app.params.preview.countdown.interval
-					);
-				},
-				update:		function(){
-					console.log('preview.countdown.update');
-					app.preview.countdown.count	= app.preview.countdown.count - 1;
-					app.ui.events.updateCountdown(app.preview.countdown.count);
-					if(app.preview.countdown.count <= 0)
-						app.preview.countdown.stop();
-				},
-				stop:		function(){
-					console.log('preview.countdown.stop');
-					clearInterval(app.preview.countdown.counter);
-				}
-			}
-		}, */
-		/* ui:		{
-			icon:		null,
-			countdown:	null,
-			preview:	null,
-			init:		function(){
-				console.log('ui.init');
-				this.icon		= $('.icon-video');
-				this.countdown	= $('#countdown');
-				this.preview	= $('#video-preview');
-			},
-			events:	{
-				updateCountdown:	function(text){
-					console.log('ui.events.updateCountdown', text);
-					app.ui.countdown.text(text);
-				}
-			}
-		}, */
-		/* home: {
-			init:	function(){
-				console.log('home.init');
-				this.ui.init();
-			},
-			ui:	{
-				titleWrap:			null,
-				consentBtnWrap:		null,
-				noConsentBtnWrap:	null,
-				infoBtnWrap:		null,
-				consentBtn:			null,
-				noConsentBtn:		null,
-				init:	function(){
-					console.log('home.ui.init');
-					this.titleWrap			= $('#title-wrap');
-					this.consentBtnWrap		= $('#consent-btn-wrap');
-					this.noConsentBtnWrap	= $('#no-consent-btn-wrap');
-					this.infoBtnWrap		= $('#info-btn-wrap');
-					this.consentBtn			= $('#consent-btn')
-						.on('click', app.home.events.recordConsent);
-					this.noConsentBtn		= $('#no-consent-btn')
-						.on('click', app.home.events.recordNoConsent);
-				},
-				hide:	function(){
-					console.log('home.ui.hide');
-					this.titleWrap.addClass('hidden');
-					this.consentBtnWrap.addClass('hidden');
-					this.noConsentBtnWrap.addClass('hidden');
-					this.infoBtnWrap.addClass('hidden');
-				},
-				show:	function(){
-					console.log('home.ui.show');
-					this.titleWrap.removeClass('hidden');
-					this.consentBtnWrap.removeClass('hidden');
-					this.noConsentBtnWrap.removeClass('hidden');
-					this.infoBtnWrap.removeClass('hidden');
-				},
-			},
-			events:	{
-				recordConsent:		function(event){
-					console.log('home.events.recordConsent');
-					event.preventDefault();
-					event.stopPropagation();
-					app.home.events.record(true);
-				},
-				recordNoConsent:	function(event){
-					console.log('home.events.recordNoConsent');
-					event.preventDefault();
-					event.stopPropagation();
-					app.home.events.record(false);
-				},
-				record:	function(consented){
-					console.log('home.events.record');
-					console.log('consented', consented);
-					app.home.ui.hide();
-					$.post(app.params.ajaxBase + 'record', {
-						foo:	'bar'
-					})
-						.done(function(data, textStatus, jqXHR){
-							console.log('success',		'success');
-							console.log('data',			data);
-							console.log('textStatus',	textStatus);
-							console.log('jqXHR',		jqXHR);
-							setTimeout(function() {
-								app.home.ui.show();
-							}, 1000);
-						})
-						.fail(function(jqXHR, textStatus, errorThrown){
-							console.error('error',			'error');
-							console.error('jqXHR',			jqXHR);
-							console.error('textStatus',		textStatus);
-							console.error('errorThrown',	errorThrown);
-							window.location.replace(app.params.errorURL);
-							// if(
-									// typeof jqXHR.responseJSON			!== 'undefined'
-								// &&	typeof jqXHR.responseJSON.errors	!== 'undefined'
-							// ){
-							// }
-						});
-				}
-			}
-		} */
 	};
 	app.init();
 });

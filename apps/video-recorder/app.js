@@ -83,10 +83,12 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 			}
 		});
 	}, req.params.duration * 1000); */
-	// Camera.init(debug);
-	Camera.init(debug);
+	Camera.init();
 	Camera.preview.init({
 		duration:	req.params.duration,
+		errorCB:	function(){
+			new Error('Preview failed');
+		},
 		successCB:	function(){
 			res.json({
 				data:	{
@@ -104,18 +106,21 @@ app.post('/camera/record/start/:duration/:consent', function(req, res, next){
 		new Error('Missing required param: duration');
 	if(typeof req.params.consent === 'undefined')
 		new Error('Missing required param: consent');
-	var timer = setTimeout(function(){
+	/* var timer = setTimeout(function(){
 		clearTimeout(timer);
 		res.json({
 			data:	{
 				success:	true
 			}
 		});
-	}, req.params.duration * 1000);
-	/* Camera.init();
+	}, req.params.duration * 1000); */
+	Camera.init();
 	Camera.record.init({
 		consent:	req.params.consent,
 		duration:	req.params.duration,
+		errorCB:	function(){
+			new Error('Record failed');
+		},
 		successCB:	function(){
 			res.json({
 				data:	{
@@ -124,7 +129,7 @@ app.post('/camera/record/start/:duration/:consent', function(req, res, next){
 			});
 		}
 	});
-	Camera.record.start(); */
+	Camera.record.start();
 });
 
 /**
