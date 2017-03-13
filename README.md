@@ -18,12 +18,17 @@ Create symbolic links
 ls -s ~/saguaro-man/desktop/name-of-file.desktop ~/Desktop/name-of-file.desktop
 ```
 
-###Auto Start
+###Auto Start & Disable Screen Saver
 
 [How To](https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=163316)
 
 ```
-~/.config/lxsession/LXDE-pi/autostart
+vim ~/.config/lxsession/LXDE-pi/autostart
+```
+
+Update to:
+
+```
 #@xscreensaver -no-splash # comment this line out to disable screensaver
 @xset s off
 @xset -dpms
@@ -44,4 +49,4 @@ sudo apt-get clean
 rm -rf /home/pi/python_games
 ```
 
-###Disable Screen Saver
+###Update NodeJS
