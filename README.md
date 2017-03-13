@@ -18,7 +18,7 @@ Create symbolic links
 ls -s ~/saguaro-man/desktop/name-of-file.desktop ~/Desktop/name-of-file.desktop
 ```
 
-##Auto Start
+###Auto Start
 
 [How To](https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=163316)
 
@@ -38,11 +38,10 @@ ls -s ~/saguaro-man/desktop/name-of-file.desktop ~/Desktop/name-of-file.desktop
 [How To Two](https://project.altservice.com/issues/418)
 
 ```
-sudo apt-get remove --purge wolfram-engine libreoffice* penguinspuzzle scratch dillo squeak-vm squeak-plugins-scratch sonic-pi idle idle3 netsurf-gtk netsurf-common
+sudo apt-get remove --purge wolfram-engine libreoffice* penguinspuzzle
 sudo apt-get autoremove
 sudo apt-get clean
 rm -rf /home/pi/python_games
-sudo rm -rf /opt/vc
 ```
 
 ###Disable Screen Saver
