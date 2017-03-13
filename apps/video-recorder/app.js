@@ -1,7 +1,7 @@
 /**
  * Include dependencies
  */
-var debug	= require('debug')('video_recorder')
+var debug	= require('debug')('video_recorder');
 var express	= require('express');
 var fs		= require('fs');
 var morgan	= require('morgan');
@@ -24,11 +24,10 @@ var Camera	= require(path.join(__dirname, paths.models, 'camera'));
 /**
  * App Settings
  */
-// var debug		= true
 var port		= 5000
 var logger		= {
-	debug:		true,
-	// debug:		false,
+	// debug:		true,
+	debug:		false,
 	format:		'combined',	// DEFAULT - Standard Apache combined log output.
 	// format:		'tiny',		// The minimal output.
 	// format:		'dev',		// Concise output colored by response status for development use.
@@ -76,15 +75,16 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 	console.log(req.params.duration);
 	if(typeof req.params.duration === 'undefined')
 		new Error('Missing required param: duration');
-	var timer = setTimeout(function(){
+	/* var timer = setTimeout(function(){
 		clearTimeout(timer);
 		res.json({
 			data:	{
 				success:	true
 			}
 		});
-	}, req.params.duration * 1000);
-	/* Camera.init();
+	}, req.params.duration * 1000); */
+	// Camera.init(debug);
+	Camera.init(debug);
 	Camera.preview.init({
 		duration:	req.params.duration,
 		successCB:	function(){
@@ -95,7 +95,7 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 			});
 		}
 	});
-	Camera.preview.start(); */
+	Camera.preview.start();
 });
 app.post('/camera/record/start/:duration/:consent', function(req, res, next){
 	console.log(req.params.duration);

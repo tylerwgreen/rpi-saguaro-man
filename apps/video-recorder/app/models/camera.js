@@ -1,3 +1,4 @@
+var debug	= require('debug')('raspicam');
 var RaspiCam = require('raspicam');
 
 // console.log('Camera.camera.js');
@@ -17,16 +18,16 @@ var Camera = {
 		init:		function(){
 			console.log('Camera.params.init');
 			this.camera.defaultConfig.preview =
-					// ((this.display.width	- this.preview.width)	/ 2)	+ ','
+					((this.display.width	- this.preview.width)	/ 2)	+ ','
 				+	((this.display.height	- this.preview.height)	/ 2)	+ ','
-				+	(this.display.height	- this.preview.height)			+ ','
+				// +	(this.display.height	- this.preview.height)			+ ','
 				+	this.preview.width										+ ','
 				+	this.preview.height;
 			// console.log(this.preview.rendered);
-			console.log(this.camera);
+			// console.log(this.camera);
 			new Error('test');
 		},
-		videoDir:	'/home/pi/saguaro-man/assets/video/',
+		videoDir:	'/home/pi/saguaro-man/assets/video/recordings/',
 		preview: 	{
 			// calculated from width and height
 			x:			null,
@@ -64,6 +65,8 @@ var Camera = {
 				// irefresh:	'cyclic',
 				// 'raw-format':	'yuv',
 				
+				// Display preview image after encoding (shows compression artifacts)
+				// penc:		true,
 				
 				// preview set in params.init()
 				// not fullscreen preview mode
@@ -94,16 +97,21 @@ var Camera = {
 			}
 		}
 	},
-	init:	function(){
+	// logger:	null,
+	// init:	function(logger){
+	init:	function(logger){
 		console.log('Camera.init');
+		// this.logger = logger;
 		this.params.init();
 	},
 	preview:	{
 		camera:		null,
 		successCB:	null,
+		errorCB:	null,
 		init:		function(params){
 			console.log('Camera.preview.init', params);
-			this.successCB = params.successCB;
+			this.successCB	= params.successCB;
+			this.errorCB	= params.errorCB;
 			this.configCamera(params.duration);
 			this.events.init();
 		},
@@ -112,6 +120,7 @@ var Camera = {
 			var config		= Camera.params.camera.defaultConfig;
 			config.output	= Camera.params.videoDir + 'preview.h264';
 			config.timeout	= (duration * 1000);
+			// config.log		= Camera.logger;
 			Camera.preview.camera	= new RaspiCam(config);
 		},
 		events:	{
@@ -119,7 +128,7 @@ var Camera = {
 				console.log('Camera.preview.events.init');
 				var camera = Camera.preview.camera;
 				//listen for the 'started' event triggered when the start method has been successfully initiated
-				camera.on('start', function(err, timestamp){ 
+				camera.on('start', function(err, timestamp){
 					console.log('Camera.preview.camera.on.start', err, timestamp);
 				});
 
@@ -128,12 +137,12 @@ var Camera = {
 				}); */
 
 				//listen for the 'read' event triggered when each new photo/video is saved
-				camera.on('read', function(err, timestamp, filename){ 
+				camera.on('read', function(err, timestamp, filename){
 					console.log('Camera.preview.camera.on.read', err, timestamp, filename);
 				});
 
 				//listen for the "stop" event triggered when the stop method was called
-				camera.on('stop', function(err, timestamp){ 
+				camera.on('stop', function(err, timestamp){
 					console.log('Camera.preview.camera.on.stop', err, timestamp);
 					Camera.preview.successCB();
 				});
