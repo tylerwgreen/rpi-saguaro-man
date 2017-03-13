@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Video Recorder
-Comment=Video Recorder
-Icon=/home/pi/saguaro-man/apps/video-recorder/desktop-icon.png
-Exec=/home/pi/saguaro-man/apps/video-recorder/startup
-Type=Application
-Encoding=UTF-8
-Terminal=true
-Categories=None;

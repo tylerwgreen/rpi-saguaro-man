@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Edit Startup
+Comment=Edit Startup
+Icon=/home/pi/saguaro-man/assets/icon/edit-startup-icon.png
+Exec=/home/pi/saguaro-man/bin/edit-startup
+Type=Application
+Encoding=UTF-8
+Terminal=true
+Categories=None;
