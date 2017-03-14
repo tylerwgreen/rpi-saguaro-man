@@ -79,8 +79,11 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 	Camera.preview.init({
 		duration:	req.params.duration,
 		errorCB:	function(){
-			console.log('camera/preview/start:errorCB');
+			console.log('camera/preview/start:errorCB', res.headersSent);
 			throw new Error('Preview failed');
+			res.status(500).json({
+				errors: ['Preview failed']
+			});
 		},
 		successCB:	function(){
 			console.log('camera/preview/start:successCB');
@@ -106,11 +109,10 @@ app.post('/camera/record/start/:duration/:consent', function(req, res, next){
 			consent:	req.params.consent,
 			duration:	req.params.duration,
 			errorCB:	function(){
-				console.log('camera/record/start:errorCB');
-				throw new Error('Record failed');
-				// res.status(500).json({
-					// error: 'Record failed'
-				// });
+				console.log('camera/record/start:errorCB', res.headersSent);
+				res.status(500).json({
+					errors: ['Record failed']
+				});
 			},
 			successCB:	function(file){
 				console.log('camera/record/start:successCB', file);
@@ -147,8 +149,8 @@ app.use(function(err, req, res, next){
 	var msg = err.message || 'Unknown error';
 	// for json errors
 	if(req.xhr) {
-		res.send({
-			error: msg
+		res.json({
+			errors: [msg]
 		})
 	}else{
 		res.send('Error: ' + msg);

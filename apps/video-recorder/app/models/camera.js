@@ -4,7 +4,7 @@
 var debug		= require('debug')('raspicam');
 var fs			= require('fs');
 var RaspiCam	= require('raspicam');
-var ffmpeg		= require('ffmpeg');
+// var MP4Box		= require('mp4box');
 
 var Camera		= {
 	params:	{
@@ -60,6 +60,7 @@ var Camera		= {
 				
 				// Display preview image after encoding (shows compression artifacts)
 				// penc:		true,
+				// inline:		false,
 				
 				// preview set in params.init()
 				// not fullscreen preview mode
@@ -115,26 +116,29 @@ var Camera		= {
 		},
 		events:	{
 			recording:	null,
+			reset:		function(){
+				console.log('Camera.preview.events.reset');
+				Camera.preview.events.recording	= null;
+			},
 			init:		function(){
 				console.log('Camera.preview.events.init');
-				var camera = Camera.preview.camera;
-				camera.on('start', function(error, timestamp){
+				Camera.preview.camera.on('start', function(error, timestamp){
 					console.log('Camera.preview.camera.on.start', error, timestamp);
 					if(error)
 						Camera.preview.error(new Error(error));
 				});
 				Camera.preview.camera.on('change', function(error, timestamp){
-					console.log('Camera.camera.on.change', error, timestamp);
+					console.log('Camera.preview.camera.on.change', error, timestamp);
 					Camera.preview.events.recording = true;
 					if(error)
 						Camera.preview.error(new Error(error));
 				});
-				camera.on('read', function(error, timestamp, filename){
+				Camera.preview.camera.on('read', function(error, timestamp, filename){
 					console.log('Camera.preview.camera.on.read', error, timestamp, filename);
 					if(error)
 						Camera.preview.error(new Error(error));
 				});
-				camera.on('stop', function(error, timestamp){
+				Camera.preview.camera.on('stop', function(error, timestamp){
 					console.log('Camera.preview.camera.on.stop', error, timestamp);
 					if(error){
 						Camera.preview.error(new Error(error));
@@ -142,8 +146,8 @@ var Camera		= {
 						Camera.preview.success();
 					}
 				});
-				camera.on('exit', function(timestamp){
-					console.log('Camera.preview.camera.on.exit', timestamp);
+				Camera.preview.camera.on('exit', function(timestamp){
+					console.log('Camera.preview.camera.on.exit', timestamp, Camera.preview.events.recording);
 					if(true !== Camera.preview.events.recording){
 						Camera.preview.error(new Error('Preview did not begin'));
 					}else{
@@ -155,12 +159,13 @@ var Camera		= {
 		},
 		start:	function(){
 			console.log('Camera.preview.start');
-			var results = this.camera.start();
+			var results = Camera.preview.camera.start();
 			if(!results)
 				Camera.preview.error(new Error('Error starting preview camera', results));
 		},
 		error:		function(error){
 			console.log('Camera.preview.error', error);
+			Camera.preview.events.reset();
 			Camera.preview.errorCB();
 		},
 		success:	function(){
@@ -188,46 +193,45 @@ var Camera		= {
 			var config				= Camera.params.camera.defaultConfig;
 			config.output			= Camera.record.file.recording();
 			config.timeout			= (duration * 1000);
+			// config.framerate		= 500;
 			// config.framerate		= 132;
 			config.framerate		= 120;
 			Camera.record.camera	= new RaspiCam(config);
 		},
 		events:	{
 			recording:	null,
+			reset:		function(){
+				console.log('Camera.record.events.reset');
+				Camera.record.events.recording	= null;
+			},
 			init:		function(){
 				console.log('Camera.record.events.init');
-				var camera = Camera.record.camera;
-				camera.on('start', function(error, timestamp){
+				Camera.record.camera.on('start', function(error, timestamp){
 					console.log('Camera.record.camera.on.start', error, timestamp);
-throw new Error('test');
 					if(error)
 						Camera.record.error(new Error(error));
 				});
 				Camera.record.camera.on('change', function(error, timestamp){
-					console.log('Camera.camera.on.change', error, timestamp);
-throw new Error('test');
+					console.log('Camera.record.camera.on.change', error, timestamp);
 					Camera.record.events.recording = true;
 					if(error)
 						Camera.record.error(new Error(error));
 				});
-				camera.on('read', function(error, timestamp, filename){
+				Camera.record.camera.on('read', function(error, timestamp, filename){
 					console.log('Camera.record.camera.on.read', error, timestamp, filename);
-throw new Error('test');
 					if(error)
 						Camera.record.error(new Error(error));
 				});
-				camera.on('stop', function(error, timestamp){
+				Camera.record.camera.on('stop', function(error, timestamp){
 					console.log('Camera.record.camera.on.stop', error, timestamp);
-throw new Error('test');
 					if(error){
 						Camera.record.error(new Error(error));
 					}else{
 						Camera.record.convert.start();
 					}
 				});
-				camera.on('exit', function(timestamp){
-					console.log('Camera.record.camera.on.exit', timestamp);
-throw new Error('test');
+				Camera.record.camera.on('exit', function(timestamp){
+					console.log('Camera.record.camera.on.exit', timestamp, Camera.record.events.recording);
 					if(true !== Camera.record.events.recording){
 						Camera.record.error(new Error('Recording did not begin'));
 					}else{
@@ -239,15 +243,49 @@ throw new Error('test');
 		},
 		start:	function(){
 			console.log('Camera.record.start');
-			var results = this.camera.start();
+			var results = Camera.record.camera.start();
 			if(!results)
 				Camera.record.error(new Error('Error starting record camera', results));
 		},
 		convert:	{
 			start:	function(){
-				console.log('Camera.record.convert.start', Camera.record.file.recording());
-				Camera.record.success();
-				Camera.record.error('test');
+				console.log('Camera.record.convert.start', Camera.record.file.recording(), Camera.record.file.converting(), Camera.record.file.converting2(), Camera.record.file.converted());
+/*
+#!/bin/bash
+
+INPUT=source.h264
+OUTPUT=destination.h264
+
+#ffmpeg -i $INPUT -vf setpts=2.5*PTS -r 24 $OUTPUT
+
+MP4Box -add $INPUT#video -raw 1 -new test
+MP4Box -add test_track1.h264:fps=24 -new $OUTPUT
+*/
+				var exec = require('child_process').exec;
+				var cmd = 'MP4Box -add ' + Camera.record.file.recording() + '#video -raw 1 -new ' + Camera.record.file.converting();
+				exec(cmd, function(error, stdout, stderr) {
+					console.log('Camera.record.convert.start.exec', error, stdout, stderr);
+					var exec2	= require('child_process').exec;
+					var cmd2	= 'MP4Box -add ' + Camera.record.file.converting2() + ':fps=24 -new ' + Camera.record.file.converted();
+					exec2(cmd2, function(error, stdout, stderr) {
+						console.log('Camera.record.convert.start.exec2', error, stdout, stderr);
+						Camera.record.success();
+					});
+				});
+				// var MP4Box = new MP4Box();
+				// mp4box.onError = function(error){
+					// console.log('Camera.record.convert.start.mp4box.onError', error);
+					// Camera.record.error(error);
+				// };
+				// mp4box.onReady = function(info){
+					// console.log('Camera.record.convert.start.mp4box.onReady', info);
+				// };
+				// mp4box.appendBuffer(data);
+				// mp4box.appendBuffer(data);
+				// mp4box.appendBuffer(data);
+				// mp4box.flush();
+
+// Camera.record.error('test');
 			},
 			/* _start:	function(){
 				console.log('Camera.record.convert', Camera.record.file.recording());
@@ -282,9 +320,13 @@ throw new Error('test');
 				console.log('Camera.record.file.recording');
 				return Camera.params.videoDir + 'recording.h264';
 			},
-			conversion:	function(){
-				console.log('Camera.record.file.conversion');
-				return Camera.params.videoDir + 'conversion.h264';
+			converting:	function(){
+				console.log('Camera.record.file.converting');
+				return Camera.params.videoDir + 'converting.h264';
+			},
+			converting2:	function(){
+				console.log('Camera.record.file.converting');
+				return Camera.params.videoDir + 'converting_track1.h264';
 			},
 			converted:	function(){
 				console.log('Camera.record.file.converted');
@@ -330,13 +372,12 @@ throw new Error('test');
 		},
 		error:		function(error){
 			console.log('Camera.record.error', error);
-throw new Error('test');
-			Camera.record.file.delete.all();
+			Camera.record.events.reset();
+//			Camera.record.file.delete.all();
 			Camera.record.errorCB();
 		},
 		success:	function(){
 			console.log('Camera.record.success', Camera.record.file.converted());
-throw new Error('test');
 //			Camera.record.file.delete.recording();
 			Camera.record.successCB(Camera.record.file.converted());
 		},

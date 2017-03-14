@@ -56,3 +56,10 @@ sudo apt-get install gpac
 ```
 
 ###Update NodeJS
+
+[How To Two](http://thisdavej.com/beginners-guide-to-installing-node-js-on-a-raspberry-pi/)
+
+```
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+sudo apt install nodejs
+```
