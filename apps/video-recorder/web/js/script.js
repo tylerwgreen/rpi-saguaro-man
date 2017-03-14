@@ -4,10 +4,10 @@ jQuery(function($){
 		params:	{
 			ajaxBase:	'http://127.0.0.1:5000/',
 			record:		{
-				previewDuration:	3,	// seconds
-				recordDuration:		7,	// seconds
-				// previewDuration:	1,	// seconds
-				// recordDuration:		1,	// seconds
+				// previewDuration:	5,	// seconds
+				// recordDuration:		7,	// seconds
+				previewDuration:	1,	// seconds
+				recordDuration:		1,	// seconds
 				countdown:	{
 					interval:	1000,
 				}
@@ -226,6 +226,7 @@ jQuery(function($){
 						console.log('textStatus',	textStatus);
 						console.log('jqXHR',		jqXHR);
 						if(app.utils.isValidJqXHR(jqXHR)){
+							// alert(data);
 							app.finish.prompt();
 						}else{
 							app.error.raise('Invalid jqXHR');

@@ -49,4 +49,10 @@ sudo apt-get clean
 rm -rf /home/pi/python_games
 ```
 
+###Dependent packages
+
+```
+sudo apt-get install gpac
+```
+
 ###Update NodeJS

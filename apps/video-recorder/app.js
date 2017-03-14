@@ -72,24 +72,18 @@ app.get('/', function(req, res, next){
 	res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 });
 app.post('/camera/preview/start/:duration', function(req, res, next){
-	console.log(req.params.duration);
+	console.log('camera/preview/start:duration', req.params.duration);
 	if(typeof req.params.duration === 'undefined')
-		new Error('Missing required param: duration');
-	/* var timer = setTimeout(function(){
-		clearTimeout(timer);
-		res.json({
-			data:	{
-				success:	true
-			}
-		});
-	}, req.params.duration * 1000); */
+		throw new Error('Missing required param: duration');
 	Camera.init();
 	Camera.preview.init({
 		duration:	req.params.duration,
 		errorCB:	function(){
-			new Error('Preview failed');
+			console.log('camera/preview/start:errorCB');
+			throw new Error('Preview failed');
 		},
 		successCB:	function(){
+			console.log('camera/preview/start:successCB');
 			res.json({
 				data:	{
 					success:	true,
@@ -100,36 +94,39 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 	Camera.preview.start();
 });
 app.post('/camera/record/start/:duration/:consent', function(req, res, next){
-	console.log(req.params.duration);
-	console.log(req.params.consent);
+	console.log('camera/record/start:duration', req.params.duration);
+	console.log('camera/record/start:consent', req.params.consent);
 	if(typeof req.params.duration === 'undefined')
-		new Error('Missing required param: duration');
+		throw new Error('Missing required param: duration');
 	if(typeof req.params.consent === 'undefined')
-		new Error('Missing required param: consent');
-	/* var timer = setTimeout(function(){
-		clearTimeout(timer);
-		res.json({
-			data:	{
-				success:	true
+		throw new Error('Missing required param: consent');
+	try{
+		Camera.init();
+		Camera.record.init({
+			consent:	req.params.consent,
+			duration:	req.params.duration,
+			errorCB:	function(){
+				console.log('camera/record/start:errorCB');
+				throw new Error('Record failed');
+				// res.status(500).json({
+					// error: 'Record failed'
+				// });
+			},
+			successCB:	function(file){
+				console.log('camera/record/start:successCB', file);
+				res.json({
+					data:	{
+						success:	true,
+						// file:		file
+					}
+				});
 			}
 		});
-	}, req.params.duration * 1000); */
-	Camera.init();
-	Camera.record.init({
-		consent:	req.params.consent,
-		duration:	req.params.duration,
-		errorCB:	function(){
-			new Error('Record failed');
-		},
-		successCB:	function(){
-			res.json({
-				data:	{
-					success:	true,
-				}
-			});
-		}
-	});
-	Camera.record.start();
+		Camera.record.start();
+	}catch(e){
+		console.error('camera/record/start:caughtError', e);
+		throw e;
+	}
 });
 
 /**
