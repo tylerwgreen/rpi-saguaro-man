@@ -4,14 +4,11 @@ jQuery(function($){
 		params:	{
 			consent:	null,
 			ajaxBase:	'http://127.0.0.1:5000/',
+			preview:	{
+				duration:	5,	// seconds
+			},
 			record:		{
-				previewDuration:	5,	// seconds
-				recordDuration:		7,	// seconds
-				// previewDuration:	1,	// seconds
-				// recordDuration:		1,	// seconds
-				countdown:	{
-					interval:	1000,
-				}
+				duration:	7,	// seconds
 			},
 			init:	function(){
 				console.log('params.init');
@@ -28,6 +25,7 @@ jQuery(function($){
 			app.info.init();
 			app.preview.init();
 			app.record.init();
+			app.convert.init();
 			app.finish.init();
 			app.error.init();
 		},
@@ -38,10 +36,13 @@ jQuery(function($){
 			app.info.reset();
 			app.preview.reset();
 			app.record.reset();
+			app.convert.reset();
 			app.finish.reset();
 			app.error.reset();
+			// reset timers
+			app.utils.timerCountdown.reset();
+			app.utils.timer.reset();
 			// reset ui
-			// app.error.ui.hide();
 			app.consent.ui.show();
 		},
 		quit:	function(){
@@ -51,6 +52,7 @@ jQuery(function($){
 			app.info.quit();
 			app.preview.quit();
 			app.record.quit();
+			app.convert.quit();
 			app.finish.quit();
 			app.error.quit();
 			// reset app
@@ -109,14 +111,14 @@ jQuery(function($){
 					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
 					app.params.consent = true;
-					app.preview.init();
+					app.preview.events.preview.start();
 				},
 				recordNoConsent:	function(event){
 					console.log('consent.events.recordNoConsent');
 					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
 					app.params.consent = false;
-					app.preview.init();
+					app.preview.events.preview.start();
 				},
 				showInfo:			function(event){
 					console.log('consent.events.showInfo');
@@ -190,36 +192,12 @@ jQuery(function($){
 				// app.preview.countdown.reset();
 			},
 			ui:	{
-				previewWrap:		null,
-				previewIcon:		null,
-				infoText:		null,
+				wrap:			null,
 				countdownText:	null,
-				feedbackText:	null,
 				init:	function(){
 					console.log('preview.ui.init');
-					this.previewWrap	= $('#preview-wrap');
-					this.previewIcon	= $('#preview-icon');
-					this.infoText		= $('#preview-info-text');
+					this.wrap			= $('#preview-wrap');
 					this.countdownText	= $('#preview-countdown-text');
-					this.feedbackText	= $('#preview-feedback-text');
-				},
-				icon:	{
-					preview:	function(){
-						console.log('preview.ui.icon.preview');
-						app.preview.ui.previewIcon.removeClass('previewing');
-						app.preview.ui.previewIcon.addClass('preview');
-					},
-					previewing:	function(){
-						console.log('preview.ui.icon.previewing');
-						app.preview.ui.previewIcon.removeClass('preview');
-						app.preview.ui.previewIcon.addClass('previewing');
-					},
-				},
-				info:	{
-					update:	function(text){
-						console.log('preview.ui.info.update');
-						app.preview.ui.infoText.text(text);
-					}
 				},
 				countdown:	{
 					update:	function(text){
@@ -227,28 +205,48 @@ jQuery(function($){
 						app.preview.ui.countdownText.text(text);
 					}
 				},
-				feedback:	{
-					update:	function(text){
-						console.log('preview.ui.feedback.update');
-						app.preview.ui.feedbackText.text(text);
-					}
-				},
 				hide:	function(){
 					console.log('preview.ui.hide');
-					this.previewWrap.removeClass('visible');
+					this.wrap.removeClass('visible');
 				},
 				show:	function(){
 					console.log('preview.ui.show');
-					this.previewWrap.addClass('visible');
+					this.wrap.addClass('visible');
 				},
 			},
 			events:	{
 				preview:	{
 					start:	function(){
 						console.log('preview.events.preview.start');
+						app.preview.events.show();
+						app.utils.timerCountdown.start(
+							app.params.preview.duration,
+							app.preview.events.updateCountdown
+						);
+						$.post(app.params.ajaxBase + 'camera/preview')
+							.done(function(data, textStatus, jqXHR){
+								console.log('success',		'success');
+								console.log('data',			data);
+								console.log('textStatus',	textStatus);
+								console.log('jqXHR',		jqXHR);
+								if(app.utils.isValidJqXHR(jqXHR)){
+									app.preview.events.preview.end();
+								}else{
+									app.error.raise('Invalid jqXHR');
+								}
+							})
+							.fail(function(jqXHR, textStatus, errorThrown){
+								console.error('error',			'error');
+								console.error('jqXHR',			jqXHR);
+								console.error('textStatus',		textStatus);
+								console.error('errorThrown',	errorThrown);
+								app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+							});
 					},
 					end:	function(){
 						console.log('preview.events.preview.end');
+						app.preview.events.hide();
+						app.record.events.record.start();
 					}
 				},
 				show:	function(){
@@ -264,92 +262,6 @@ jQuery(function($){
 					app.preview.ui.countdown.update(text);
 				}
 			},
-			preview:	function(consent){
-				app.preview.events.show();
-				app.preview.ui.icon.preview();
-				app.preview.ui.info.update('Preview');
-				app.preview.ui.feedback.update('Express yourself!');
-				app.preview.countdown.start(app.params.preview.previewDuration);
-				$.post(app.params.ajaxBase + 'camera/preview/' + app.params.preview.previewDuration)
-					.done(function(data, textStatus, jqXHR){
-						console.log('success',		'success');
-						console.log('data',			data);
-						console.log('textStatus',	textStatus);
-						console.log('jqXHR',		jqXHR);
-						if(app.utils.isValidJqXHR(jqXHR)){
-							app.preview.preview(consent);
-						}else{
-							app.error.raise('Invalid jqXHR');
-						}
-					})
-					.fail(function(jqXHR, textStatus, errorThrown){
-						console.error('error',			'error');
-						console.error('jqXHR',			jqXHR);
-						console.error('textStatus',		textStatus);
-						console.error('errorThrown',	errorThrown);
-						app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
-					});
-			},
-			record:		function(consent){
-				console.log('record.record', consent);
-				app.record.ui.icon.recording();
-				app.record.ui.info.update('Recording');
-				app.record.ui.feedback.update('Radically express yourself!');
-				app.record.countdown.start(app.params.record.recordDuration);
-				$.post(app.params.ajaxBase + 'camera/record/' + app.params.record.recordDuration + '/' + consent)
-					.done(function(data, textStatus, jqXHR){
-						console.log('success',		'success');
-						console.log('data',			data);
-						console.log('textStatus',	textStatus);
-						console.log('jqXHR',		jqXHR);
-						if(app.utils.isValidJqXHR(jqXHR)){
-							app.finish.prompt(jqXHR.responseJSON.data.fileName);
-						}else{
-							app.error.raise('Invalid jqXHR');
-						}
-					})
-					.fail(function(jqXHR, textStatus, errorThrown){
-						console.error('error',			'error');
-						console.error('jqXHR',			jqXHR);
-						console.error('textStatus',		textStatus);
-						console.error('errorThrown',	errorThrown);
-						app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
-					});
-			},
-			/* reRecord:	{
-			},
-			delete:		{
-			}, */
-			countdown:	{
-				counter:	null,
-				count:		null,
-				start:		function(duration){
-					console.log('record.countdown.start', duration);
-					app.record.events.updateCountdown(duration);
-					app.record.countdown.count		= duration;
-					app.record.countdown.counter	= setInterval(
-						app.record.countdown.update,
-						app.params.record.countdown.interval
-					);
-				},
-				update:		function(){
-					console.log('record.countdown.update');
-					app.record.countdown.count	= app.record.countdown.count - 1;
-					app.record.events.updateCountdown(app.record.countdown.count);
-					if(app.record.countdown.count <= 0)
-						app.record.countdown.stop();
-				},
-				stop:		function(){
-					console.log('record.countdown.stop');
-					clearInterval(app.record.countdown.counter);
-				},
-				reset:		function(){
-					console.log('record.countdown.reset');
-					clearInterval(app.record.countdown.counter);
-					app.record.countdown.counter	= null;
-					app.record.countdown.count		= null;
-				}
-			},
 		},
 		record:		{
 			init:	function(){
@@ -363,63 +275,64 @@ jQuery(function($){
 			},
 			quit:	function(){
 				console.log('record.quit');
-				app.record.countdown.reset();
 			},
 			ui:	{
-				recordWrap:		null,
-				recordIcon:		null,
-				infoText:		null,
+				wrap:			null,
 				countdownText:	null,
-				feedbackText:	null,
 				init:	function(){
 					console.log('record.ui.init');
-					this.recordWrap		= $('#record-wrap');
-					// this.recordInfoWrap			= $('#record-info-wrap');
-					// this.recordIconWrap			= $('#record-icon-wrap');
-					this.recordIcon		= $('#record-icon');
-					// this.recordInfoTextWrap		= $('#record-info-text-wrap');
-					this.infoText		= $('#record-info-text');
-					// this.recordCountdownWrap	= $('#record-countdown-wrap');
+					this.wrap			= $('#record-wrap');
 					this.countdownText	= $('#record-countdown-text');
-					// this.videoPlaceholder	= $('#record-video-placeholder');
-					// this.recordFeedbackTextWrap	= $('#record-feedback-text-wrap');
-					this.feedbackText	= $('#record-feedback-text');
-				},
-				icon:	{
-					preview:	function(){
-						app.record.ui.recordIcon.removeClass('recording');
-						app.record.ui.recordIcon.addClass('preview');
-					},
-					recording:	function(){
-						app.record.ui.recordIcon.removeClass('preview');
-						app.record.ui.recordIcon.addClass('recording');
-					},
-				},
-				info:	{
-					update:	function(text){
-						app.record.ui.infoText.text(text);
-					}
 				},
 				countdown:	{
 					update:	function(text){
 						app.record.ui.countdownText.text(text);
 					}
 				},
-				feedback:	{
-					update:	function(text){
-						app.record.ui.feedbackText.text(text);
-					}
-				},
 				hide:	function(){
 					console.log('record.ui.hide');
-					this.recordWrap.removeClass('visible');
+					this.wrap.removeClass('visible');
 				},
 				show:	function(){
 					console.log('record.ui.show');
-					this.recordWrap.addClass('visible');
+					this.wrap.addClass('visible');
 				},
 			},
 			events:	{
+				record:	{
+					start:	function(){
+						console.log('record.events.record.start');
+						app.record.events.show();
+						app.utils.timerCountdown.start(
+							app.params.record.duration,
+							app.record.events.updateCountdown
+						);
+						$.post(app.params.ajaxBase + 'camera/record')
+							.done(function(data, textStatus, jqXHR){
+								console.log('success',		'success');
+								console.log('data',			data);
+								console.log('textStatus',	textStatus);
+								console.log('jqXHR',		jqXHR);
+								if(app.utils.isValidJqXHR(jqXHR)){
+									app.record.events.record.end();
+								}else{
+									app.error.raise('Invalid jqXHR');
+								}
+							})
+							.fail(function(jqXHR, textStatus, errorThrown){
+								console.error('error',			'error');
+								console.error('jqXHR',			jqXHR);
+								console.error('textStatus',		textStatus);
+								console.error('errorThrown',	errorThrown);
+								app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+							});
+					},
+					end:	function(){
+						console.log('record.events.record.end');
+						app.record.events.hide();
+						app.convert.events.convert.start();
+					}
+				},
 				show:	function(){
 					console.log('record.events.show');
 					app.record.ui.show();
@@ -433,90 +346,88 @@ jQuery(function($){
 					app.record.ui.countdown.update(text);
 				}
 			},
-			preview:	function(consent){
-				app.record.events.show();
-				app.record.ui.icon.preview();
-				app.record.ui.info.update('Preview');
-				app.record.ui.feedback.update('Express yourself!');
-				app.record.countdown.start(app.params.record.previewDuration);
-				$.post(app.params.ajaxBase + 'camera/preview/' + app.params.record.previewDuration)
-					.done(function(data, textStatus, jqXHR){
-						console.log('success',		'success');
-						console.log('data',			data);
-						console.log('textStatus',	textStatus);
-						console.log('jqXHR',		jqXHR);
-						if(app.utils.isValidJqXHR(jqXHR)){
-							app.record.record(consent);
-						}else{
-							app.error.raise('Invalid jqXHR');
-						}
-					})
-					.fail(function(jqXHR, textStatus, errorThrown){
-						console.error('error',			'error');
-						console.error('jqXHR',			jqXHR);
-						console.error('textStatus',		textStatus);
-						console.error('errorThrown',	errorThrown);
-						app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
-					});
+		},
+		convert:		{
+			init:	function(){
+				console.log('convert.init');
+				this.ui.init();
 			},
-			record:		function(consent){
-				console.log('record.record', consent);
-				app.record.ui.icon.recording();
-				app.record.ui.info.update('Recording');
-				app.record.ui.feedback.update('Radically express yourself!');
-				app.record.countdown.start(app.params.record.recordDuration);
-				$.post(app.params.ajaxBase + 'camera/record/' + app.params.record.recordDuration + '/' + consent)
-					.done(function(data, textStatus, jqXHR){
-						console.log('success',		'success');
-						console.log('data',			data);
-						console.log('textStatus',	textStatus);
-						console.log('jqXHR',		jqXHR);
-						if(app.utils.isValidJqXHR(jqXHR)){
-							app.finish.prompt(jqXHR.responseJSON.data.fileName);
-						}else{
-							app.error.raise('Invalid jqXHR');
-						}
-					})
-					.fail(function(jqXHR, textStatus, errorThrown){
-						console.error('error',			'error');
-						console.error('jqXHR',			jqXHR);
-						console.error('textStatus',		textStatus);
-						console.error('errorThrown',	errorThrown);
-						app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
-					});
+			reset:	function(){
+				console.log('convert.reset');
+				this.quit();
+				this.events.hide();
 			},
-			/* reRecord:	{
+			quit:	function(){
+				console.log('convert.quit');
 			},
-			delete:		{
-			}, */
-			countdown:	{
-				counter:	null,
-				count:		null,
-				start:		function(duration){
-					console.log('record.countdown.start', duration);
-					app.record.events.updateCountdown(duration);
-					app.record.countdown.count		= duration;
-					app.record.countdown.counter	= setInterval(
-						app.record.countdown.update,
-						app.params.record.countdown.interval
-					);
+			ui:	{
+				wrap:		null,
+				timerText:	null,
+				init:	function(){
+					console.log('convert.ui.init');
+					this.wrap		= $('#convert-wrap');
+					this.timerText	= $('#convert-timer-text');
 				},
-				update:		function(){
-					console.log('record.countdown.update');
-					app.record.countdown.count	= app.record.countdown.count - 1;
-					app.record.events.updateCountdown(app.record.countdown.count);
-					if(app.record.countdown.count <= 0)
-						app.record.countdown.stop();
+				timer:	{
+					update:	function(text){
+						app.convert.ui.timerText.text(text);
+					}
 				},
-				stop:		function(){
-					console.log('record.countdown.stop');
-					clearInterval(app.record.countdown.counter);
+				hide:	function(){
+					console.log('convert.ui.hide');
+					this.wrap.removeClass('visible');
 				},
-				reset:		function(){
-					console.log('record.countdown.reset');
-					clearInterval(app.record.countdown.counter);
-					app.record.countdown.counter	= null;
-					app.record.countdown.count		= null;
+				show:	function(){
+					console.log('convert.ui.show');
+					this.wrap.addClass('visible');
+				},
+			},
+			events:	{
+				convert:	{
+					start:	function(){
+						console.log('convert.events.convert.start');
+						app.convert.events.show();
+						app.utils.timer.start(
+							app.convert.events.updateTimer
+						);
+						$.post(app.params.ajaxBase + 'video/convert/' + app.params.consent)
+							.done(function(data, textStatus, jqXHR){
+								console.log('success',		'success');
+								console.log('data',			data);
+								console.log('textStatus',	textStatus);
+								console.log('jqXHR',		jqXHR);
+								if(app.utils.isValidJqXHR(jqXHR)){
+									app.convert.events.convert.end(jqXHR.responseJSON.data.fileName);
+								}else{
+									app.error.raise('Invalid jqXHR');
+								}
+							})
+							.fail(function(jqXHR, textStatus, errorThrown){
+								console.error('error',			'error');
+								console.error('jqXHR',			jqXHR);
+								console.error('textStatus',		textStatus);
+								console.error('errorThrown',	errorThrown);
+								app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+							});
+					},
+					end:	function(fileName){
+						console.log('convert.events.convert.end');
+						app.convert.events.hide();
+						app.utils.timer.stop();
+						app.finish.events.play.start(fileName);
+					}
+				},
+				show:	function(){
+					console.log('convert.events.show');
+					app.convert.ui.show();
+				},
+				hide:	function(){
+					console.log('convert.events.hide');
+					app.convert.ui.hide();
+				},
+				updateTimer:	function(text){
+					console.log('convert.events.updateTimer', text);
+					app.convert.ui.timer.update(text);
 				}
 			},
 		},
@@ -535,24 +446,54 @@ jQuery(function($){
 				app.finish.events.play(fileName);
 			},
 			ui:	{
-				finishWrap:		null,
+				wrap:			null,
 				finishDoneBtn:	null,
 				init:	function(){
 					console.log('finish.ui.init');
-					this.finishWrap		= $('#finish-wrap');
+					this.wrap			= $('#finish-wrap');
 					this.finishDoneBtn	= $('#finish-done-btn')
-						.on('click', app.finish.events.done);
+						.on('click', app.finish.events.play.end);
 				},
 				hide:	function(){
 					console.log('finish.ui.hide');
-					this.finishWrap.removeClass('visible');
+					this.wrap.removeClass('visible');
 				},
 				show:	function(){
 					console.log('finish.ui.show');
-					this.finishWrap.addClass('visible');
+					this.wrap.addClass('visible');
 				},
 			},
 			events:	{
+				play:	{
+					start:	function(fileName){
+						console.log('finish.events.play.start');
+						app.finish.events.show();
+						$.post(app.params.ajaxBase + 'video/play/' + fileName)
+							.done(function(data, textStatus, jqXHR){
+								console.log('success',		'success');
+								console.log('data',			data);
+								console.log('textStatus',	textStatus);
+								console.log('jqXHR',		jqXHR);
+								if(app.utils.isValidJqXHR(jqXHR)){
+									app.finish.events.play.end();
+								}else{
+									app.error.raise('Invalid jqXHR');
+								}
+							})
+							.fail(function(jqXHR, textStatus, errorThrown){
+								console.error('error',			'error');
+								console.error('jqXHR',			jqXHR);
+								console.error('textStatus',		textStatus);
+								console.error('errorThrown',	errorThrown);
+								app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+							});
+					},
+					end:	function(){
+						console.log('finish.events.play.end');
+						app.finish.events.hide();
+						app.reset();
+					},
+				},
 				show:	function(){
 					console.log('finish.events.show');
 					app.finish.ui.show();
@@ -561,32 +502,6 @@ jQuery(function($){
 					console.log('finish.events.hide');
 					app.finish.ui.hide();
 				},
-				done:	function(event){
-					console.log('finish.events.done', event);
-					app.utils.cancelDefaultEvent(event);
-					app.reset();
-				},
-				play:	function(fileName){
-					$.post(app.params.ajaxBase + 'video/play/' + fileName)
-						.done(function(data, textStatus, jqXHR){
-							console.log('success',		'success');
-							console.log('data',			data);
-							console.log('textStatus',	textStatus);
-							console.log('jqXHR',		jqXHR);
-							if(app.utils.isValidJqXHR(jqXHR)){
-								app.finish.events.done();
-							}else{
-								app.error.raise('Invalid jqXHR');
-							}
-						})
-						.fail(function(jqXHR, textStatus, errorThrown){
-							console.error('error',			'error');
-							console.error('jqXHR',			jqXHR);
-							console.error('textStatus',		textStatus);
-							console.error('errorThrown',	errorThrown);
-							app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
-						});
-				}
 			}
 		},
 		error:		{
@@ -673,7 +588,73 @@ jQuery(function($){
 					event.preventDefault();
 					event.stopPropagation();
 				}
-			}
+			},
+			timerCountdown:	{
+				callback:	null,
+				counter:	null,
+				count:		null,
+				start:		function(duration, callback){
+					console.log('app.utils.timerCountdown.start', duration);
+					app.utils.timerCountdown.callback	= callback;
+					app.utils.timerCountdown.count		= duration;
+					app.utils.timerCountdown.counter	= setInterval(
+						app.utils.timerCountdown.update,
+						1000	// 1 second
+					);
+					app.utils.timerCountdown.callback(duration);
+				},
+				update:		function(){
+					console.log('app.utils.timerCountdown.update');
+					app.utils.timerCountdown.count	= app.utils.timerCountdown.count - 1;
+					app.utils.timerCountdown.callback(app.utils.timerCountdown.count);
+					if(app.utils.timerCountdown.count <= 0)
+						app.utils.timerCountdown.stop();
+				},
+				stop:		function(){
+					console.log('app.utils.timerCountdown.stop');
+					clearInterval(app.utils.timerCountdown.counter);
+				},
+				reset:		function(){
+					console.log('app.utils.timerCountdown.reset');
+					clearInterval(app.utils.timerCountdown.counter);
+					app.utils.timerCountdown.callback	= null;
+					app.utils.timerCountdown.counter	= null;
+					app.utils.timerCountdown.count		= null;
+				}
+			},
+			timer:	{
+				callback:	null,
+				counter:	null,
+				count:		0,
+				countMax:	10,
+				start:		function(callback){
+					console.log('app.utils.timer.start');
+					app.utils.timer.callback	= callback;
+					app.utils.timer.counter		= setInterval(
+						app.utils.timer.update,
+						1000	// 1 second
+					);
+					app.utils.timer.callback(app.utils.timer.count);
+				},
+				update:		function(){
+					console.log('app.utils.timer.update');
+					app.utils.timer.count	= app.utils.timer.count + 1;
+					app.utils.timer.callback(app.utils.timer.count);
+					if(app.utils.timer.count > app.utils.timer.countMax)
+						app.utils.timer.stop();
+				},
+				stop:		function(){
+					console.log('app.utils.timer.stop');
+					clearInterval(app.utils.timer.counter);
+				},
+				reset:		function(){
+					console.log('app.utils.timer.reset');
+					clearInterval(app.utils.timer.counter);
+					app.utils.timer.callback	= null;
+					app.utils.timer.counter		= null;
+					app.utils.timer.count		= 0;
+				}
+			},
 		}
 	};
 	app.init();

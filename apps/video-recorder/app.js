@@ -83,11 +83,17 @@ app.use(express.static(path.join(__dirname, paths.web)));
 app.get('/', function(req, res, next){
 	res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 });
-app.post('/camera/preview/:duration', function(req, res, next){
-	console.log('camera/preview:duration', req.params.duration);
-	if(typeof req.params.duration === 'undefined')
-		throw new Error('Missing required param: duration');
-	Camera.preview({
+app.post('/camera/preview', function(req, res, next){
+	console.log('camera/preview', req.params);
+	setTimeout(function(){
+		console.log('camera/preview', 'success');
+		res.json({
+			data:	{
+				success:	true,
+			}
+		});
+	}, 5000);
+	/* Camera.preview({
 		errorCB:	function(error){
 			console.log('camera/preview:errorCB', error);
 			throw new Error('Preview failed');
@@ -103,65 +109,95 @@ app.post('/camera/preview/:duration', function(req, res, next){
 				}
 			});
 		}
-	});
+	}); */
 });
-app.post('/camera/record/:duration/:consent', function(req, res, next){
-	console.log('camera/record:duration', req.params.duration);
-	console.log('camera/record:consent', req.params.consent);
-	if(typeof req.params.duration === 'undefined')
-		throw new Error('Missing required param: duration');
+app.post('/camera/record', function(req, res, next){
+	console.log('camera/record', req.params);
+	setTimeout(function(){
+		console.log('camera/record', 'success');
+		res.json({
+			data:	{
+				success:	true,
+			}
+		});
+	}, 7000);
+	/* Camera.record({
+		consent:	req.params.consent,
+		errorCB:	function(error){
+			console.log('camera/record:errorCB', error);
+			res.status(500).json({
+				errors: ['Record failed'],
+			});
+		},
+		successCB:	function(fileName){
+			console.log('camera/record:successCB', fileName);
+			res.json({
+				data:	{
+					success:	true,
+				}
+			});
+		}
+	}); */
+});
+app.post('/video/convert/:consent', function(req, res, next){
+	console.log('video/convert', req.params);
 	if(typeof req.params.consent === 'undefined')
 		throw new Error('Missing required param: consent');
-	try{
-		Camera.record({
-			consent:	req.params.consent,
-			errorCB:	function(error){
-				console.log('camera/record:errorCB', error);
-				res.status(500).json({
-					errors: ['Record failed']
-				});
-			},
-			successCB:	function(fileName){
-				console.log('camera/record:successCB', fileName);
-				res.json({
-					data:	{
-						success:	true,
-						fileName:	fileName
-					}
-				});
+	setTimeout(function(){
+		res.json({
+			data:	{
+				success:	true,
+				fileName:	'converted.h264',
 			}
 		});
-	}catch(e){
-		console.error('camera/record:caughtError', e);
-		throw e;
-	}
+	}, 3000);
+	/* VideoPlayer.play({
+		fileName:	req.params.fileName,
+		errorCB:	function(error){
+			console.log('video/play:errorCB', error);
+			res.status(500).json({
+				errors: ['Play failed'],
+			});
+		},
+		successCB:	function(fileName){
+			console.log('video/play:successCB');
+			res.json({
+				data:	{
+					success:	true,
+					fileName:	fileName,
+				}
+			});
+		}
+	}); */
 });
 app.post('/video/play/:fileName', function(req, res, next){
-	console.log('video/play:fileName', req.params.fileName);
+	console.log('video/play', req.params);
 	if(typeof req.params.fileName === 'undefined')
 		throw new Error('Missing required param: fileName');
-	try{
-		VideoPlayer.play({
-			fileName:	req.params.fileName,
-			errorCB:	function(error){
-				console.log('video/play:errorCB', error);
-				res.status(500).json({
-					errors: ['Play failed'],
-				});
-			},
-			successCB:	function(fileName){
-				console.log('video/play:successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+	setTimeout(function(){
+		res.json({
+			data:	{
+				success:	true,
 			}
 		});
-	}catch(e){
-		console.error('video/play:caughtError', e);
-		throw e;
-	}
+	}, 3000);
+	/* VideoPlayer.play({
+		fileName:	req.params.fileName,
+		errorCB:	function(error){
+			console.log('video/play:errorCB', error);
+			res.status(500).json({
+				errors: ['Play failed'],
+			});
+		},
+		successCB:	function(fileName){
+			console.log('video/play:successCB');
+			res.json({
+				data:	{
+					success:	true,
+				}
+			});
+		}
+	}); */
 });
 
 /**

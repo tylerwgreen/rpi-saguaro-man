@@ -1,4 +1,4 @@
-#preview-wrap{
+#convert-wrap{
 	@controls-height:55px;
 	z-index:-1;
 	.opacity(0);
@@ -11,34 +11,34 @@
 		z-index:2000;
 		.opacity(100);
 	}
-	#preview-info-wrap{
+	#convert-info-wrap{
 		width:@display-width;
 		height:@controls-height;
 		line-height:@controls-height;
-		#preview-icon-wrap{
+		#convert-icon-wrap{
 			position:absolute;
 			top:0;
 			left:0;
 			padding-left:10px;
-			i#preview-icon{
+			i#convert-icon{
 				font-size:70px;
 				position:relative;
 				top:-5px;
-				color:@blue-light;
+				color:@red;
 			}
 		}
-		#preview-info-text-wrap{
+		#convert-info-text-wrap{
 			width:@display-width;
 			height:@controls-height;
 			line-height:@controls-height;
 			position:absolute;
 			top:0;
 			font-size:30px;
-			#preview-info-text{
+			#convert-info-text{
 				text-align:center;
 			}
 		}
-		#preview-countdown-wrap{
+		#convert-timer-wrap{
 			height:@controls-height;
 			line-height:@controls-height;
 			position:absolute;
@@ -48,7 +48,7 @@
 			font-size:40px;
 		}
 	}
-	#preview-video-placeholder{
+	#convert-video-placeholder{
 		position:absolute;
 		width:@preview-width;
 		height:@preview-height;
@@ -56,14 +56,14 @@
 		left:(@display-width - @preview-width) / 2;
 		background-color:@black-dark;
 	}
-	#preview-feedback-text-wrap{
+	#convert-feedback-text-wrap{
 		width:@display-width;
 		height:@controls-height;
 		line-height:@controls-height;
 		position:absolute;
 		bottom:0;
 		font-size:30px;
-		#preview-feedback-text{
+		#convert-feedback-text{
 			text-align:center;
 		}
 	}
