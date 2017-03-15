@@ -6,7 +6,7 @@ var express	= require('express');
 var fs		= require('fs');
 var morgan	= require('morgan');
 var path	= require('path');
-var rfs		= require('rotating-file-stream')
+var rfs		= require('rotating-file-stream');
 var paths	= {
 	app:	'/app/',
 	models:	'/app/models/',
@@ -18,7 +18,19 @@ var paths	= {
 /**
  * Load models
  */
-var Camera	= require(path.join(__dirname, paths.models, 'camera'));
+var Camera		= require(path.join(__dirname, paths.models, 'camera'));
+var VideoPlayer	= require(path.join(__dirname, paths.models, 'videoPlayer'));
+// VideoPlayer.init();
+/* VideoPlayer.play({
+	fileName:	'20170313205726-consent.h264',
+	successCB:	function(){
+		console.log('successCB');
+	},
+	errorCB:	function(){
+		console.log('errorCB');
+	},
+}); */
+// setTimeout(VideoPlayer.quit, 3000);
 
 // app settings
 /**
@@ -71,22 +83,20 @@ app.use(express.static(path.join(__dirname, paths.web)));
 app.get('/', function(req, res, next){
 	res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 });
-app.post('/camera/preview/start/:duration', function(req, res, next){
-	console.log('camera/preview/start:duration', req.params.duration);
+app.post('/camera/preview/:duration', function(req, res, next){
+	console.log('camera/preview:duration', req.params.duration);
 	if(typeof req.params.duration === 'undefined')
 		throw new Error('Missing required param: duration');
-	Camera.init();
-	Camera.preview.init({
-		duration:	req.params.duration,
-		errorCB:	function(){
-			console.log('camera/preview/start:errorCB', res.headersSent);
+	Camera.preview({
+		errorCB:	function(error){
+			console.log('camera/preview:errorCB', error);
 			throw new Error('Preview failed');
 			res.status(500).json({
 				errors: ['Preview failed']
 			});
 		},
 		successCB:	function(){
-			console.log('camera/preview/start:successCB');
+			console.log('camera/preview:successCB');
 			res.json({
 				data:	{
 					success:	true,
@@ -94,39 +104,62 @@ app.post('/camera/preview/start/:duration', function(req, res, next){
 			});
 		}
 	});
-	Camera.preview.start();
 });
-app.post('/camera/record/start/:duration/:consent', function(req, res, next){
-	console.log('camera/record/start:duration', req.params.duration);
-	console.log('camera/record/start:consent', req.params.consent);
+app.post('/camera/record/:duration/:consent', function(req, res, next){
+	console.log('camera/record:duration', req.params.duration);
+	console.log('camera/record:consent', req.params.consent);
 	if(typeof req.params.duration === 'undefined')
 		throw new Error('Missing required param: duration');
 	if(typeof req.params.consent === 'undefined')
 		throw new Error('Missing required param: consent');
 	try{
-		Camera.init();
-		Camera.record.init({
+		Camera.record({
 			consent:	req.params.consent,
-			duration:	req.params.duration,
-			errorCB:	function(){
-				console.log('camera/record/start:errorCB', res.headersSent);
+			errorCB:	function(error){
+				console.log('camera/record:errorCB', error);
 				res.status(500).json({
 					errors: ['Record failed']
 				});
 			},
-			successCB:	function(file){
-				console.log('camera/record/start:successCB', file);
+			successCB:	function(fileName){
+				console.log('camera/record:successCB', fileName);
 				res.json({
 					data:	{
 						success:	true,
-						// file:		file
+						fileName:	fileName
 					}
 				});
 			}
 		});
-		Camera.record.start();
 	}catch(e){
-		console.error('camera/record/start:caughtError', e);
+		console.error('camera/record:caughtError', e);
+		throw e;
+	}
+});
+app.post('/video/play/:fileName', function(req, res, next){
+	console.log('video/play:fileName', req.params.fileName);
+	if(typeof req.params.fileName === 'undefined')
+		throw new Error('Missing required param: fileName');
+	try{
+		VideoPlayer.play({
+			fileName:	req.params.fileName,
+			errorCB:	function(error){
+				console.log('video/play:errorCB', error);
+				res.status(500).json({
+					errors: ['Play failed'],
+				});
+			},
+			successCB:	function(fileName){
+				console.log('video/play:successCB');
+				res.json({
+					data:	{
+						success:	true,
+					}
+				});
+			}
+		});
+	}catch(e){
+		console.error('video/play:caughtError', e);
 		throw e;
 	}
 });
@@ -165,5 +198,4 @@ var server = app.listen(port, function(){
 	var port = server.address().port
 	debug('Example app listening at http://%s:%s', host, port);
 });
-
 module.exports = app, debug;

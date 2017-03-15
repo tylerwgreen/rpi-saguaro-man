@@ -2,6 +2,7 @@ jQuery(function($){
 	var app	= {
 		debug:	true,
 		params:	{
+			consent:	null,
 			ajaxBase:	'http://127.0.0.1:5000/',
 			record:		{
 				previewDuration:	5,	// seconds
@@ -11,23 +12,33 @@ jQuery(function($){
 				countdown:	{
 					interval:	1000,
 				}
+			},
+			init:	function(){
+				console.log('params.init');
+			},
+			reset:	function(){
+				console.log('params.reset');
+				this.consent	= null;
 			}
 		},
 		init:	function(){
 			console.log('init');
-			app.error.init();
-			app.info.init();
+			app.params.init();
 			app.consent.init();
+			app.info.init();
+			app.preview.init();
 			app.record.init();
 			app.finish.init();
-			// app.preview.init();
+			app.error.init();
 		},
 		reset:	function(){
 			console.log('reset');
-			app.finish.reset();
-			app.record.reset();
+			app.params.reset();
 			app.consent.reset();
 			app.info.reset();
+			app.preview.reset();
+			app.record.reset();
+			app.finish.reset();
 			app.error.reset();
 			// reset ui
 			// app.error.ui.hide();
@@ -35,11 +46,15 @@ jQuery(function($){
 		},
 		quit:	function(){
 			console.log('quit');
-			// app.finish.quit();
+			app.params.quit();
+			app.consent.quit();
+			app.info.quit();
+			app.preview.quit();
 			app.record.quit();
-			// app.consent.quit();
-			// app.info.quit();
-			// app.error.quit();
+			app.finish.quit();
+			app.error.quit();
+			// reset app
+			app.reset();
 		},
 		consent:	{
 			init:	function(){
@@ -48,6 +63,9 @@ jQuery(function($){
 			},
 			reset:	function(){
 				console.log('consent.reset');
+			},
+			quit:	function(){
+				console.log('consent.quit');
 			},
 			ui:	{
 				titleWrap:			null,
@@ -90,13 +108,15 @@ jQuery(function($){
 					console.log('consent.events.recordConsent');
 					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
-					app.record.preview(true);
+					app.params.consent = true;
+					app.preview.init();
 				},
 				recordNoConsent:	function(event){
 					console.log('consent.events.recordNoConsent');
 					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
-					app.record.preview(false);
+					app.params.consent = false;
+					app.preview.init();
 				},
 				showInfo:			function(event){
 					console.log('consent.events.showInfo');
@@ -104,6 +124,232 @@ jQuery(function($){
 					app.info.events.show();
 				},
 			}
+		},
+		info:		{
+			init:	function(){
+				console.log('info.init');
+				this.ui.init();
+			},
+			reset:	function(){
+				console.log('info.reset');
+				this.events.hide();
+			},
+			quit:	function(){
+				console.log('info.quit');
+			},
+			ui:	{
+				infoWrap:	null,
+				backBtn:	null,
+				init:	function(){
+					console.log('info.ui.init');
+					this.infoWrap	= $('#info-wrap');
+					this.backBtn	= $('#info-back-btn')
+						.on('click', app.info.events.back);
+				},
+				msg:	{
+					update:	function(msg){
+						app.info.ui.infoMsg.text(msg);
+					},
+				},
+				hide:	function(){
+					console.log('info.ui.hide');
+					this.infoWrap.removeClass('visible');
+				},
+				show:	function(){
+					console.log('info.ui.show');
+					this.infoWrap.addClass('visible');
+				},
+			},
+			events:	{
+				show:	function(){
+					console.log('info.events.show');
+					app.info.ui.show();
+				},
+				hide:	function(){
+					console.log('info.events.hide');
+					app.info.ui.hide();
+				},
+				back:	function(event){
+					console.log('info.events.back');
+					app.utils.cancelDefaultEvent(event);
+					app.reset();
+				}
+			}
+		},
+		preview:		{
+			init:	function(){
+				console.log('preview.init');
+				this.ui.init();
+			},
+			reset:	function(){
+				console.log('preview.reset');
+				// this.events.hide();
+			},
+			quit:	function(){
+				console.log('preview.quit');
+				// app.preview.countdown.reset();
+			},
+			ui:	{
+				previewWrap:		null,
+				previewIcon:		null,
+				infoText:		null,
+				countdownText:	null,
+				feedbackText:	null,
+				init:	function(){
+					console.log('preview.ui.init');
+					this.previewWrap	= $('#preview-wrap');
+					this.previewIcon	= $('#preview-icon');
+					this.infoText		= $('#preview-info-text');
+					this.countdownText	= $('#preview-countdown-text');
+					this.feedbackText	= $('#preview-feedback-text');
+				},
+				icon:	{
+					preview:	function(){
+						console.log('preview.ui.icon.preview');
+						app.preview.ui.previewIcon.removeClass('previewing');
+						app.preview.ui.previewIcon.addClass('preview');
+					},
+					previewing:	function(){
+						console.log('preview.ui.icon.previewing');
+						app.preview.ui.previewIcon.removeClass('preview');
+						app.preview.ui.previewIcon.addClass('previewing');
+					},
+				},
+				info:	{
+					update:	function(text){
+						console.log('preview.ui.info.update');
+						app.preview.ui.infoText.text(text);
+					}
+				},
+				countdown:	{
+					update:	function(text){
+						console.log('preview.ui.countdown.update');
+						app.preview.ui.countdownText.text(text);
+					}
+				},
+				feedback:	{
+					update:	function(text){
+						console.log('preview.ui.feedback.update');
+						app.preview.ui.feedbackText.text(text);
+					}
+				},
+				hide:	function(){
+					console.log('preview.ui.hide');
+					this.previewWrap.removeClass('visible');
+				},
+				show:	function(){
+					console.log('preview.ui.show');
+					this.previewWrap.addClass('visible');
+				},
+			},
+			events:	{
+				preview:	{
+					start:	function(){
+						console.log('preview.events.preview.start');
+					},
+					end:	function(){
+						console.log('preview.events.preview.end');
+					}
+				},
+				show:	function(){
+					console.log('preview.events.show');
+					app.preview.ui.show();
+				},
+				hide:	function(){
+					console.log('preview.events.hide');
+					app.preview.ui.hide();
+				},
+				updateCountdown:	function(text){
+					console.log('preview.events.updateCountdown', text);
+					app.preview.ui.countdown.update(text);
+				}
+			},
+			preview:	function(consent){
+				app.preview.events.show();
+				app.preview.ui.icon.preview();
+				app.preview.ui.info.update('Preview');
+				app.preview.ui.feedback.update('Express yourself!');
+				app.preview.countdown.start(app.params.preview.previewDuration);
+				$.post(app.params.ajaxBase + 'camera/preview/' + app.params.preview.previewDuration)
+					.done(function(data, textStatus, jqXHR){
+						console.log('success',		'success');
+						console.log('data',			data);
+						console.log('textStatus',	textStatus);
+						console.log('jqXHR',		jqXHR);
+						if(app.utils.isValidJqXHR(jqXHR)){
+							app.preview.preview(consent);
+						}else{
+							app.error.raise('Invalid jqXHR');
+						}
+					})
+					.fail(function(jqXHR, textStatus, errorThrown){
+						console.error('error',			'error');
+						console.error('jqXHR',			jqXHR);
+						console.error('textStatus',		textStatus);
+						console.error('errorThrown',	errorThrown);
+						app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+					});
+			},
+			record:		function(consent){
+				console.log('record.record', consent);
+				app.record.ui.icon.recording();
+				app.record.ui.info.update('Recording');
+				app.record.ui.feedback.update('Radically express yourself!');
+				app.record.countdown.start(app.params.record.recordDuration);
+				$.post(app.params.ajaxBase + 'camera/record/' + app.params.record.recordDuration + '/' + consent)
+					.done(function(data, textStatus, jqXHR){
+						console.log('success',		'success');
+						console.log('data',			data);
+						console.log('textStatus',	textStatus);
+						console.log('jqXHR',		jqXHR);
+						if(app.utils.isValidJqXHR(jqXHR)){
+							app.finish.prompt(jqXHR.responseJSON.data.fileName);
+						}else{
+							app.error.raise('Invalid jqXHR');
+						}
+					})
+					.fail(function(jqXHR, textStatus, errorThrown){
+						console.error('error',			'error');
+						console.error('jqXHR',			jqXHR);
+						console.error('textStatus',		textStatus);
+						console.error('errorThrown',	errorThrown);
+						app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+					});
+			},
+			/* reRecord:	{
+			},
+			delete:		{
+			}, */
+			countdown:	{
+				counter:	null,
+				count:		null,
+				start:		function(duration){
+					console.log('record.countdown.start', duration);
+					app.record.events.updateCountdown(duration);
+					app.record.countdown.count		= duration;
+					app.record.countdown.counter	= setInterval(
+						app.record.countdown.update,
+						app.params.record.countdown.interval
+					);
+				},
+				update:		function(){
+					console.log('record.countdown.update');
+					app.record.countdown.count	= app.record.countdown.count - 1;
+					app.record.events.updateCountdown(app.record.countdown.count);
+					if(app.record.countdown.count <= 0)
+						app.record.countdown.stop();
+				},
+				stop:		function(){
+					console.log('record.countdown.stop');
+					clearInterval(app.record.countdown.counter);
+				},
+				reset:		function(){
+					console.log('record.countdown.reset');
+					clearInterval(app.record.countdown.counter);
+					app.record.countdown.counter	= null;
+					app.record.countdown.count		= null;
+				}
+			},
 		},
 		record:		{
 			init:	function(){
@@ -193,7 +439,7 @@ jQuery(function($){
 				app.record.ui.info.update('Preview');
 				app.record.ui.feedback.update('Express yourself!');
 				app.record.countdown.start(app.params.record.previewDuration);
-				$.post(app.params.ajaxBase + 'camera/preview/start/' + app.params.record.previewDuration)
+				$.post(app.params.ajaxBase + 'camera/preview/' + app.params.record.previewDuration)
 					.done(function(data, textStatus, jqXHR){
 						console.log('success',		'success');
 						console.log('data',			data);
@@ -219,14 +465,14 @@ jQuery(function($){
 				app.record.ui.info.update('Recording');
 				app.record.ui.feedback.update('Radically express yourself!');
 				app.record.countdown.start(app.params.record.recordDuration);
-				$.post(app.params.ajaxBase + 'camera/record/start/' + app.params.record.recordDuration + '/' + consent)
+				$.post(app.params.ajaxBase + 'camera/record/' + app.params.record.recordDuration + '/' + consent)
 					.done(function(data, textStatus, jqXHR){
 						console.log('success',		'success');
 						console.log('data',			data);
 						console.log('textStatus',	textStatus);
 						console.log('jqXHR',		jqXHR);
 						if(app.utils.isValidJqXHR(jqXHR)){
-							app.finish.prompt();
+							app.finish.prompt(jqXHR.responseJSON.data.fileName);
 						}else{
 							app.error.raise('Invalid jqXHR');
 						}
@@ -283,13 +529,14 @@ jQuery(function($){
 				console.log('finish.reset');
 				app.finish.events.hide();
 			},
-			prompt:	function(){
+			prompt:	function(fileName){
 				console.log('finish.prompt');
 				app.finish.events.show();
+				app.finish.events.play(fileName);
 			},
 			ui:	{
 				finishWrap:		null,
-				finishDoneBtn:		null,
+				finishDoneBtn:	null,
 				init:	function(){
 					console.log('finish.ui.init');
 					this.finishWrap		= $('#finish-wrap');
@@ -318,54 +565,27 @@ jQuery(function($){
 					console.log('finish.events.done', event);
 					app.utils.cancelDefaultEvent(event);
 					app.reset();
-				}
-			}
-		},
-		info:		{
-			init:	function(){
-				console.log('info.init');
-				this.ui.init();
-			},
-			reset:	function(){
-				console.log('info.reset');
-				this.events.hide();
-			},
-			ui:	{
-				infoWrap:	null,
-				backBtn:	null,
-				init:	function(){
-					console.log('info.ui.init');
-					this.infoWrap	= $('#info-wrap');
-					this.backBtn	= $('#info-back-btn')
-						.on('click', app.info.events.back);
 				},
-				msg:	{
-					update:	function(msg){
-						app.info.ui.infoMsg.text(msg);
-					},
-				},
-				hide:	function(){
-					console.log('info.ui.hide');
-					this.infoWrap.removeClass('visible');
-				},
-				show:	function(){
-					console.log('info.ui.show');
-					this.infoWrap.addClass('visible');
-				},
-			},
-			events:	{
-				show:	function(){
-					console.log('info.events.show');
-					app.info.ui.show();
-				},
-				hide:	function(){
-					console.log('info.events.hide');
-					app.info.ui.hide();
-				},
-				back:	function(event){
-					console.log('info.events.back');
-					app.utils.cancelDefaultEvent(event);
-					app.reset();
+				play:	function(fileName){
+					$.post(app.params.ajaxBase + 'video/play/' + fileName)
+						.done(function(data, textStatus, jqXHR){
+							console.log('success',		'success');
+							console.log('data',			data);
+							console.log('textStatus',	textStatus);
+							console.log('jqXHR',		jqXHR);
+							if(app.utils.isValidJqXHR(jqXHR)){
+								app.finish.events.done();
+							}else{
+								app.error.raise('Invalid jqXHR');
+							}
+						})
+						.fail(function(jqXHR, textStatus, errorThrown){
+							console.error('error',			'error');
+							console.error('jqXHR',			jqXHR);
+							console.error('textStatus',		textStatus);
+							console.error('errorThrown',	errorThrown);
+							app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+						});
 				}
 			}
 		},

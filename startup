@@ -10,7 +10,7 @@ NOW=$(date +"%y-%m-%d %H:%M:%S")
 APP=video-recorder
 #APP=another-app
 
-STARTUP=$APPS$APP/startup
+STARTUP=$APPS$APP/bin/startup
 LOGFILE=$APPS$APP$LOG
 
 # log

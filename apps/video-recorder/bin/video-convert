@@ -1,0 +1,9 @@
+#!/bin/bash
+echo Video convert start
+FILE_DIR=/home/pi/saguaro-man/assets/video/recordings
+FILE_RECORDING=$FILE_DIR/recording.h264
+FILE_CONVERTING=$FILE_DIR/converting.h264
+FILE_CONVERTED=$FILE_DIR/converted/converted.h264
+MP4Box -add $FILE_RECORDING#video -raw 1 -new $FILE_CONVERTING
+MP4Box -add $FILE_CONVERTING:fps=24 -new $FILE_CONVERTED
+echo Video convert end

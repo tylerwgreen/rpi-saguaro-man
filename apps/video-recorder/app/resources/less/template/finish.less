@@ -11,16 +11,24 @@
 		z-index:2000;
 		.opacity(100);
 	}
-	#finish-info-wrap{
-		@height:425px;
+	#finish-title-wrap{
+		@height:55px;
 		height:@height;
 		.clearfix();
 		h1{
 			line-height:@height;
 			text-align:center;
-			color:@green-light;
-			font-size:150px;
+			color:@white;
+			font-size:30px;
 		}
+	}
+	#finish-video-placeholder{
+		position:absolute;
+		width:@preview-width;
+		height:@preview-height;
+		top:(@display-height - @preview-height) / 2;;
+		left:(@display-width - @preview-width) / 2;
+		background-color:@black-dark;
 	}
 	#finish-done-btn-wrap{
 		@height:55px;

@@ -1,0 +1,4 @@
+#!/bin/bash
+echo Camera kill start
+killall raspivid
+echo Camera kill end
