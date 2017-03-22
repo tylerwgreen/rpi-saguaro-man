@@ -14,7 +14,8 @@ var paths	= {
 	logs:	'/logs/',
 	web:	'/web/',
 };
-var styling	= false;
+// var styling	= false;
+var styling	= true;
 
 /**
  * Global app functions and params (not framework related)
@@ -307,6 +308,96 @@ app.post('/video/delete', function(req, res, next){
 				});
 			}
 		});
+	}
+});
+app.post('/quit', function(req, res, next){
+	console.log('quit', req.params);
+	if(styling){
+		res.json({
+			data:	{
+				success:	true,
+			}
+		});
+	}else{
+		var status	= {
+			camera:	{
+				finished:	null,
+				error:		null,
+			},
+			converter:	{
+				finished:	null,
+				error:		null,
+			},
+			player:		{
+				finished:	null,
+				error:		null,
+			},
+		};
+		Camera.quit({
+			errorCB:	function(error){
+				console.log('quit - Camera.quit - errorCB', error);
+				status.camera.finished		= true;
+				status.camera.error			= true;
+				quitFinished();
+			},
+			successCB:	function(){
+				console.log('quit - Camera.quit - successCB');
+				status.camera.finished		= true;
+				status.camera.error			= false;
+				quitFinished();
+			}
+		});
+		VideoConverter.quit({
+			errorCB:	function(error){
+				console.log('quit - VideoConverter.quit - errorCB', error);
+				status.converter.finished	= true;
+				status.converter.error		= true; 
+				quitFinished();
+			},
+			successCB:	function(){
+				console.log('quit - VideoConverter.quit - successCB');
+				status.converter.finished	= true;
+				status.converter.error		= false; 
+				quitFinished();
+			}
+		});
+		VideoPlayer.quit({
+			errorCB:	function(error){
+				console.log('quit - VideoPlayer.quit - errorCB', error);
+				status.player.finished		= true;
+				status.player.error			= true;
+				quitFinished();
+			},
+			successCB:	function(){
+				console.log('quit - VideoPlayer.quit - successCB');
+				status.player.finished		= true;
+				status.player.error			= false;
+				quitFinished();
+			}
+		});
+		function quitFinished(){
+			if(
+					status.camera.finished		=== true
+				&&	status.converter.finished	=== true
+				&&	status.player.finished		=== true
+			){
+				if(
+						status.camera.error		=== false
+					&&	status.converter.error	=== false
+					&&	status.player.error		=== false
+				){
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}else{
+					res.status(500).json({
+						errors: ['Quit failed'],
+					});
+				}
+			}
+		}
 	}
 });
 

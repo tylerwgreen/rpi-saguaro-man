@@ -7,16 +7,18 @@ var VideoPlayer		= {
 	quit:		function(params){
 		console.log('VideoPlayer.quit');
 		child = execFile(
-			VideoPlayer.params.binDir + 'video-kill',
+			VideoPlayer.params.binDir + 'video-play-quit',
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoPlayer.quit.error', error);
-					console.error('VideoPlayer.quit.error', stdout);
-					params.errorCB(error);
+					console.error('VideoPlayer.quit.error.error', error);
+					console.error('VideoPlayer.quit.error.stderr', stderr);
+					if(typeof params.errorCB !== 'undefined')
+						params.errorCB(error);
 				}else{
-					console.log('VideoPlayer.quit.success', stdout);
-					params.successCB();
+					console.log('VideoPlayer.quit.success.stdout', stdout);
+					if(typeof params.successCB !== 'undefined')
+						params.successCB();
 				}
 			}
 		);
@@ -28,11 +30,12 @@ var VideoPlayer		= {
 			[params.fileName],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoPlayer.play.error', error);
-					console.error('VideoPlayer.play.error', stdout);
+					console.error('VideoPlayer.play.error.error', error);
+					console.error('VideoPlayer.play.error.stderr', stderr);
+					VideoPlayer.quit();
 					params.errorCB(error);
 				}else{
-					console.log('VideoPlayer.play.success', stdout);
+					console.log('VideoPlayer.play.success.stdout', stdout);
 					params.successCB();
 				}
 			}
@@ -45,11 +48,12 @@ var VideoPlayer		= {
 			[params.fileName],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoPlayer.stop.error', error);
-					console.error('VideoPlayer.stop.error', stdout);
+					console.error('VideoPlayer.stop.error.error', error);
+					console.error('VideoPlayer.stop.error.stderr', stderr);
+					VideoPlayer.quit();
 					params.errorCB(error);
 				}else{
-					console.log('VideoPlayer.stop.success', stdout);
+					console.log('VideoPlayer.stop.success.stdout', stdout);
 					params.successCB();
 				}
 			}

@@ -7,16 +7,18 @@ var VideoConverter		= {
 	quit:		function(params){
 		console.log('VideoConverter.quit');
 		child = execFile(
-			VideoConverter.params.binDir + 'video-kill',
+			VideoConverter.params.binDir + 'video-convert-quit',
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoConverter.quit.error', error);
-					console.error('VideoConverter.quit.error', stdout);
-					params.errorCB();
+					console.error('VideoConverter.quit.error.error', error);
+					console.error('VideoConverter.quit.error.stderr', stderr);
+					if(typeof params.errorCB !== 'undefined')
+						params.errorCB(error);
 				}else{
-					console.log('VideoConverter.quit.success', stdout);
-					params.successCB();
+					console.log('VideoConverter.quit.success.stdout', stdout);
+					if(typeof params.successCB !== 'undefined')
+						params.successCB();
 				}
 			}
 		);
@@ -28,11 +30,12 @@ var VideoConverter		= {
 			[params.fileName],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoConverter.convert.error', error);
-					console.error('VideoConverter.convert.error', stdout);
-					params.errorCB();
+					console.error('VideoConverter.convert.error.error', error);
+					console.error('VideoConverter.convert.error.stderr', stderr);
+					VideoConverter.quit();
+					params.errorCB(error);
 				}else{
-					console.log('VideoConverter.convert.success', stdout);
+					console.log('VideoConverter.convert.success.stdout', stdout);
 					params.successCB();
 				}
 			}
@@ -45,11 +48,12 @@ var VideoConverter		= {
 			[params.fileName],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoConverter.delete.error', error);
-					console.error('VideoConverter.delete.error', stdout);
-					params.errorCB();
+					console.error('VideoConverter.delete.error.error', error);
+					console.error('VideoConverter.delete.error.stderr', stderr);
+					VideoConverter.quit();
+					params.errorCB(error);
 				}else{
-					console.log('VideoConverter.delete.success', stdout);
+					console.log('VideoConverter.delete.success.stdout', stdout);
 					params.successCB();
 				}
 			}
