@@ -2,20 +2,26 @@ jQuery(function($){
 	var app	= {
 		debug:	true,
 		params:	{
-			consent:	null,
 			ajaxBase:	'http://127.0.0.1:5000/',
 			preview:	{
+				// duration:	1,	// seconds
 				duration:	5,	// seconds
 			},
 			record:		{
+				// duration:	1,	// seconds
 				duration:	7,	// seconds
+			},
+			finish:		{
+				wait:	{
+					// duration:	1,	// seconds
+					duration:	5,	// seconds
+				}
 			},
 			init:	function(){
 				console.log('params.init');
 			},
 			reset:	function(){
 				console.log('params.reset');
-				this.consent	= null;
 			}
 		},
 		init:	function(){
@@ -28,6 +34,7 @@ jQuery(function($){
 			app.convert.init();
 			app.finish.init();
 			app.error.init();
+// app.finish.events.play.start();
 		},
 		reset:	function(){
 			console.log('reset');
@@ -110,15 +117,13 @@ jQuery(function($){
 					console.log('consent.events.recordConsent');
 					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
-					app.params.consent = true;
-					app.preview.events.preview.start();
+					app.preview.events.preview.start(true);
 				},
 				recordNoConsent:	function(event){
 					console.log('consent.events.recordNoConsent');
 					app.utils.cancelDefaultEvent(event);
 					app.consent.ui.hide();
-					app.params.consent = false;
-					app.preview.events.preview.start();
+					app.preview.events.preview.start(false);
 				},
 				showInfo:			function(event){
 					console.log('consent.events.showInfo');
@@ -216,14 +221,14 @@ jQuery(function($){
 			},
 			events:	{
 				preview:	{
-					start:	function(){
-						console.log('preview.events.preview.start');
+					start:	function(consent){
+						console.log('preview.events.preview.start', consent);
 						app.preview.events.show();
 						app.utils.timerCountdown.start(
 							app.params.preview.duration,
 							app.preview.events.updateCountdown
 						);
-						$.post(app.params.ajaxBase + 'camera/preview')
+						$.post(app.params.ajaxBase + 'camera/preview/' + consent)
 							.done(function(data, textStatus, jqXHR){
 								console.log('success',		'success');
 								console.log('data',			data);
@@ -390,14 +395,14 @@ jQuery(function($){
 						app.utils.timer.start(
 							app.convert.events.updateTimer
 						);
-						$.post(app.params.ajaxBase + 'video/convert/' + app.params.consent)
+						$.post(app.params.ajaxBase + 'video/convert')
 							.done(function(data, textStatus, jqXHR){
 								console.log('success',		'success');
 								console.log('data',			data);
 								console.log('textStatus',	textStatus);
 								console.log('jqXHR',		jqXHR);
 								if(app.utils.isValidJqXHR(jqXHR)){
-									app.convert.events.convert.end(jqXHR.responseJSON.data.fileName);
+									app.convert.events.convert.end();
 								}else{
 									app.error.raise('Invalid jqXHR');
 								}
@@ -410,11 +415,11 @@ jQuery(function($){
 								app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
 							});
 					},
-					end:	function(fileName){
+					end:	function(){
 						console.log('convert.events.convert.end');
 						app.convert.events.hide();
 						app.utils.timer.stop();
-						app.finish.events.play.start(fileName);
+						app.finish.events.play.start();
 					}
 				},
 				show:	function(){
@@ -440,19 +445,27 @@ jQuery(function($){
 				console.log('finish.reset');
 				app.finish.events.hide();
 			},
-			prompt:	function(fileName){
-				console.log('finish.prompt');
-				app.finish.events.show();
-				app.finish.events.play(fileName);
-			},
 			ui:	{
-				wrap:			null,
-				finishDoneBtn:	null,
+				wrap:				null,
+				countdownText:		null,
+				finishDeleteBtn:	null,
+				finishDoneBtn:		null,
 				init:	function(){
 					console.log('finish.ui.init');
-					this.wrap			= $('#finish-wrap');
+					this.wrap				= $('#finish-wrap');
+					this.countdownText		= $('#finish-countdown-text')
+						.text(0);
+					this.finishDeleteBtn	= $('#finish-delete-btn')
+						.on('click', app.finish.events.delete);
 					this.finishDoneBtn	= $('#finish-done-btn')
-						.on('click', app.finish.events.play.end);
+						.on('click', app.finish.events.play.stop);
+				},
+				countdown:	{
+					update:	function(countdown){
+						app.finish.ui.countdownText.text(countdown);
+						if(countdown <= 0)
+							app.finish.events.play.end();
+					}
 				},
 				hide:	function(){
 					console.log('finish.ui.hide');
@@ -465,10 +478,33 @@ jQuery(function($){
 			},
 			events:	{
 				play:	{
-					start:	function(fileName){
+					start:	function(){
 						console.log('finish.events.play.start');
 						app.finish.events.show();
-						$.post(app.params.ajaxBase + 'video/play/' + fileName)
+						$.post(app.params.ajaxBase + 'video/play')
+							.done(function(data, textStatus, jqXHR){
+								console.log('success',		'success');
+								console.log('data',			data);
+								console.log('textStatus',	textStatus);
+								console.log('jqXHR',		jqXHR);
+								if(app.utils.isValidJqXHR(jqXHR)){
+									app.finish.events.wait();
+								}else{
+									app.error.raise('Invalid jqXHR');
+								}
+							})
+							.fail(function(jqXHR, textStatus, errorThrown){
+								console.error('error',			'error');
+								console.error('jqXHR',			jqXHR);
+								console.error('textStatus',		textStatus);
+								console.error('errorThrown',	errorThrown);
+								app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+							});
+					},
+					stop:	function(){
+						console.log('finish.events.play.stop');
+						app.finish.events.show();
+						$.post(app.params.ajaxBase + 'video/stop')
 							.done(function(data, textStatus, jqXHR){
 								console.log('success',		'success');
 								console.log('data',			data);
@@ -494,6 +530,35 @@ jQuery(function($){
 						app.reset();
 					},
 				},
+				wait:	function(){
+					console.log('finish.events.wait');
+					app.utils.timerCountdown.start(
+						app.params.finish.wait.duration,
+						app.finish.events.updateCountdown
+					);
+				},
+				delete:	function(){
+					console.log('finish.events.delete');
+					$.post(app.params.ajaxBase + 'video/delete')
+						.done(function(data, textStatus, jqXHR){
+							console.log('success',		'success');
+							console.log('data',			data);
+							console.log('textStatus',	textStatus);
+							console.log('jqXHR',		jqXHR);
+							if(app.utils.isValidJqXHR(jqXHR)){
+								app.finish.events.play.end();
+							}else{
+								app.error.raise('Invalid jqXHR');
+							}
+						})
+						.fail(function(jqXHR, textStatus, errorThrown){
+							console.error('error',			'error');
+							console.error('jqXHR',			jqXHR);
+							console.error('textStatus',		textStatus);
+							console.error('errorThrown',	errorThrown);
+							app.error.raise(new Error(app.utils.getJqXHRError(jqXHR)));
+						});
+				},
 				show:	function(){
 					console.log('finish.events.show');
 					app.finish.ui.show();
@@ -502,6 +567,10 @@ jQuery(function($){
 					console.log('finish.events.hide');
 					app.finish.ui.hide();
 				},
+				updateCountdown:	function(text){
+					console.log('finish.events.updateCountdown', text);
+					app.finish.ui.countdown.update(text);
+				}
 			}
 		},
 		error:		{

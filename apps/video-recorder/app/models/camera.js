@@ -22,10 +22,10 @@ var Camera		= {
 		);
 	},
 	preview:	function(params){
-		console.log('Camera.preview', params);
+		console.log('Camera.preview');
 		child		= execFile(
 			Camera.params.binDir + 'camera-preview',
-			[Camera.params.videoDir + params.fileName],
+			[],
 			function(error, stdout, stderr){
 				if(error){
 					console.error('Camera.preview.error', error);
@@ -39,10 +39,10 @@ var Camera		= {
 		);
 	},
 	record:		function(params){
-		console.log('Camera.record', params);
+		console.log('Camera.record');
 		child		= execFile(
 			Camera.params.binDir + 'camera-record',
-			[Camera.params.videoDir + params.fileName],
+			[],
 			function(error, stdout, stderr){
 				if(error){
 					console.error('Camera.record.error', error);

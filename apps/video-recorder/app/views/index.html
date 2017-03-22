@@ -4,6 +4,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Video Recorder | Saguaro Man</title>
 	<link rel="stylesheet" media="all" href="/css/style.css">
+	<!-- fake there is a favicon -->
+	<link rel="icon" href="data:;base64,=">
 </head>
 <body>
 	<div id="body-wrap">
@@ -89,12 +91,25 @@
 			</div>
 		</div>
 		<div id="finish-wrap">
-			<div id="finish-title-wrap">
-				<h1>Finished!</h1>
+			<div id="finish-info-wrap">
+				<div id="finish-icon-wrap">
+					<i id="finish-icon" class="icon-yes"></i>
+				</div>
+				<div id="finish-info-text-wrap">
+					<p id="finish-info-text">Finished</p>
+				</div>
+				<div id="finish-countdown-wrap">
+					<p id="finish-countdown-text">NaN</p>
+				</div>
 			</div>
 			<div id="finish-video-placeholder"></div>
-			<div id="finish-done-btn-wrap">
-				<p><a id="finish-done-btn" class="btn" href="#">Done</a></p>
+			<div id="finish-btns-wrap">
+				<div class="finish-btn-wrap">
+					<p><a id="finish-delete-btn" class="btn" href="#">Delete</a></p>
+				</div>
+				<div class="finish-btn-wrap">
+					<p><a id="finish-done-btn" class="btn" href="#">Done</a></p>
+				</div>
 			</div>
 		</div>
 		<div id="info-wrap">

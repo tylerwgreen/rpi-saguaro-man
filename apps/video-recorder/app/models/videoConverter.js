@@ -3,7 +3,6 @@ var execFile	= require('child_process').execFile;
 var VideoConverter		= {
 	params:	{
 		binDir:		'/home/pi/saguaro-man/apps/video-recorder/bin/',
-		videoDir:	'/home/pi/saguaro-man/assets/video/recordings/converted/',
 	},
 	quit:		function(params){
 		console.log('VideoConverter.quit');
@@ -23,17 +22,34 @@ var VideoConverter		= {
 		);
 	},
 	convert:	function(params){
-		console.log('VideoConverter.play', params);
+		console.log('VideoConverter.convert', params.fileName);
 		child		= execFile(
 			VideoConverter.params.binDir + 'video-convert',
-			[VideoConverter.params.videoDir + params.fileName],
+			[params.fileName],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoConverter.play.error', error);
-					console.error('VideoConverter.play.error', stdout);
+					console.error('VideoConverter.convert.error', error);
+					console.error('VideoConverter.convert.error', stdout);
 					params.errorCB();
 				}else{
-					console.log('VideoConverter.play.success', stdout);
+					console.log('VideoConverter.convert.success', stdout);
+					params.successCB();
+				}
+			}
+		);
+	},
+	delete:	function(params){
+		console.log('VideoConverter.delete', params.fileName);
+		child		= execFile(
+			VideoConverter.params.binDir + 'video-delete',
+			[params.fileName],
+			function(error, stdout, stderr){
+				if(error){
+					console.error('VideoConverter.delete.error', error);
+					console.error('VideoConverter.delete.error', stdout);
+					params.errorCB();
+				}else{
+					console.log('VideoConverter.delete.success', stdout);
 					params.successCB();
 				}
 			}

@@ -1,4 +1,0 @@
-#!/bin/bash
-echo Video convert kill start
-killall MP4Box
-echo Video convert kill end

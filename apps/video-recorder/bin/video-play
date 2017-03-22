@@ -1,15 +1,20 @@
 #!/bin/bash
-echo Video play start
+echo "Video play start"
+FILE_DIR_CONVERTED=/home/pi/saguaro-man/assets/video/recordings/converted
+FILE=$FILE_DIR_CONVERTED/$1
 #HDMI
 #DISPLAY=5
 #LCD
 DISPLAY=4
 DISPLAY_WIDTH=800
 DISPLAY_HEIGHT=480
-VIDEO_WIDTH=660
-VIDEO_HEIGHT=366
+#VIDEO_WIDTH=660
+#VIDEO_HEIGHT=366
+VIDEO_WIDTH=730
+VIDEO_HEIGHT=410
 VIDEO_OFFSET_X=$(($DISPLAY_WIDTH - $VIDEO_WIDTH))
 VIDEO_OFFSET_Y=$(($DISPLAY_HEIGHT - $VIDEO_HEIGHT))
 SIZE=$VIDEO_OFFSET_X,$VIDEO_OFFSET_Y,$VIDEO_WIDTH,$VIDEO_HEIGHT
-omxplayer --win $SIZE --display=$DISPLAY $1
-echo Video play end
+echo "Playing $FILE"
+omxplayer --win $SIZE --display=$DISPLAY $FILE
+echo "Video play end"

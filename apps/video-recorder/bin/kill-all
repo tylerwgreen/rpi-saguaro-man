@@ -1,6 +1,0 @@
-#!/bin/bash
-echo Kill all start
-./camera-kill
-./video-encode-kill
-./video-play-kill
-echo Kill all  end

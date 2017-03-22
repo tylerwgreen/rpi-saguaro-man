@@ -1,9 +1,11 @@
 #!/bin/bash
-echo Video convert start
+echo "Video convert start"
 FILE_DIR=/home/pi/saguaro-man/assets/video/recordings
+FILE_DIR_CONVERTED=$FILE_DIR/converted
 FILE_RECORDING=$FILE_DIR/recording.h264
 FILE_CONVERTING=$FILE_DIR/converting.h264
-FILE_CONVERTED=$FILE_DIR/converted/converted.h264
+FILE_CONVERTED=$FILE_DIR_CONVERTED/$1
+echo "Converting $FILE_CONVERTING to $FILE_CONVERTED"
 MP4Box -add $FILE_RECORDING#video -raw 1 -new $FILE_CONVERTING
 MP4Box -add $FILE_CONVERTING:fps=24 -new $FILE_CONVERTED
-echo Video convert end
+echo "Video convert end"
