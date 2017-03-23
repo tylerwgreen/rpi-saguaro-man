@@ -1,0 +1,21 @@
+#!/bin/bash
+echo "Camera record start"
+#10 mbps
+BITRATE=10000000
+RECORDING_WIDTH=1280
+RECORDING_HEIGHT=720
+DISPLAY_WIDTH=800
+DISPLAY_HEIGHT=480
+VIDEO_WIDTH=660
+VIDEO_HEIGHT=366
+VIDEO_OFFSET_X=$((($DISPLAY_WIDTH - $VIDEO_WIDTH) / 2))
+VIDEO_OFFSET_Y=$((($DISPLAY_HEIGHT - $VIDEO_HEIGHT) / 2))
+PREVIEW=$VIDEO_OFFSET_X,$VIDEO_OFFSET_Y,$VIDEO_WIDTH,$VIDEO_HEIGHT
+FILE_DIR=/home/pi/saguaro-man/assets/video/recordings
+FILE=$FILE_DIR/recording.h264
+DURATION=7000
+#DURATION=1000
+FRAMERATE=130
+echo "Recording to $FILE"
+raspivid --width $RECORDING_WIDTH --height $RECORDING_HEIGHT --bitrate $BITRATE --penc --preview $PREVIEW --saturation -100 --exposure auto --metering matrix --timeout $DURATION --framerate $FRAMERATE --output $FILE
+echo "Camera record end"

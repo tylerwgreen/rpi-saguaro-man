@@ -474,6 +474,7 @@ jQuery(function($){
 					end:	function(){
 						console.log('finish.events.play.end');
 						app.finish.events.hide();
+						app.quit();
 						app.reset();
 					},
 				},

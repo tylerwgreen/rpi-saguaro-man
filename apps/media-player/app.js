@@ -1,7 +1,7 @@
 /**
  * Include dependencies
  */
-var debug	= require('debug')('video_recorder');
+var debug	= require('debug')('media_player');
 var express	= require('express');
 var fs		= require('fs');
 var morgan	= require('morgan');
@@ -72,9 +72,9 @@ var recordParams	= {
 /**
  * Load models
  */
-var Camera			= require(path.join(__dirname, paths.models, 'camera'));
-var VideoConverter	= require(path.join(__dirname, paths.models, 'videoConverter'));
-var VideoPlayer		= require(path.join(__dirname, paths.models, 'videoPlayer'));
+// var Camera			= require(path.join(__dirname, paths.models, 'camera'));
+// var VideoConverter	= require(path.join(__dirname, paths.models, 'videoConverter'));
+// var VideoPlayer		= require(path.join(__dirname, paths.models, 'videoPlayer'));
 
 // app settings
 /**
