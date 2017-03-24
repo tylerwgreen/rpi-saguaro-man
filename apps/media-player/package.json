@@ -1,0 +1,22 @@
+{
+	"name":			"saguaro-man-video-recorder",
+	"niceName":		"Saguaro Man | Video Recorder",
+	"license":		"UNLICENSED",
+	"version":		"1.0.0",
+	"private":		true,
+	"description":	"Saguaro Man Video Recorder",
+	"author":		{
+		"name":		"Tyler Green",
+		"email":	"freshgreenmedia@gmail",
+		"url":		"http://freshgreenmedia.com/"
+	},
+	"dependencies":	{
+		"express":				"~4.14.1",
+		"debug":				"~2.6.0",
+		"morgan":				"~1.7.0",
+		"rotating-file-stream":	"~1.1.9",
+		"grunt":				"~1.0.1",
+		"grunt-contrib-less":	"~1.4.0",
+		"grunt-contrib-watch":	"~1.0.0"
+	}
+}
