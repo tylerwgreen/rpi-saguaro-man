@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Media Player
+Comment=Media Player
+Icon=/home/pi/saguaro-man/assets/icon/media-player-icon.png
+Exec=/home/pi/saguaro-man/apps/media-player/bin/startup
+Type=Application
+Encoding=UTF-8
+Terminal=true
+Categories=None;
