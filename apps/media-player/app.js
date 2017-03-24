@@ -72,9 +72,9 @@ var recordParams	= {
 /**
  * Load models
  */
-// var Camera			= require(path.join(__dirname, paths.models, 'camera'));
-// var VideoConverter	= require(path.join(__dirname, paths.models, 'videoConverter'));
-// var VideoPlayer		= require(path.join(__dirname, paths.models, 'videoPlayer'));
+var Expressions		= require(path.join(__dirname, paths.models, 'expressions'));
+// var PuppetPeople	= require(path.join(__dirname, paths.models, 'puppetPeople'));
+// var DustyLoops		= require(path.join(__dirname, paths.models, 'dustyLoops'));
 
 // app settings
 /**
@@ -127,14 +127,12 @@ app.use(express.static(path.join(__dirname, paths.web)));
 app.get('/', function(req, res, next){
 	res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 });
-app.post('/camera/preview/:consent', function(req, res, next){
-	console.log('camera/preview', req.params);
-	if(typeof req.params.consent === 'undefined')
-		throw new Error('Missing required param: consent');
-	recordParams.setConsent(req.params.consent);
+/** Expressions */
+app.post('/apps/expressions/play', function(req, res, next){
+	console.log('apps/expressions/play', req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('camera/preview', 'success');
+			console.log('apps/expressions', 'success');
 			res.json({
 				data:	{
 					success:	true,
@@ -142,16 +140,15 @@ app.post('/camera/preview/:consent', function(req, res, next){
 			});
 		}, 5000);
 	}else{
-		Camera.preview({
+		Expressions.play({
 			errorCB:	function(error){
-				console.log('camera/preview - errorCB', error);
-				throw new Error('Preview failed');
+				console.log('apps/expressions/play - errorCB', error);
 				res.status(500).json({
-					errors: ['Preview failed']
+					errors: ['Expressions play failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('camera/preview - successCB');
+				console.log('apps/expressions/play - successCB', fileName);
 				res.json({
 					data:	{
 						success:	true,
@@ -161,72 +158,12 @@ app.post('/camera/preview/:consent', function(req, res, next){
 		});
 	}
 });
-app.post('/camera/record', function(req, res, next){
-	console.log('camera/record', req.params);
+/** Puppet People */
+app.post('/apps/puppet-people/play', function(req, res, next){
+	console.log('apps/puppet-people/play', req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('camera/preview', 'success');
-			res.json({
-				data:	{
-					success:	true,
-				}
-			});
-		}, 7000);
-	}else{
-		Camera.record({
-			errorCB:	function(error){
-				console.log('camera/record - errorCB', error);
-				res.status(500).json({
-					errors: ['Record failed'],
-				});
-			},
-			successCB:	function(fileName){
-				console.log('camera/record - successCB', fileName);
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
-			}
-		});
-	}
-});
-app.post('/video/convert', function(req, res, next){
-	console.log('video/convert', req.params);
-	if(styling){
-		setTimeout(function(){
-			console.log('camera/preview', 'success');
-			res.json({
-				data:	{
-					success:	true,
-				}
-			});
-		}, 1000);
-	}else{
-		VideoConverter.convert({
-			fileName:	recordParams.getVideo(),
-			errorCB:	function(error){
-				console.log('video/convert - errorCB', error);
-				res.status(500).json({
-					errors: ['convert failed'],
-				});
-			},
-			successCB:	function(fileName){
-				console.log('video/convert - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
-			}
-		});
-	}
-});
-app.post('/video/play', function(req, res, next){
-	console.log('video/play', req.params);
-	if(styling){
-		setTimeout(function(){
-			console.log('camera/preview', 'success');
+			console.log('apps/puppet-people', 'success');
 			res.json({
 				data:	{
 					success:	true,
@@ -234,16 +171,15 @@ app.post('/video/play', function(req, res, next){
 			});
 		}, 5000);
 	}else{
-		VideoPlayer.play({
-			fileName:	recordParams.getVideo(),
+		PuppetPeople.play({
 			errorCB:	function(error){
-				console.log('video/play - errorCB', error);
+				console.log('apps/puppet-people/play - errorCB', error);
 				res.status(500).json({
-					errors: ['Play failed'],
+					errors: ['Puppet People play failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('video/play - successCB');
+				console.log('apps/puppet-people/play - successCB', fileName);
 				res.json({
 					data:	{
 						success:	true,
@@ -253,53 +189,28 @@ app.post('/video/play', function(req, res, next){
 		});
 	}
 });
-app.post('/video/stop', function(req, res, next){
-	console.log('video/stop', req.params);
+/** Dusty Loops */
+app.post('/apps/dusty-loops/play', function(req, res, next){
+	console.log('apps/dusty-loops/play', req.params);
 	if(styling){
-		res.json({
-			data:	{
-				success:	true,
-			}
-		});
+		setTimeout(function(){
+			console.log('apps/dusty-loops', 'success');
+			res.json({
+				data:	{
+					success:	true,
+				}
+			});
+		}, 5000);
 	}else{
-		VideoPlayer.stop({
-			fileName:	recordParams.getVideo(),
+		PuppetPeople.play({
 			errorCB:	function(error){
-				console.log('video/stop - errorCB', error);
+				console.log('apps/dusty-loops/play - errorCB', error);
 				res.status(500).json({
-					errors: ['Stop failed'],
+					errors: ['Dusty Loops play failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('video/stop - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
-			}
-		});
-	}
-});
-app.post('/video/delete', function(req, res, next){
-	console.log('video/delete', req.params);
-	if(styling){
-		res.json({
-			data:	{
-				success:	true,
-			}
-		});
-	}else{
-		VideoConverter.delete({
-			fileName:	recordParams.getVideo(),
-			errorCB:	function(error){
-				console.log('video/delete - errorCB', error);
-				res.status(500).json({
-					errors: ['Delete failed'],
-				});
-			},
-			successCB:	function(){
-				console.log('video/delete - successCB');
+				console.log('apps/dusty-loops/play - successCB', fileName);
 				res.json({
 					data:	{
 						success:	true,
@@ -319,73 +230,73 @@ app.post('/quit', function(req, res, next){
 		});
 	}else{
 		var status	= {
-			camera:	{
+			expressions:	{
 				finished:	null,
 				error:		null,
 			},
-			converter:	{
+			puppetPeople:	{
 				finished:	null,
 				error:		null,
 			},
-			player:		{
+			dustyLoops:		{
 				finished:	null,
 				error:		null,
 			},
 		};
 		console.log('status', status);
-		Camera.quit({
+		Expressions.quit({
 			errorCB:	function(error){
-				console.log('quit - Camera.quit - errorCB', error);
-				status.camera.finished		= true;
-				status.camera.error			= true;
+				console.log('quit - Expressions.quit - errorCB', error);
+				status.expressions.finished		= true;
+				status.expressions.error		= true;
 				quitFinished();
 			},
 			successCB:	function(){
-				console.log('quit - Camera.quit - successCB');
-				status.camera.finished		= true;
-				status.camera.error			= false;
+				console.log('quit - Expressions.quit - successCB');
+				status.expressions.finished		= true;
+				status.expressions.error		= false;
 				quitFinished();
 			}
 		});
-		VideoConverter.quit({
+		PuppetPeople.quit({
 			errorCB:	function(error){
 				console.log('quit - VideoConverter.quit - errorCB', error);
-				status.converter.finished	= true;
-				status.converter.error		= true; 
+				status.puppetPeople.finished	= true;
+				status.puppetPeople.error		= true; 
 				quitFinished();
 			},
 			successCB:	function(){
 				console.log('quit - VideoConverter.quit - successCB');
-				status.converter.finished	= true;
-				status.converter.error		= false; 
+				status.puppetPeople.finished	= true;
+				status.puppetPeople.error		= false; 
 				quitFinished();
 			}
 		});
-		VideoPlayer.quit({
+		DustyLoops.quit({
 			errorCB:	function(error){
 				console.log('quit - VideoPlayer.quit - errorCB', error);
-				status.player.finished		= true;
-				status.player.error			= true;
+				status.dustyLoops.finished		= true;
+				status.dustyLoops.error			= true;
 				quitFinished();
 			},
 			successCB:	function(){
 				console.log('quit - VideoPlayer.quit - successCB');
-				status.player.finished		= true;
-				status.player.error			= false;
+				status.dustyLoops.finished		= true;
+				status.dustyLoops.error			= false;
 				quitFinished();
 			}
 		});
 		function quitFinished(){
 			console.log('quit - quitFinished');
 			if(
-					status.camera.finished		=== true
-				&&	status.converter.finished	=== true
-				&&	status.player.finished		=== true
+					status.expressions.finished		=== true
+				&&	status.puppetPeople.finished	=== true
+				&&	status.dustyLoops.finished		=== true
 			){
 				if(
-						status.camera.error		=== false
-					&&	status.converter.error	=== false
-					&&	status.player.error		=== false
+						status.expressions.error		=== false
+					&&	status.puppetPeople.error	=== false
+					&&	status.dustyLoops.error		=== false
 				){
 					console.log('quit - success');
 					res.json({

@@ -1,5 +1,5 @@
 #!/bin/bash
-APP_DIR=/home/pi/saguaro-man/apps/video-recorder
+APP_DIR=/home/pi/saguaro-man/apps/media-player
 echo "killing node"
 killall node
 echo "killing chrome"

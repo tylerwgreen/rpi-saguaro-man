@@ -9,23 +9,20 @@ jQuery(function($){
 			app.selection.init();
 			app.info.init();
 			app.error.init();
+			app.reset();
 		},
 		reset:	function(){
 			console.log('reset');
 			app.selection.reset();
 			app.info.reset();
 			app.error.reset();
-			// reset timers
-			app.utils.timerCountdown.reset();
-			app.utils.timer.reset();
 			// reset default ui
 			app.selection.events.show();
+			app.selection.events.btnToggle(app.selection.ui.selectionBtnExpressions);
+			app.apps.expressions.init();
 		},
 		quit:	function(){
 			console.log('quit');
-			// stop timers
-			app.utils.timerCountdown.stop();
-			app.utils.timer.stop();
 			// stop server processes
 			$.post(app.params.ajaxBase + 'quit')
 				.done(function(data, textStatus, jqXHR){
@@ -47,59 +44,65 @@ jQuery(function($){
 				this.events.hide();
 			},
 			ui:	{
-				titleWrap:			null,
-				selectionBtnWrap:		null,
-				noselectionBtnWrap:	null,
-				infoBtnWrap:		null,
-				selectionBtn:			null,
-				noselectionBtn:		null,
-				infoBtn:			null,
+				selectionWrap:				null,
+				selectionBtnExpressions:	null,
+				selectionBtnPuppetPeople:	null,
+				selectionBtnDustyLoops:		null,
+				infoBtn:					null,
 				init:	function(){
 					console.log('selection.ui.init');
-					this.titleWrap			= $('#title-wrap');
-					this.selectionBtnsWrap	= $('#selection-btns-wrap');
-					this.infoBtnWrap		= $('#info-btn-wrap');
-					this.selectionBtnOne	= $('#selection-btn-one')
-						.on('click', app.selection.events.selectionBtnOneClick);
-					this.selectionBtnTwo	= $('#selection-btn-two')
-						.on('click', app.selection.events.selectionBtnTwoClick);
-					this.selectionBtnThree	= $('#selection-btn-three')
-						.on('click', app.selection.events.selectionBtnThreeClick);
-					this.infoBtn			= $('#info-btn')
+					this.selectionWrap				= $('#selection-wrap');
+					this.selectionBtnExpressions	= $('#selection-btn-expressions')
+						.on('click', app.selection.events.selectionBtnExpressionsClick);
+					this.selectionBtnPuppetPeople	= $('#selection-btn-puppet-people')
+						.on('click', app.selection.events.selectionBtnPuppetPeopleClick);
+					this.selectionBtnDustyLoops		= $('#selection-btn-dusty-loops')
+						.on('click', app.selection.events.selectionBtnDustyLoopsClick);
+					this.infoBtn					= $('#info-btn')
 						.on('click', app.selection.events.showInfo);
 				},
 				hide:	function(){
 					console.log('selection.ui.hide');
-					this.titleWrap.addClass('hidden');
-					this.selectionBtnsWrap.addClass('hidden');
-					this.infoBtnWrap.addClass('hidden');
+					this.selectionWrap.removeClass('visible');
 				},
 				show:	function(){
 					console.log('selection.ui.show');
-					this.titleWrap.removeClass('hidden');
-					this.selectionBtnsWrap.removeClass('hidden');
-					this.infoBtnWrap.removeClass('hidden');
+					this.selectionWrap.addClass('visible');
 				},
+				btnToggle:	function(btn){
+					console.log('selection.ui.btnToggle');
+					this.selectionBtnExpressions.removeClass('active');
+					this.selectionBtnPuppetPeople.removeClass('active');
+					this.selectionBtnDustyLoops.removeClass('active');
+					if(typeof btn.currentTarget !== 'undefined')
+						$(btn.currentTarget).addClass('active');
+					else
+						btn.addClass('active');
+				}
 			},
 			events:	{
-				selectionBtnOneClick:	function(event){
-					console.log('selection.events.selectionBtnOneClick');
+				selectionBtnExpressionsClick:	function(event){
+					console.log('selection.events.selectionBtnExpressionsClick');
 					app.utils.cancelDefaultEvent(event);
-					app.selection.ui.hide();
+					app.selection.ui.btnToggle(event);
+					app.apps.expressions.init();
 				},
-				selectionBtnTwoClick:	function(event){
-					console.log('selection.events.selectionBtnTwoClick');
+				selectionBtnPuppetPeopleClick:	function(event){
+					console.log('selection.events.selectionBtnPuppetPeopleClick');
 					app.utils.cancelDefaultEvent(event);
-					app.selection.ui.hide();
+					app.selection.ui.btnToggle(event);
+					app.apps.puppetPeople.init();
 				},
-				selectionBtnThreeClick:	function(event){
-					console.log('selection.events.selectionBtnThreeClick');
+				selectionBtnDustyLoopsClick:	function(event){
+					console.log('selection.events.selectionBtnDustyLoopsClick');
 					app.utils.cancelDefaultEvent(event);
-					app.selection.ui.hide();
+					app.selection.ui.btnToggle(event);
+					app.apps.dustyLoops.init();
 				},
 				showInfo:				function(event){
 					console.log('selection.events.showInfo');
 					app.utils.cancelDefaultEvent(event);
+					app.selection.events.hide();
 					app.info.events.show();
 				},
 				show:	function(){
@@ -110,6 +113,9 @@ jQuery(function($){
 					console.log('selection.events.hide');
 					app.selection.ui.hide();
 				},
+				btnToggle:	function(btn){
+					app.selection.ui.btnToggle(btn);
+				}
 			}
 		},
 		info:		{
@@ -158,6 +164,59 @@ jQuery(function($){
 					app.utils.cancelDefaultEvent(event);
 					app.reset();
 				}
+			}
+		},
+		apps:		{
+			expressions:	{
+				init:	function(){
+					console.log('apps.expressions.init');
+					app.quit();
+					$.post(app.params.ajaxBase + 'apps/expressions/play')
+						.done(function(data, textStatus, jqXHR){
+							console.log('data',			data);
+							if(app.utils.isValidJqXHR(jqXHR))
+								app.reset();
+							else
+								app.error.raise('Invalid jqXHR');
+						})
+						.fail(function(jqXHR, textStatus, errorThrown){
+							app.error.raise(app.utils.getJqXHRError(jqXHR));
+						});
+				},
+			},
+			puppetPeople:	{
+				init:	function(){
+					console.log('apps.puppetPeople.init');
+					app.quit();
+					$.post(app.params.ajaxBase + 'apps/puppet-people/play')
+						.done(function(data, textStatus, jqXHR){
+							console.log('data',			data);
+							if(app.utils.isValidJqXHR(jqXHR))
+								app.reset();
+							else
+								app.error.raise('Invalid jqXHR');
+						})
+						.fail(function(jqXHR, textStatus, errorThrown){
+							app.error.raise(app.utils.getJqXHRError(jqXHR));
+						});
+				},
+			},
+			dustyLoops:		{
+				init:	function(){
+					console.log('apps.dustyLoops.init');
+					app.quit();
+					$.post(app.params.ajaxBase + 'apps/dusty-loops/play')
+						.done(function(data, textStatus, jqXHR){
+							console.log('data',			data);
+							if(app.utils.isValidJqXHR(jqXHR))
+								app.reset();
+							else
+								app.error.raise('Invalid jqXHR');
+						})
+						.fail(function(jqXHR, textStatus, errorThrown){
+							app.error.raise(app.utils.getJqXHRError(jqXHR));
+						});
+				},
 			}
 		},
 		error:		{
@@ -243,72 +302,6 @@ jQuery(function($){
 				if(typeof event !== 'undefined'){
 					event.preventDefault();
 					event.stopPropagation();
-				}
-			},
-			timerCountdown:	{
-				callback:	null,
-				counter:	null,
-				count:		null,
-				start:		function(duration, callback){
-					console.log('app.utils.timerCountdown.start', duration);
-					app.utils.timerCountdown.callback	= callback;
-					app.utils.timerCountdown.count		= duration;
-					app.utils.timerCountdown.counter	= setInterval(
-						app.utils.timerCountdown.update,
-						1000	// 1 second
-					);
-					app.utils.timerCountdown.callback(duration);
-				},
-				update:		function(){
-					console.log('app.utils.timerCountdown.update');
-					app.utils.timerCountdown.count	= app.utils.timerCountdown.count - 1;
-					app.utils.timerCountdown.callback(app.utils.timerCountdown.count);
-					if(app.utils.timerCountdown.count <= 0)
-						app.utils.timerCountdown.stop();
-				},
-				stop:		function(){
-					console.log('app.utils.timerCountdown.stop');
-					clearInterval(app.utils.timerCountdown.counter);
-				},
-				reset:		function(){
-					console.log('app.utils.timerCountdown.reset');
-					clearInterval(app.utils.timerCountdown.counter);
-					app.utils.timerCountdown.callback	= null;
-					app.utils.timerCountdown.counter	= null;
-					app.utils.timerCountdown.count		= null;
-				}
-			},
-			timer:	{
-				callback:	null,
-				counter:	null,
-				count:		0,
-				countMax:	10,
-				start:		function(callback){
-					console.log('app.utils.timer.start');
-					app.utils.timer.callback	= callback;
-					app.utils.timer.counter		= setInterval(
-						app.utils.timer.update,
-						1000	// 1 second
-					);
-					app.utils.timer.callback(app.utils.timer.count);
-				},
-				update:		function(){
-					console.log('app.utils.timer.update');
-					app.utils.timer.count	= app.utils.timer.count + 1;
-					app.utils.timer.callback(app.utils.timer.count);
-					if(app.utils.timer.count > app.utils.timer.countMax)
-						app.utils.timer.stop();
-				},
-				stop:		function(){
-					console.log('app.utils.timer.stop');
-					clearInterval(app.utils.timer.counter);
-				},
-				reset:		function(){
-					console.log('app.utils.timer.reset');
-					clearInterval(app.utils.timer.counter);
-					app.utils.timer.callback	= null;
-					app.utils.timer.counter		= null;
-					app.utils.timer.count		= 0;
 				}
 			},
 		}
