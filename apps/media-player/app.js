@@ -14,67 +14,16 @@ var paths	= {
 	logs:	'/logs/',
 	web:	'/web/',
 };
-// var styling	= false;
-var styling	= true;
-
-/**
- * Global app functions and params (not framework related)
- */
-
-var recordParams	= {
-	consent:		null,
-	video:			null,
-	dateTime:		null,
-	reset:			function(){
-		console.log('recordParams.reset');
-		this.consent	= null;
-		this.video		= null;
-		this.dateTime	= null;
-	},
-	setConsent:		function(consent){
-		console.log('recordParams.setConsent', consent);
-		this.reset();
-		this.consent	= consent;
-		this.setVideo();
-	},
-	setVideo:		function(){
-		console.log('recordParams.setVideo');
-		this.video		= this.getDateTime()
-			+ (this.consent == 'true' ? '-consent' : '-no-consent')
-			+ '.h264';
-		console.log('video', this.video);
-	},
-	getVideo:		function(){
-		console.log('recordParams.getVideo', this.video);
-		return this.video;
-	},
-	getDateTime:	function(){
-		console.log('recordParams.setConsent', this.dateTime);
-		if(null !== this.dateTime)
-			return this.dateTime;
-		var date		= new Date();
-		var hour		= date.getHours();
-			hour		= (hour		< 10 ? '0' : '') + hour;
-		var min			= date.getMinutes();
-			min			= (min		< 10 ? '0' : '') + min;
-		var sec			= date.getSeconds();
-			sec			= (sec		< 10 ? '0' : '') + sec;
-		var year		= date.getFullYear();
-		var month		= date.getMonth() + 1;
-			month		= (month	< 10 ? '0' : '') + month;
-		var day			= date.getDate();
-			day			= (day		< 10 ? '0' : '') + day;
-		this.dateTime	= year + month + day + '-' + hour + min + sec;
-		return this.dateTime;
-	}
-};
+var styling	= false;
+// var styling	= true;
 
 /**
  * Load models
  */
 var Expressions		= require(path.join(__dirname, paths.models, 'expressions'));
-// var PuppetPeople	= require(path.join(__dirname, paths.models, 'puppetPeople'));
-// var DustyLoops		= require(path.join(__dirname, paths.models, 'dustyLoops'));
+var PuppetPeople	= require(path.join(__dirname, paths.models, 'puppetPeople'));
+var DustyLoops		= require(path.join(__dirname, paths.models, 'dustyLoops'));
+Expressions.init();
 
 // app settings
 /**
@@ -129,10 +78,10 @@ app.get('/', function(req, res, next){
 });
 /** Expressions */
 app.post('/apps/expressions/play', function(req, res, next){
-	console.log('apps/expressions/play', req.params);
+	console.log('/apps/expressions/play', req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('apps/expressions', 'success');
+			console.log('/apps/expressions', 'success');
 			res.json({
 				data:	{
 					success:	true,
@@ -142,13 +91,13 @@ app.post('/apps/expressions/play', function(req, res, next){
 	}else{
 		Expressions.play({
 			errorCB:	function(error){
-				console.log('apps/expressions/play - errorCB', error);
+				console.log('/apps/expressions/play - errorCB', error);
 				res.status(500).json({
 					errors: ['Expressions play failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('apps/expressions/play - successCB', fileName);
+				console.log('/apps/expressions/play - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -160,10 +109,10 @@ app.post('/apps/expressions/play', function(req, res, next){
 });
 /** Puppet People */
 app.post('/apps/puppet-people/play', function(req, res, next){
-	console.log('apps/puppet-people/play', req.params);
+	console.log('/apps/puppet-people/play', req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('apps/puppet-people', 'success');
+			console.log('/apps/puppet-people', 'success');
 			res.json({
 				data:	{
 					success:	true,
@@ -173,13 +122,13 @@ app.post('/apps/puppet-people/play', function(req, res, next){
 	}else{
 		PuppetPeople.play({
 			errorCB:	function(error){
-				console.log('apps/puppet-people/play - errorCB', error);
+				console.log('/apps/puppet-people/play - errorCB', error);
 				res.status(500).json({
 					errors: ['Puppet People play failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('apps/puppet-people/play - successCB', fileName);
+				console.log('/apps/puppet-people/play - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -191,10 +140,10 @@ app.post('/apps/puppet-people/play', function(req, res, next){
 });
 /** Dusty Loops */
 app.post('/apps/dusty-loops/play', function(req, res, next){
-	console.log('apps/dusty-loops/play', req.params);
+	console.log('/apps/dusty-loops/play', req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('apps/dusty-loops', 'success');
+			console.log('/apps/dusty-loops', 'success');
 			res.json({
 				data:	{
 					success:	true,
@@ -202,15 +151,15 @@ app.post('/apps/dusty-loops/play', function(req, res, next){
 			});
 		}, 5000);
 	}else{
-		PuppetPeople.play({
+		DustyLoops.play({
 			errorCB:	function(error){
-				console.log('apps/dusty-loops/play - errorCB', error);
+				console.log('/apps/dusty-loops/play - errorCB', error);
 				res.status(500).json({
 					errors: ['Dusty Loops play failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('apps/dusty-loops/play - successCB', fileName);
+				console.log('/apps/dusty-loops/play - successCB', fileName);
 				res.json({
 					data:	{
 						success:	true,
@@ -221,7 +170,7 @@ app.post('/apps/dusty-loops/play', function(req, res, next){
 	}
 });
 app.post('/quit', function(req, res, next){
-	console.log('quit', req.params);
+	console.log('/quit', req.params);
 	if(styling){
 		res.json({
 			data:	{
@@ -243,16 +192,16 @@ app.post('/quit', function(req, res, next){
 				error:		null,
 			},
 		};
-		console.log('status', status);
+		console.log('/quit - status', status);
 		Expressions.quit({
 			errorCB:	function(error){
-				console.log('quit - Expressions.quit - errorCB', error);
+				console.log('/quit - Expressions.quit - errorCB', error);
 				status.expressions.finished		= true;
 				status.expressions.error		= true;
 				quitFinished();
 			},
 			successCB:	function(){
-				console.log('quit - Expressions.quit - successCB');
+				console.log('/quit - Expressions.quit - successCB');
 				status.expressions.finished		= true;
 				status.expressions.error		= false;
 				quitFinished();
@@ -260,13 +209,13 @@ app.post('/quit', function(req, res, next){
 		});
 		PuppetPeople.quit({
 			errorCB:	function(error){
-				console.log('quit - VideoConverter.quit - errorCB', error);
+				console.log('/quit - VideoConverter.quit - errorCB', error);
 				status.puppetPeople.finished	= true;
 				status.puppetPeople.error		= true; 
 				quitFinished();
 			},
 			successCB:	function(){
-				console.log('quit - VideoConverter.quit - successCB');
+				console.log('/quit - VideoConverter.quit - successCB');
 				status.puppetPeople.finished	= true;
 				status.puppetPeople.error		= false; 
 				quitFinished();
@@ -274,20 +223,20 @@ app.post('/quit', function(req, res, next){
 		});
 		DustyLoops.quit({
 			errorCB:	function(error){
-				console.log('quit - VideoPlayer.quit - errorCB', error);
+				console.log('/quit - VideoPlayer.quit - errorCB', error);
 				status.dustyLoops.finished		= true;
 				status.dustyLoops.error			= true;
 				quitFinished();
 			},
 			successCB:	function(){
-				console.log('quit - VideoPlayer.quit - successCB');
+				console.log('/quit - VideoPlayer.quit - successCB');
 				status.dustyLoops.finished		= true;
 				status.dustyLoops.error			= false;
 				quitFinished();
 			}
 		});
 		function quitFinished(){
-			console.log('quit - quitFinished');
+			console.log('/quit - quitFinished');
 			if(
 					status.expressions.finished		=== true
 				&&	status.puppetPeople.finished	=== true
@@ -298,14 +247,14 @@ app.post('/quit', function(req, res, next){
 					&&	status.puppetPeople.error	=== false
 					&&	status.dustyLoops.error		=== false
 				){
-					console.log('quit - success');
+					console.log('/quit - success');
 					res.json({
 						data:	{
 							success:	true,
 						}
 					});
 				}else{
-					console.log('quit - error');
+					console.log('/quit - error');
 					res.status(500).json({
 						errors: ['Quit failed'],
 					});

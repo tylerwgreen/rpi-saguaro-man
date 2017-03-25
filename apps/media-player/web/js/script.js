@@ -19,7 +19,7 @@ jQuery(function($){
 			// reset default ui
 			app.selection.events.show();
 			app.selection.events.btnToggle(app.selection.ui.selectionBtnExpressions);
-			app.apps.expressions.init();
+//			app.apps.expressions.init();
 		},
 		quit:	function(){
 			console.log('quit');

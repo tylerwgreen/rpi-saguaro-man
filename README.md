@@ -63,3 +63,8 @@ sudo apt-get install gpac
 curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
 sudo apt install nodejs
 ```
+
+##Notes
+
+Projector resolution: 1280x720
+Display resoultion: 800x480

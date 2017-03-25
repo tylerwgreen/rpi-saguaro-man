@@ -24,10 +24,10 @@ var DustyLoops		= {
 		);
 	},
 	play:		function(params){
-		console.log('DustyLoops.play', params.fileName);
+		console.log('DustyLoops.play');
 		child		= execFile(
 			DustyLoops.params.binDir + 'dusty-loops-play',
-			[params.fileName],
+			[],
 			function(error, stdout, stderr){
 				if(error){
 					console.error('DustyLoops.play.error.error', error);

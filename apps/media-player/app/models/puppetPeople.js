@@ -24,10 +24,10 @@ var PuppetPeople		= {
 		);
 	},
 	play:		function(params){
-		console.log('PuppetPeople.play', params.fileName);
+		console.log('PuppetPeople.play');
 		child		= execFile(
 			PuppetPeople.params.binDir + 'puppet-people-play',
-			[params.fileName],
+			[],
 			function(error, stdout, stderr){
 				if(error){
 					console.error('PuppetPeople.play.error.error', error);
