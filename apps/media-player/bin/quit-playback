@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "#bash - Expressions quit start"
+echo "#bash - Quit playback start"
 killall omxplayer
 killall omxplayer.bin
-echo "#bash - Expressions quit end"
+echo "#bash - Quit playback end"

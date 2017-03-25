@@ -5,14 +5,15 @@ jQuery(function($){
 			ajaxBase:	'http://127.0.0.1:5000/',
 		},
 		init:	function(){
-			console.log('init');
+			console.log('app.init');
 			app.selection.init();
 			app.info.init();
 			app.error.init();
 			app.reset();
 		},
 		reset:	function(){
-			console.log('reset');
+			console.log('app.reset');
+			app.apps.quit.reset();
 			app.selection.reset();
 			app.info.reset();
 			app.error.reset();
@@ -20,26 +21,29 @@ jQuery(function($){
 			app.selection.events.btnToggle(app.selection.ui.selectionBtnExpressions);
 			app.apps.expressions.init();
 		},
-		quit:	function(){
-			console.log('quit');
+		quit:	function(params){
+			console.log('app.quit');
+			app.apps.quit.set();
 			// stop server processes
 			$.post(app.params.ajaxBase + 'quit')
 				.done(function(data, textStatus, jqXHR){
-					console.log('data',	data);
-					if(!app.utils.isValidJqXHR(jqXHR))
-						console.error('Invalid jqXHR');
+					console.log('app.data',	data);
+					if(app.utils.isValidJqXHR(jqXHR))
+						params.successCB(data);
+					else
+						params.errorCB(data);
 				})
 				.fail(function(jqXHR, textStatus, errorThrown){
-					console.error(app.utils.getJqXHRError(jqXHR));
+					params.errorCB(app.utils.getJqXHRError(jqXHR));
 				});
 		},
 		selection:	{
 			init:	function(){
-				console.log('selection.init');
+				console.log('app.selection.init');
 				app.selection.ui.init();
 			},
 			reset:	function(){
-				console.log('selection.reset');
+				console.log('app.selection.reset');
 			},
 			ui:	{
 				selectionBtnExpressions:	null,
@@ -47,7 +51,7 @@ jQuery(function($){
 				selectionBtnDustyLoops:		null,
 				infoBtn:					null,
 				init:	function(){
-					console.log('selection.ui.init');
+					console.log('app.selection.ui.init');
 					this.selectionBtnExpressions	= $('#selection-btn-expressions')
 						.on('click', app.selection.events.selectionBtnExpressionsClick);
 					this.selectionBtnPuppetPeople	= $('#selection-btn-puppet-people')
@@ -58,7 +62,7 @@ jQuery(function($){
 						.on('click', app.selection.events.showInfo);
 				},
 				btnToggle:	function(btn){
-					console.log('selection.ui.btnToggle');
+					console.log('app.selection.ui.btnToggle');
 					this.selectionBtnExpressions.removeClass('active');
 					this.selectionBtnPuppetPeople.removeClass('active');
 					this.selectionBtnDustyLoops.removeClass('active');
@@ -70,94 +74,143 @@ jQuery(function($){
 			},
 			events:	{
 				selectionBtnExpressionsClick:	function(event){
-					console.log('selection.events.selectionBtnExpressionsClick');
+					console.log('app.selection.events.selectionBtnExpressionsClick');
 					app.utils.cancelDefaultEvent(event);
 					app.selection.ui.btnToggle(event);
 					app.apps.expressions.init();
 				},
 				selectionBtnPuppetPeopleClick:	function(event){
-					console.log('selection.events.selectionBtnPuppetPeopleClick');
+					console.log('app.selection.events.selectionBtnPuppetPeopleClick');
 					app.utils.cancelDefaultEvent(event);
 					app.selection.ui.btnToggle(event);
 					app.apps.puppetPeople.init();
 				},
 				selectionBtnDustyLoopsClick:	function(event){
-					console.log('selection.events.selectionBtnDustyLoopsClick');
+					console.log('app.selection.events.selectionBtnDustyLoopsClick');
 					app.utils.cancelDefaultEvent(event);
 					app.selection.ui.btnToggle(event);
 					app.apps.dustyLoops.init();
 				},
 				showInfo:				function(event){
-					console.log('selection.events.showInfo');
+					console.log('app.selection.events.showInfo');
 					app.utils.cancelDefaultEvent(event);
-					// app.selection.events.hide();
 					app.info.events.show();
 				},
 				btnToggle:	function(btn){
+					console.log('app.selection.events.btnToggle', btn);
 					app.selection.ui.btnToggle(btn);
 				}
 			}
 		},
 		info:		{
 			init:	function(){
-				console.log('info.init');
+				console.log('app.info.init');
 				app.info.ui.init();
 			},
 			reset:	function(){
-				console.log('info.reset');
+				console.log('app.info.reset');
 				app.info.events.hide();
 			},
 			ui:	{
 				infoWrap:	null,
 				backBtn:	null,
 				init:	function(){
-					console.log('info.ui.init');
+					console.log('app.info.ui.init');
 					this.infoWrap	= $('#info-wrap');
 					this.backBtn	= $('#info-back-btn')
 						.on('click', app.info.events.back);
 				},
 				msg:	{
 					update:	function(msg){
+						console.log('app.info.ui.msg.update', msg);
 						app.info.ui.infoMsg.text(msg);
 					},
 				},
 				hide:	function(){
-					console.log('info.ui.hide');
+					console.log('app.info.ui.hide');
 					this.infoWrap.removeClass('visible');
 				},
 				show:	function(){
-					console.log('info.ui.show');
+					console.log('app.info.ui.show');
 					this.infoWrap.addClass('visible');
 				},
 			},
 			events:	{
 				show:	function(){
-					console.log('info.events.show');
+					console.log('app.info.events.show');
 					app.info.ui.show();
 				},
 				hide:	function(){
-					console.log('info.events.hide');
+					console.log('app.info.events.hide');
 					app.info.ui.hide();
 				},
 				back:	function(event){
-					console.log('info.events.back');
+					console.log('app.info.events.back');
 					app.utils.cancelDefaultEvent(event);
 					app.info.events.hide();
 				}
 			}
 		},
 		apps:		{
+			current:		{
+				current:	null,
+				previous:	null,
+				set:	function(app){
+					console.log('app.apps.current.set', app);
+					this.previous	= this.current;
+					this.current	= app;
+				},
+				get:	function(){
+					console.log('app.apps.current.get', this.current);
+					return this.current;
+				},
+				isPrevious:	function(app){
+					console.log('app.apps.current.isPrevious', this.previous);
+					return app == this.previous	? true : false;
+				},
+				isCurrent:	function(app){
+					console.log('app.apps.current.isCurrent', this.current);
+					return app == this.current	? true : false;
+				}
+			},
+			quit:	{
+				_quit:	null,
+				set:	function(){
+					console.log('app.apps.quit.set', this._quit);
+					app.apps.quit._quit = true;
+				},
+				hasQuit:	function(){
+					console.log('app.apps.quit.hasQuit', this._quit);
+					return app.apps.quit.get();
+				},
+				get:	function(){
+					console.log('app.apps.quit.get', this._quit);
+					return app.apps.quit._quit == false ? false : true;
+				},
+				reset:	function(){
+					console.log('app.apps.quit.reset', this._quit);
+					app.apps.quit._quit = false;
+				}
+			},
 			expressions:	{
+				name:	'expressions',
 				init:	function(){
-					console.log('apps.expressions.init');
-					app.quit();
+					console.log('app.apps.expressions.init');
+					if(
+							app.apps.current.isCurrent(app.apps.expressions.name)
+						||	app.apps.quit.hasQuit()
+					)
+						return;
+					app.apps.current.set(app.apps.expressions.name);
 					$.post(app.params.ajaxBase + 'apps/expressions/play')
 						.done(function(data, textStatus, jqXHR){
-							console.log('data',			data);
-							if(app.utils.isValidJqXHR(jqXHR))
-								app.reset();
-							else
+							console.log('app.data',	data);
+							if(app.utils.isValidJqXHR(jqXHR)){
+								if(!app.apps.current.isPrevious(app.apps.expressions.name))
+									app.reset();
+							}else{
 								app.error.raise('Invalid jqXHR');
+							}
 						})
 						.fail(function(jqXHR, textStatus, errorThrown){
 							app.error.raise(app.utils.getJqXHRError(jqXHR));
@@ -165,16 +218,24 @@ jQuery(function($){
 				},
 			},
 			puppetPeople:	{
+				name:	'puppetPeople',
 				init:	function(){
-					console.log('apps.puppetPeople.init');
-					app.quit();
+					console.log('app.apps.puppetPeople.init');
+					if(
+						app.apps.current.isCurrent(app.apps.puppetPeople.name)
+						||	app.apps.quit.hasQuit()
+					)
+						return;
+					app.apps.current.set(app.apps.puppetPeople.name);
 					$.post(app.params.ajaxBase + 'apps/puppet-people/play')
 						.done(function(data, textStatus, jqXHR){
-							console.log('data',			data);
-							if(app.utils.isValidJqXHR(jqXHR))
-								app.reset();
-							else
+							console.log('app.data',	data);
+							if(app.utils.isValidJqXHR(jqXHR)){
+								if(!app.apps.current.isPrevious(app.apps.puppetPeople.name))
+									app.reset();
+							}else{
 								app.error.raise('Invalid jqXHR');
+							}
 						})
 						.fail(function(jqXHR, textStatus, errorThrown){
 							app.error.raise(app.utils.getJqXHRError(jqXHR));
@@ -182,16 +243,24 @@ jQuery(function($){
 				},
 			},
 			dustyLoops:		{
+				name:	'dustyLoops',
 				init:	function(){
-					console.log('apps.dustyLoops.init');
-					app.quit();
+					console.log('app.apps.dustyLoops.init');
+					if(
+						app.apps.current.isCurrent(app.apps.dustyLoops.name)
+						||	app.apps.quit.hasQuit()
+					)
+						return;
+					app.apps.current.set(app.apps.dustyLoops.name);
 					$.post(app.params.ajaxBase + 'apps/dusty-loops/play')
 						.done(function(data, textStatus, jqXHR){
-							console.log('data',			data);
-							if(app.utils.isValidJqXHR(jqXHR))
-								app.reset();
-							else
+							console.log('app.data',	data);
+							if(app.utils.isValidJqXHR(jqXHR)){
+								if(!app.apps.current.isPrevious(app.apps.dustyLoops.name))
+									app.reset();
+							}else{
 								app.error.raise('Invalid jqXHR');
+							}
 						})
 						.fail(function(jqXHR, textStatus, errorThrown){
 							app.error.raise(app.utils.getJqXHRError(jqXHR));
@@ -201,11 +270,11 @@ jQuery(function($){
 		},
 		error:		{
 			init:	function(){
-				console.log('error.init');
+				console.log('app.error.init');
 				this.ui.init();
 			},
 			reset:	function(){
-				console.log('error.reset');
+				console.log('app.error.reset');
 				this.events.hide();
 			},
 			ui:	{
@@ -213,7 +282,7 @@ jQuery(function($){
 				errorMsg:	null,
 				resetBtn:	null,
 				init:	function(){
-					console.log('error.ui.init');
+					console.log('app.error.ui.init');
 					this.errorWrap	= $('#error-wrap');
 					this.errorMsg	= $('#error-msg');
 					this.resetBtn	= $('#reset-btn')
@@ -221,43 +290,44 @@ jQuery(function($){
 				},
 				msg:	{
 					update:	function(msg){
+						console.log('app.error.ui.msg.update', msg);
 						app.error.ui.errorMsg.text(msg);
 					},
 				},
 				hide:	function(){
-					console.log('error.ui.hide');
+					console.log('app.error.ui.hide');
 					this.errorWrap.removeClass('visible');
 				},
 				show:	function(){
-					console.log('error.ui.show');
+					console.log('app.error.ui.show');
 					this.errorWrap.addClass('visible');
 				},
 			},
 			events:	{
 				reset:	function(event){
-					console.log('error.events.reset');
+					console.log('app.error.events.reset');
 					app.utils.cancelDefaultEvent(event);
 					app.reset();
 				},
 				show:	function(msg){
-					console.log('error.events.show');
+					console.log('app.error.events.show');
 					app.error.ui.msg.update(msg);
 					app.error.ui.show();
 				},
 				hide:	function(){
-					console.log('error.events.hide');
+					console.log('app.error.events.hide');
 					app.error.ui.hide();
 				}
 			},
 			raise:	function(msg){
-				console.error('error.raise', msg);
+				console.error('app.error.raise', msg);
 				this.events.show(msg);
 				app.quit();
 			}
 		},
 		utils:	{
 			isValidJqXHR:	function(jqXHR){
-				console.log('utils.isValidJqXHR', jqXHR);
+				console.log('app.utils.isValidJqXHR', jqXHR);
 				return (
 					typeof jqXHR.responseJSON	!== 'undefined'
 					&&	(
@@ -271,6 +341,7 @@ jQuery(function($){
 				) ? true : false;
 			},
 			getJqXHRError:	function(jqXHR){
+				console.log('app.utils.getJqXHRError', jqXHR);
 				if(
 					typeof jqXHR.responseJSON	!== 'undefined'
 					&& typeof jqXHR.responseJSON.errors	!== 'undefined'
@@ -279,6 +350,7 @@ jQuery(function($){
 				return 'unknown error';
 			},
 			cancelDefaultEvent:	function(event){
+				console.log('app.utils.cancelDefaultEvent', event);
 				if(typeof event !== 'undefined'){
 					event.preventDefault();
 					event.stopPropagation();

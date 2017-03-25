@@ -76,10 +76,11 @@ app.get('/', function(req, res, next){
 });
 /** Expressions */
 app.post('/apps/expressions/play', function(req, res, next){
-	console.log('/apps/expressions/play', req.params);
+	console.log('/apps/expressions/play');
+	// console.log(req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('/apps/expressions', 'success');
+			console.log('/apps/expressions - success');
 			res.json({
 				data:	{
 					success:	true,
@@ -89,7 +90,8 @@ app.post('/apps/expressions/play', function(req, res, next){
 	}else{
 		MediaPlayer.expressions.play({
 			errorCB:	function(error){
-				console.log('/apps/expressions/play - errorCB', error);
+				console.log('/apps/expressions/play - errorCB');
+				console.log(error);
 				res.status(500).json({
 					errors: ['Expressions play failed'],
 				});
@@ -107,10 +109,11 @@ app.post('/apps/expressions/play', function(req, res, next){
 });
 /** Puppet People */
 app.post('/apps/puppet-people/play', function(req, res, next){
-	console.log('/apps/puppet-people/play', req.params);
+	console.log('/apps/puppet-people/play');
+	// console.log(req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('/apps/puppet-people', 'success');
+			console.log('/apps/puppet-people - success');
 			res.json({
 				data:	{
 					success:	true,
@@ -120,7 +123,8 @@ app.post('/apps/puppet-people/play', function(req, res, next){
 	}else{
 		MediaPlayer.puppetPeople.play({
 			errorCB:	function(error){
-				console.log('/apps/puppet-people/play - errorCB', error);
+				console.log('/apps/puppet-people/play - errorCB');
+				console.log(error);
 				res.status(500).json({
 					errors: ['Puppet People play failed'],
 				});
@@ -138,10 +142,11 @@ app.post('/apps/puppet-people/play', function(req, res, next){
 });
 /** Dusty Loops */
 app.post('/apps/dusty-loops/play', function(req, res, next){
-	console.log('/apps/dusty-loops/play', req.params);
+	console.log('/apps/dusty-loops/play');
+	// console.log(req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('/apps/dusty-loops', 'success');
+			console.log('/apps/dusty-loops - success');
 			res.json({
 				data:	{
 					success:	true,
@@ -151,7 +156,8 @@ app.post('/apps/dusty-loops/play', function(req, res, next){
 	}else{
 		MediaPlayer.dustyLoops.play({
 			errorCB:	function(error){
-				console.log('/apps/dusty-loops/play - errorCB', error);
+				console.log('/apps/dusty-loops/play - errorCB');
+				console.log(error);
 				res.status(500).json({
 					errors: ['Dusty Loops play failed'],
 				});
@@ -168,7 +174,8 @@ app.post('/apps/dusty-loops/play', function(req, res, next){
 	}
 });
 app.post('/quit', function(req, res, next){
-	console.log('/quit', req.params);
+	console.log('/quit');
+	// console.log(req.params);
 	if(styling){
 		res.json({
 			data:	{
@@ -178,7 +185,8 @@ app.post('/quit', function(req, res, next){
 	}else{
 		MediaPlayer.quit({
 			errorCB:	function(error){
-				console.log('/quit - errorCB', error);
+				console.log('/quit - errorCB');
+				console.log(error);
 				res.status(500).json({
 					errors: ['Quit failed'],
 				});
@@ -209,7 +217,7 @@ app.use(function(req, res, next){
  * Error handler
  */
 app.use(function(err, req, res, next){
-	console.error('Error: ' + err.message);
+	console.log('Error: ' + err.message);
 	res.status(err.status || 500);
 	var msg = err.message || 'Unknown error';
 	// for json errors

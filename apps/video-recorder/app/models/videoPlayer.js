@@ -11,12 +11,15 @@ var VideoPlayer		= {
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoPlayer.quit.error.error', error);
-					console.error('VideoPlayer.quit.error.stderr', stderr);
+					console.log('VideoPlayer.quit.error.error');
+					console.log(error);
+					console.log('VideoPlayer.quit.error.stderr');
+					console.log(stderr);
 					if(typeof params.errorCB !== 'undefined')
 						params.errorCB(error);
 				}else{
-					console.log('VideoPlayer.quit.success.stdout', stdout);
+					console.log('VideoPlayer.quit.success.stdout');
+					console.log(stdout);
 					if(typeof params.successCB !== 'undefined')
 						params.successCB();
 				}
@@ -24,36 +27,42 @@ var VideoPlayer		= {
 		);
 	},
 	play:		function(params){
-		console.log('VideoPlayer.play', params.fileName);
+		console.log('VideoPlayer.play');
+		console.log(params.fileName);
 		child		= execFile(
 			VideoPlayer.params.binDir + 'video-play',
 			[params.fileName],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoPlayer.play.error.error', error);
-					console.error('VideoPlayer.play.error.stderr', stderr);
-					VideoPlayer.quit();
+					console.log('VideoPlayer.play.error.error');
+					console.log(error);
+					console.log('VideoPlayer.play.error.stderr');
+					console.log(stderr);
 					params.errorCB(error);
 				}else{
-					console.log('VideoPlayer.play.success.stdout', stdout);
+					console.log('VideoPlayer.play.success.stdout');
+					console.log(stdout);
 					params.successCB();
 				}
 			}
 		);
 	},
 	stop:		function(params){
-		console.log('VideoPlayer.stop', params.fileName);
+		console.log('VideoPlayer.stop');
+		console.log(params.fileName);
 		child		= execFile(
 			VideoPlayer.params.binDir + 'video-stop',
 			[params.fileName],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('VideoPlayer.stop.error.error', error);
-					console.error('VideoPlayer.stop.error.stderr', stderr);
-					VideoPlayer.quit();
+					console.log('VideoPlayer.stop.error.error');
+					console.log(error);
+					console.log('VideoPlayer.stop.error.stderr');
+					console.log(stderr);
 					params.errorCB(error);
 				}else{
-					console.log('VideoPlayer.stop.success.stdout', stdout);
+					console.log('VideoPlayer.stop.success.stdout');
+					console.log(stdout);
 					params.successCB();
 				}
 			}

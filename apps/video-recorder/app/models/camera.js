@@ -11,12 +11,15 @@ var Camera		= {
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('Camera.quit.error.error', error);
-					console.error('Camera.quit.error.stdout', stdout);
+					console.log('Camera.quit.error.error');
+					console.log(error);
+					console.log('Camera.quit.error.stdout');
+					console.log(stdout);
 					if(typeof params.errorCB !== 'undefined')
 						params.errorCB(error);
 				}else{
-					console.log('Camera.quit.success.stdout', stdout);
+					console.log('Camera.quit.success.stdout');
+					console.log(stdout);
 					if(typeof params.successCB !== 'undefined')
 						params.successCB();
 				}
@@ -30,12 +33,14 @@ var Camera		= {
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('Camera.preview.error.error', error);
-					console.error('Camera.preview.error.stdout', stdout);
-					Camera.quit();
+					console.log('Camera.preview.error.error');
+					console.log(error);
+					console.log('Camera.preview.error.stdout');
+					console.log(stdout);
 					params.errorCB(error);
 				}else{
-					console.log('Camera.preview.success.stdout', stdout);
+					console.log('Camera.preview.success.stdout');
+					console.log(stdout);
 					params.successCB();
 				}
 			}
@@ -48,12 +53,14 @@ var Camera		= {
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('Camera.record.error.error', error);
-					console.error('Camera.record.error.stdout', stdout);
-					Camera.quit();
+					console.log('Camera.record.error.error');
+					console.log(error);
+					console.log('Camera.record.error.stdout');
+					console.log(stdout);
 					params.errorCB(error);
 				}else{
-					console.log('Camera.record.success.stdout', stdout);
+					console.log('Camera.record.success.stdout');
+					console.log(stdout);
 					params.successCB();
 				}
 			}

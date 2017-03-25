@@ -17,20 +17,15 @@ var MediaPlayer		= {
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.error('MediaPlayer.quit.error.error', error);
-					console.error('MediaPlayer.quit.error.stderr', stderr);
-					if(
-							typeof params			!== 'undefined'
-						&&	typeof params.errorCB	!== 'undefined'
-					)
-						params.errorCB(error);
+					console.log('MediaPlayer.quit.error.error');
+					console.log(error);
+					console.log('MediaPlayer.quit.error.stderr');
+					console.log(stderr);
+					params.errorCB(error);
 				}else{
-					console.log('MediaPlayer.quit.success.stdout', stdout);
-					if(
-							typeof params			!== 'undefined'
-						&&	typeof params.successCB	!== 'undefined'
-					)
-						params.successCB();
+					console.log('MediaPlayer.quit.success.stdout');
+					console.log(stdout);
+					params.successCB();
 				}
 			}
 		);
@@ -42,19 +37,19 @@ var MediaPlayer		= {
 		},
 		play:	function(params){
 			console.log('MediaPlayer.expressions.play');
-			MediaPlayer.quit();
-			child		= execFile(
+			child	= execFile(
 				MediaPlayer.params.binDir + 'expressions-play',
 				[MediaPlayer.expressions.files.random()],
 				function(error, stdout, stderr){
 					if(error){
-						console.error('MediaPlayer.play.error.error', error);
-						console.error('MediaPlayer.play.error.stderr', stderr);
-						MediaPlayer.quit();
+						console.log('MediaPlayer.expressions.play.error.error');
+						console.log(error);
+						console.log('MediaPlayer.expressions.play.error.stderr');
+						console.log(stderr);
 						params.errorCB(error);
 					}else{
-						console.log('MediaPlayer.play.success.stdout', stdout);
-						MediaPlayer.quit();
+						console.log('MediaPlayer.expressions.play.success.stdout');
+						console.log(stdout);
 						params.successCB();
 					}
 				}
@@ -78,18 +73,20 @@ var MediaPlayer		= {
 	},
 	puppetPeople:	{
 		play:		function(params){
-			console.log('PuppetPeople.play');
-			child		= execFile(
-				PuppetPeople.params.binDir + 'puppet-people-play',
+			console.log('MediaPlayer.puppetPeople.play');
+			child	= execFile(
+				MediaPlayer.params.binDir + 'puppet-people-play',
 				[],
 				function(error, stdout, stderr){
 					if(error){
-						console.error('PuppetPeople.play.error.error', error);
-						console.error('PuppetPeople.play.error.stderr', stderr);
-						PuppetPeople.quit();
+						console.log('MediaPlayer.puppetPeople.play.error.error');
+						console.log(error);
+						console.log('MediaPlayer.puppetPeople.play.error.stderr');
+						console.log(stderr);
 						params.errorCB(error);
 					}else{
-						console.log('PuppetPeople.play.success.stdout', stdout);
+						console.log('MediaPlayer.puppetPeople.play.success.stdout');
+						console.log(stdout);
 						params.successCB();
 					}
 				}
@@ -98,18 +95,20 @@ var MediaPlayer		= {
 	},
 	dustyLoops:		{
 		play:		function(params){
-			console.log('DustyLoops.play');
+			console.log('MediaPlayer.dustyLoops.play');
 			child		= execFile(
-				DustyLoops.params.binDir + 'dusty-loops-play',
+				MediaPlayer.params.binDir + 'dusty-loops-play',
 				[],
 				function(error, stdout, stderr){
 					if(error){
-						console.error('DustyLoops.play.error.error', error);
-						console.error('DustyLoops.play.error.stderr', stderr);
-						DustyLoops.quit();
+						console.log('MediaPlayer.dustyLoops.play.error.error');
+						console.log(error);
+						console.log('MediaPlayer.dustyLoops.play.error.stderr');
+						console.log(stderr);
 						params.errorCB(error);
 					}else{
-						console.log('DustyLoops.play.success.stdout', stdout);
+						console.log('MediaPlayer.dustyLoops.play.success.stdout');
+						console.log(stdout);
 						params.successCB();
 					}
 				}

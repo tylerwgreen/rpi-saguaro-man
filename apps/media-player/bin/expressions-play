@@ -7,6 +7,9 @@ DISPLAY=5
 #DISPLAY=4
 AUDIO_OUTPUT=local
 #AUDIO_OUTPUT=hdmi
+echo "#bash - killing playback"
+killall omxplayer
+killall omxplayer.bin
 echo "#bash - Expressions playing $FILE"
 omxplayer -o $AUDIO_OUTPUT --display=$DISPLAY $FILE
 echo "#bash - Expressions play end"
