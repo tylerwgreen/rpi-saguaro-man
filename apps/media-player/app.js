@@ -20,10 +20,8 @@ var styling	= false;
 /**
  * Load models
  */
-var Expressions		= require(path.join(__dirname, paths.models, 'expressions'));
-var PuppetPeople	= require(path.join(__dirname, paths.models, 'puppetPeople'));
-var DustyLoops		= require(path.join(__dirname, paths.models, 'dustyLoops'));
-Expressions.init();
+var MediaPlayer		= require(path.join(__dirname, paths.models, 'MediaPlayer'));
+MediaPlayer.init();
 
 // app settings
 /**
@@ -89,7 +87,7 @@ app.post('/apps/expressions/play', function(req, res, next){
 			});
 		}, 5000);
 	}else{
-		Expressions.play({
+		MediaPlayer.expressions.play({
 			errorCB:	function(error){
 				console.log('/apps/expressions/play - errorCB', error);
 				res.status(500).json({
@@ -120,7 +118,7 @@ app.post('/apps/puppet-people/play', function(req, res, next){
 			});
 		}, 5000);
 	}else{
-		PuppetPeople.play({
+		MediaPlayer.puppetPeople.play({
 			errorCB:	function(error){
 				console.log('/apps/puppet-people/play - errorCB', error);
 				res.status(500).json({
@@ -151,7 +149,7 @@ app.post('/apps/dusty-loops/play', function(req, res, next){
 			});
 		}, 5000);
 	}else{
-		DustyLoops.play({
+		MediaPlayer.dustyLoops.play({
 			errorCB:	function(error){
 				console.log('/apps/dusty-loops/play - errorCB', error);
 				res.status(500).json({
@@ -159,7 +157,7 @@ app.post('/apps/dusty-loops/play', function(req, res, next){
 				});
 			},
 			successCB:	function(){
-				console.log('/apps/dusty-loops/play - successCB', fileName);
+				console.log('/apps/dusty-loops/play - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -178,89 +176,22 @@ app.post('/quit', function(req, res, next){
 			}
 		});
 	}else{
-		var status	= {
-			expressions:	{
-				finished:	null,
-				error:		null,
-			},
-			puppetPeople:	{
-				finished:	null,
-				error:		null,
-			},
-			dustyLoops:		{
-				finished:	null,
-				error:		null,
-			},
-		};
-		console.log('/quit - status', status);
-		Expressions.quit({
+		MediaPlayer.quit({
 			errorCB:	function(error){
-				console.log('/quit - Expressions.quit - errorCB', error);
-				status.expressions.finished		= true;
-				status.expressions.error		= true;
-				quitFinished();
+				console.log('/quit - errorCB', error);
+				res.status(500).json({
+					errors: ['Quit failed'],
+				});
 			},
 			successCB:	function(){
-				console.log('/quit - Expressions.quit - successCB');
-				status.expressions.finished		= true;
-				status.expressions.error		= false;
-				quitFinished();
+				console.log('/quit - successCB');
+				res.json({
+					data:	{
+						success:	true,
+					}
+				});
 			}
 		});
-		PuppetPeople.quit({
-			errorCB:	function(error){
-				console.log('/quit - VideoConverter.quit - errorCB', error);
-				status.puppetPeople.finished	= true;
-				status.puppetPeople.error		= true; 
-				quitFinished();
-			},
-			successCB:	function(){
-				console.log('/quit - VideoConverter.quit - successCB');
-				status.puppetPeople.finished	= true;
-				status.puppetPeople.error		= false; 
-				quitFinished();
-			}
-		});
-		DustyLoops.quit({
-			errorCB:	function(error){
-				console.log('/quit - VideoPlayer.quit - errorCB', error);
-				status.dustyLoops.finished		= true;
-				status.dustyLoops.error			= true;
-				quitFinished();
-			},
-			successCB:	function(){
-				console.log('/quit - VideoPlayer.quit - successCB');
-				status.dustyLoops.finished		= true;
-				status.dustyLoops.error			= false;
-				quitFinished();
-			}
-		});
-		function quitFinished(){
-			console.log('/quit - quitFinished');
-			if(
-					status.expressions.finished		=== true
-				&&	status.puppetPeople.finished	=== true
-				&&	status.dustyLoops.finished		=== true
-			){
-				if(
-						status.expressions.error		=== false
-					&&	status.puppetPeople.error	=== false
-					&&	status.dustyLoops.error		=== false
-				){
-					console.log('/quit - success');
-					res.json({
-						data:	{
-							success:	true,
-						}
-					});
-				}else{
-					console.log('/quit - error');
-					res.status(500).json({
-						errors: ['Quit failed'],
-					});
-				}
-			}
-		}
 	}
 });
 

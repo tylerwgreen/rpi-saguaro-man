@@ -17,9 +17,8 @@ jQuery(function($){
 			app.info.reset();
 			app.error.reset();
 			// reset default ui
-			app.selection.events.show();
 			app.selection.events.btnToggle(app.selection.ui.selectionBtnExpressions);
-//			app.apps.expressions.init();
+			app.apps.expressions.init();
 		},
 		quit:	function(){
 			console.log('quit');
@@ -37,21 +36,18 @@ jQuery(function($){
 		selection:	{
 			init:	function(){
 				console.log('selection.init');
-				this.ui.init();
+				app.selection.ui.init();
 			},
 			reset:	function(){
 				console.log('selection.reset');
-				this.events.hide();
 			},
 			ui:	{
-				selectionWrap:				null,
 				selectionBtnExpressions:	null,
 				selectionBtnPuppetPeople:	null,
 				selectionBtnDustyLoops:		null,
 				infoBtn:					null,
 				init:	function(){
 					console.log('selection.ui.init');
-					this.selectionWrap				= $('#selection-wrap');
 					this.selectionBtnExpressions	= $('#selection-btn-expressions')
 						.on('click', app.selection.events.selectionBtnExpressionsClick);
 					this.selectionBtnPuppetPeople	= $('#selection-btn-puppet-people')
@@ -60,14 +56,6 @@ jQuery(function($){
 						.on('click', app.selection.events.selectionBtnDustyLoopsClick);
 					this.infoBtn					= $('#info-btn')
 						.on('click', app.selection.events.showInfo);
-				},
-				hide:	function(){
-					console.log('selection.ui.hide');
-					this.selectionWrap.removeClass('visible');
-				},
-				show:	function(){
-					console.log('selection.ui.show');
-					this.selectionWrap.addClass('visible');
 				},
 				btnToggle:	function(btn){
 					console.log('selection.ui.btnToggle');
@@ -102,16 +90,8 @@ jQuery(function($){
 				showInfo:				function(event){
 					console.log('selection.events.showInfo');
 					app.utils.cancelDefaultEvent(event);
-					app.selection.events.hide();
+					// app.selection.events.hide();
 					app.info.events.show();
-				},
-				show:	function(){
-					console.log('selection.events.show');
-					app.selection.ui.show();
-				},
-				hide:	function(){
-					console.log('selection.events.hide');
-					app.selection.ui.hide();
 				},
 				btnToggle:	function(btn){
 					app.selection.ui.btnToggle(btn);
@@ -121,11 +101,11 @@ jQuery(function($){
 		info:		{
 			init:	function(){
 				console.log('info.init');
-				this.ui.init();
+				app.info.ui.init();
 			},
 			reset:	function(){
 				console.log('info.reset');
-				this.events.hide();
+				app.info.events.hide();
 			},
 			ui:	{
 				infoWrap:	null,
@@ -162,7 +142,7 @@ jQuery(function($){
 				back:	function(event){
 					console.log('info.events.back');
 					app.utils.cancelDefaultEvent(event);
-					app.reset();
+					app.info.events.hide();
 				}
 			}
 		},

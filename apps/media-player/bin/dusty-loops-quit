@@ -1,5 +1,0 @@
-#!/bin/bash
-echo "#bash - Dusty loops quit start"
-killall omxplayer
-killall omxplayer.bin
-echo "#bash - Dusty loops quit end"

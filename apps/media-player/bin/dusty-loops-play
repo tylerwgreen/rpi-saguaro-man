@@ -1,10 +1,11 @@
 #!/bin/bash
 echo "#bash - Dusty loops play start"
 FILE=/media/pi/TYLERTHUMB/dusty-loops.mp4
-#HDMI
+#DISPLAY: 5 = HDMI, 4 = LCD
 DISPLAY=5
-#LCD
 #DISPLAY=4
+AUDIO_OUTPUT=local
+#AUDIO_OUTPUT=hdmi
 echo "#bash - Playing $FILE"
-omxplayer --display=$DISPLAY $FILE
+omxplayer -o $AUDIO_OUTPUT --display=$DISPLAY $FILE
 echo "#bash - Dusty loops end"

@@ -1,5 +1,0 @@
-#!/bin/bash
-echo "#bash - Puppet people quit start"
-killall omxplayer
-killall omxplayer.bin
-echo "#bash - Puppet people quit end"

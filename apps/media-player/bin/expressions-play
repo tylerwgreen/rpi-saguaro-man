@@ -2,10 +2,11 @@
 echo "#bash - Expressions play start"
 FILE_DIR_CONVERTED=/home/pi/saguaro-man/assets/video/recordings/converted
 FILE=$FILE_DIR_CONVERTED/$1
-#HDMI
+#DISPLAY: 5 = HDMI, 4 = LCD
 DISPLAY=5
-#LCD
 #DISPLAY=4
+AUDIO_OUTPUT=local
+#AUDIO_OUTPUT=hdmi
 echo "#bash - Expressions playing $FILE"
-omxplayer --display=$DISPLAY $FILE
+omxplayer -o $AUDIO_OUTPUT --display=$DISPLAY $FILE
 echo "#bash - Expressions play end"

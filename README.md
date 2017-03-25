@@ -66,5 +66,5 @@ sudo apt install nodejs
 
 ##Notes
 
-Projector resolution: 1280x720
+Projector resolution: 1280x800
 Display resoultion: 800x480
