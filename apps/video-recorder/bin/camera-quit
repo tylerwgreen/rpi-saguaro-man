@@ -1,4 +1,0 @@
-#!/bin/bash
-echo "#bash - Camera quit start"
-killall raspivid
-echo "#bash - Camera quit end"

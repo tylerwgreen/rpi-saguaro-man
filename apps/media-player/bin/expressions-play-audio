@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "#bash - Expressions play audio start"
+FILE_DIR=/home/pi/saguaro-man/assets/audio/cody-loops
+#FILE=$FILE_DIR/$1
+FILE=$FILE_DIR/song.mp3
+AUDIO_OUTPUT=local
+#AUDIO_OUTPUT=hdmi
+echo "#bash - Expressions playing audio $FILE"
+#sleep 3
+omxplayer -o $AUDIO_OUTPUT $FILE
+echo "#bash - Expressions play audio end"

@@ -3,17 +3,15 @@ jQuery(function($){
 		debug:	true,
 		params:	{
 			ajaxBase:	'http://127.0.0.1:5000/',
+			timeoutMins:	11, // +1 from server timeout
 			preview:	{
-				// duration:	1,	// seconds
 				duration:	5,	// seconds
 			},
 			record:		{
-				// duration:	1,	// seconds
 				duration:	7,	// seconds
 			},
 			finish:		{
 				wait:	{
-					// duration:	1,	// seconds
 					duration:	5,	// seconds
 				}
 			}
@@ -27,7 +25,6 @@ jQuery(function($){
 			app.convert.init();
 			app.finish.init();
 			app.error.init();
-// app.finish.events.play.start();
 		},
 		reset:	function(){
 			console.log('reset');
@@ -46,11 +43,15 @@ jQuery(function($){
 		},
 		quit:	function(){
 			console.log('quit');
-			// stop timers
-			app.utils.timerCountdown.stop();
-			app.utils.timer.stop();
+			// reset timers
+			app.utils.timerCountdown.reset();
+			app.utils.timer.reset();
 			// stop server processes
-			$.post(app.params.ajaxBase + 'quit')
+			$.ajax({
+				method:		'POST',
+				url:		app.params.ajaxBase + 'quit',
+				timeout:	app.utils.getTimeoutSeconds(),
+			})
 				.done(function(data, textStatus, jqXHR){
 					console.log('data',	data);
 					if(!app.utils.isValidJqXHR(jqXHR))
@@ -222,7 +223,11 @@ jQuery(function($){
 							app.params.preview.duration,
 							app.preview.events.updateCountdown
 						);
-						$.post(app.params.ajaxBase + 'camera/preview/' + consent)
+						$.ajax({
+							method:		'POST',
+							url:		app.params.ajaxBase + 'camera/preview/' + consent,
+							timeout:	app.utils.getTimeoutSeconds(),
+						})
 							.done(function(data, textStatus, jqXHR){
 								console.log('data',			data);
 								if(app.utils.isValidJqXHR(jqXHR))
@@ -294,7 +299,11 @@ jQuery(function($){
 							app.params.record.duration,
 							app.record.events.updateCountdown
 						);
-						$.post(app.params.ajaxBase + 'camera/record')
+						$.ajax({
+							method:		'POST',
+							url:		app.params.ajaxBase + 'camera/record',
+							timeout:	app.utils.getTimeoutSeconds(),
+						})
 							.done(function(data, textStatus, jqXHR){
 								console.log('data',			data);
 								if(app.utils.isValidJqXHR(jqXHR))
@@ -365,7 +374,11 @@ jQuery(function($){
 						app.utils.timer.start(
 							app.convert.events.updateTimer
 						);
-						$.post(app.params.ajaxBase + 'video/convert')
+						$.ajax({
+							method:		'POST',
+							url:		app.params.ajaxBase + 'video/convert',
+							timeout:	app.utils.getTimeoutSeconds(),
+						})
 							.done(function(data, textStatus, jqXHR){
 								console.log('data',			data);
 								if(app.utils.isValidJqXHR(jqXHR))
@@ -444,7 +457,11 @@ jQuery(function($){
 						console.log('finish.events.play.start');
 						app.finish.reset();
 						app.finish.events.show();
-						$.post(app.params.ajaxBase + 'video/play')
+						$.ajax({
+							method:		'POST',
+							url:		app.params.ajaxBase + 'video/play',
+							timeout:	app.utils.getTimeoutSeconds(),
+						})
 							.done(function(data, textStatus, jqXHR){
 								console.log('data',			data);
 								if(app.utils.isValidJqXHR(jqXHR))
@@ -459,7 +476,11 @@ jQuery(function($){
 					stop:	function(){
 						console.log('finish.events.play.stop');
 						app.finish.events.show();
-						$.post(app.params.ajaxBase + 'video/stop')
+						$.ajax({
+							method:		'POST',
+							url:		app.params.ajaxBase + 'video/stop',
+							timeout:	app.utils.getTimeoutSeconds(),
+						})
 							.done(function(data, textStatus, jqXHR){
 								console.log('data',			data);
 								if(app.utils.isValidJqXHR(jqXHR))
@@ -487,7 +508,11 @@ jQuery(function($){
 				},
 				delete:	function(){
 					console.log('finish.events.delete');
-					$.post(app.params.ajaxBase + 'video/delete')
+					$.ajax({
+						method:		'POST',
+						url:		app.params.ajaxBase + 'video/delete',
+						timeout:	app.utils.getTimeoutSeconds(),
+					})
 						.done(function(data, textStatus, jqXHR){
 							console.log('data',			data);
 							if(app.utils.isValidJqXHR(jqXHR))
@@ -570,6 +595,9 @@ jQuery(function($){
 			}
 		},
 		utils:	{
+			getTimeoutSeconds:	function(){
+				return app.params.timeoutMins * 60 * 1000;
+			},
 			isValidJqXHR:	function(jqXHR){
 				console.log('utils.isValidJqXHR', jqXHR);
 				return (
@@ -604,6 +632,7 @@ jQuery(function($){
 				count:		null,
 				start:		function(duration, callback){
 					console.log('app.utils.timerCountdown.start', duration);
+					app.utils.timerCountdown.reset();
 					app.utils.timerCountdown.callback	= callback;
 					app.utils.timerCountdown.count		= duration;
 					app.utils.timerCountdown.counter	= setInterval(
@@ -638,6 +667,7 @@ jQuery(function($){
 				countMax:	10,
 				start:		function(callback){
 					console.log('app.utils.timer.start');
+					app.utils.timer.reset();
 					app.utils.timer.callback	= callback;
 					app.utils.timer.counter		= setInterval(
 						app.utils.timer.update,

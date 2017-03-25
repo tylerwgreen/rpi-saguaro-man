@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "#bash - Dusty loops play start"
-#FILE=/media/pi/TYLERTHUMB/dusty-loops.mp4
-FILE=/home/pi/saguaro-man/assets/video/recordings/converted/20170322-192812-consent.h264
+FILE=/media/pi/TYLERTHUMB/dusty-loops.mp4
+#FILE=/home/pi/saguaro-man/assets/video/recordings/converted/20170322-192812-consent.h264
 #DISPLAY: 5 = HDMI, 4 = LCD
 DISPLAY=5
 #DISPLAY=4

@@ -16,6 +16,8 @@ FILE=$FILE_DIR/recording.h264
 DURATION=7000
 #DURATION=1000
 FRAMERATE=130
+#SATURATION=-100
+SATURATION=100
 echo "#bash - Recording to $FILE"
-raspivid --width $RECORDING_WIDTH --height $RECORDING_HEIGHT --bitrate $BITRATE --penc --preview $PREVIEW --saturation -100 --exposure auto --metering matrix --timeout $DURATION --framerate $FRAMERATE --output $FILE
+raspivid --width $RECORDING_WIDTH --height $RECORDING_HEIGHT --bitrate $BITRATE --penc --preview $PREVIEW --saturation $SATURATION --exposure auto --metering matrix --timeout $DURATION --framerate $FRAMERATE --output $FILE
 echo "#bash - Camera record end"

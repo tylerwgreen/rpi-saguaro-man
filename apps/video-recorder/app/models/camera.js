@@ -4,28 +4,6 @@ var Camera		= {
 	params:	{
 		binDir:		'/home/pi/saguaro-man/apps/video-recorder/bin/',
 	},
-	quit:		function(params){
-		console.log('Camera.quit');
-		child = execFile(
-			Camera.params.binDir + 'camera-quit',
-			[],
-			function(error, stdout, stderr){
-				if(error){
-					console.log('Camera.quit.error.error');
-					console.log(error);
-					console.log('Camera.quit.error.stdout');
-					console.log(stdout);
-					if(typeof params.errorCB !== 'undefined')
-						params.errorCB(error);
-				}else{
-					console.log('Camera.quit.success.stdout');
-					console.log(stdout);
-					if(typeof params.successCB !== 'undefined')
-						params.successCB();
-				}
-			}
-		);
-	},
 	preview:	function(params){
 		console.log('Camera.preview');
 		child		= execFile(
@@ -33,10 +11,10 @@ var Camera		= {
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.log('Camera.preview.error.error');
-					console.log(error);
-					console.log('Camera.preview.error.stdout');
-					console.log(stdout);
+					// console.log('Camera.preview.error.error');
+					// console.log(error);
+					console.log('Camera.preview.error.stderr');
+					console.log(stderr);
 					params.errorCB(error);
 				}else{
 					console.log('Camera.preview.success.stdout');
@@ -53,10 +31,10 @@ var Camera		= {
 			[],
 			function(error, stdout, stderr){
 				if(error){
-					console.log('Camera.record.error.error');
-					console.log(error);
-					console.log('Camera.record.error.stdout');
-					console.log(stdout);
+					// console.log('Camera.record.error.error');
+					// console.log(error);
+					console.log('Camera.record.error.stderr');
+					console.log(stderr);
 					params.errorCB(error);
 				}else{
 					console.log('Camera.record.success.stdout');

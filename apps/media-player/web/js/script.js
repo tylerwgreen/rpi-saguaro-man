@@ -21,20 +21,22 @@ jQuery(function($){
 			app.selection.events.btnToggle(app.selection.ui.selectionBtnExpressions);
 			app.apps.expressions.init();
 		},
-		quit:	function(params){
+		quit:	function(){
 			console.log('app.quit');
 			app.apps.quit.set();
 			// stop server processes
-			$.post(app.params.ajaxBase + 'quit')
+			$.ajax({
+				method:		'POST',
+				url:		app.params.ajaxBase + 'quit',
+				timeout:	app.utils.getTimeoutSeconds(),
+			})
 				.done(function(data, textStatus, jqXHR){
-					console.log('app.data',	data);
-					if(app.utils.isValidJqXHR(jqXHR))
-						params.successCB(data);
-					else
-						params.errorCB(data);
+					console.log('data',	data);
+					if(!app.utils.isValidJqXHR(jqXHR))
+						console.error('Invalid jqXHR');
 				})
 				.fail(function(jqXHR, textStatus, errorThrown){
-					params.errorCB(app.utils.getJqXHRError(jqXHR));
+					console.error(app.utils.getJqXHRError(jqXHR));
 				});
 		},
 		selection:	{
@@ -202,7 +204,11 @@ jQuery(function($){
 					)
 						return;
 					app.apps.current.set(app.apps.expressions.name);
-					$.post(app.params.ajaxBase + 'apps/expressions/play')
+					$.ajax({
+						method:		'POST',
+						url:		app.params.ajaxBase + 'apps/expressions/play',
+						timeout:	app.utils.getTimeoutSeconds(),
+					})
 						.done(function(data, textStatus, jqXHR){
 							console.log('app.data',	data);
 							if(app.utils.isValidJqXHR(jqXHR)){
@@ -227,7 +233,11 @@ jQuery(function($){
 					)
 						return;
 					app.apps.current.set(app.apps.puppetPeople.name);
-					$.post(app.params.ajaxBase + 'apps/puppet-people/play')
+					$.ajax({
+						method:		'POST',
+						url:		app.params.ajaxBase + 'apps/puppet-people/play',
+						timeout:	app.utils.getTimeoutSeconds(),
+					})
 						.done(function(data, textStatus, jqXHR){
 							console.log('app.data',	data);
 							if(app.utils.isValidJqXHR(jqXHR)){
@@ -252,7 +262,11 @@ jQuery(function($){
 					)
 						return;
 					app.apps.current.set(app.apps.dustyLoops.name);
-					$.post(app.params.ajaxBase + 'apps/dusty-loops/play')
+					$.ajax({
+						method:		'POST',
+						url:		app.params.ajaxBase + 'apps/dusty-loops/play',
+						timeout:	app.utils.getTimeoutSeconds(),
+					})
 						.done(function(data, textStatus, jqXHR){
 							console.log('app.data',	data);
 							if(app.utils.isValidJqXHR(jqXHR)){
@@ -326,6 +340,9 @@ jQuery(function($){
 			}
 		},
 		utils:	{
+			getTimeoutSeconds:	function(){
+				return app.params.timeoutMins * 60 * 1000;
+			},
 			isValidJqXHR:	function(jqXHR){
 				console.log('app.utils.isValidJqXHR', jqXHR);
 				return (

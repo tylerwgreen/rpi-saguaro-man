@@ -7,6 +7,8 @@ var fs		= require('fs');
 var morgan	= require('morgan');
 var path	= require('path');
 var rfs		= require('rotating-file-stream');
+var timeout	= require('connect-timeout');
+var timeoutMins	= 10;
 var paths	= {
 	app:	'/app/',
 	models:	'/app/models/',
@@ -14,8 +16,8 @@ var paths	= {
 	logs:	'/logs/',
 	web:	'/web/',
 };
-// var styling	= false;
-var styling	= true;
+var styling	= false;
+// var styling	= true;
 
 /**
  * Global app functions and params (not framework related)
@@ -79,6 +81,7 @@ var recordParams	= {
 var Camera			= require(path.join(__dirname, paths.models, 'camera'));
 var VideoConverter	= require(path.join(__dirname, paths.models, 'videoConverter'));
 var VideoPlayer		= require(path.join(__dirname, paths.models, 'videoPlayer'));
+var Quitter			= require(path.join(__dirname, paths.models, 'quitter'));
 
 // app settings
 /**
@@ -122,6 +125,17 @@ var accessLogStream = rfs(logger.stream.file, logger.stream.config)
 logger.options.stream = accessLogStream;
 // setup the logger
 app.use(morgan(logger.format, logger.options))
+// timeout
+app.use(timeout(getTimeoutSeconds()));
+// !!! must be last middleware !!!
+app.use(haltOnTimedout);
+function haltOnTimedout(req, res, next){
+	if(!req.timedout)
+		next();
+}
+function getTimeoutSeconds(){
+	return timeoutMins * 60 * 1000;
+}
 
 /**
  * Routes
@@ -132,14 +146,14 @@ app.get('/', function(req, res, next){
 	res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 });
 app.post('/camera/preview/:consent', function(req, res, next){
-	console.log('camera/preview');
+	console.log('/camera/preview');
 	console.log(req.params);
 	if(typeof req.params.consent === 'undefined')
 		throw new Error('Missing required param: consent');
 	recordParams.setConsent(req.params.consent);
 	if(styling){
 		setTimeout(function(){
-			console.log('camera/preview - success');
+			console.log('/camera/preview - success');
 			res.json({
 				data:	{
 					success:	true,
@@ -149,7 +163,7 @@ app.post('/camera/preview/:consent', function(req, res, next){
 	}else{
 		Camera.preview({
 			errorCB:	function(error){
-				console.log('camera/preview - errorCB');
+				console.log('/camera/preview - errorCB');
 				console.log(error);
 				throw new Error('Preview failed');
 				res.status(500).json({
@@ -157,7 +171,7 @@ app.post('/camera/preview/:consent', function(req, res, next){
 				});
 			},
 			successCB:	function(){
-				console.log('camera/preview - successCB');
+				console.log('/camera/preview - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -168,11 +182,11 @@ app.post('/camera/preview/:consent', function(req, res, next){
 	}
 });
 app.post('/camera/record', function(req, res, next){
-	console.log('camera/record');
+	console.log('/camera/record');
 	console.log(req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('camera/preview - success');
+			console.log('/camera/preview - success');
 			res.json({
 				data:	{
 					success:	true,
@@ -182,14 +196,14 @@ app.post('/camera/record', function(req, res, next){
 	}else{
 		Camera.record({
 			errorCB:	function(error){
-				console.log('camera/record - errorCB');
+				console.log('/camera/record - errorCB');
 				console.log(error);
 				res.status(500).json({
 					errors: ['Record failed'],
 				});
 			},
 			successCB:	function(fileName){
-				console.log('camera/record - successCB');
+				console.log('/camera/record - successCB');
 				console.log(fileName);
 				res.json({
 					data:	{
@@ -201,11 +215,11 @@ app.post('/camera/record', function(req, res, next){
 	}
 });
 app.post('/video/convert', function(req, res, next){
-	console.log('video/convert');
+	console.log('/video/convert');
 	console.log(req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('camera/preview - success');
+			console.log('/camera/preview - success');
 			res.json({
 				data:	{
 					success:	true,
@@ -216,14 +230,14 @@ app.post('/video/convert', function(req, res, next){
 		VideoConverter.convert({
 			fileName:	recordParams.getVideo(),
 			errorCB:	function(error){
-				console.log('video/convert - errorCB');
+				console.log('/video/convert - errorCB');
 				console.log(error);
 				res.status(500).json({
 					errors: ['convert failed'],
 				});
 			},
 			successCB:	function(fileName){
-				console.log('video/convert - successCB');
+				console.log('/video/convert - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -234,11 +248,11 @@ app.post('/video/convert', function(req, res, next){
 	}
 });
 app.post('/video/play', function(req, res, next){
-	console.log('video/play');
+	console.log('/video/play');
 	console.log(req.params);
 	if(styling){
 		setTimeout(function(){
-			console.log('camera/preview - success');
+			console.log('/camera/preview - success');
 			res.json({
 				data:	{
 					success:	true,
@@ -249,14 +263,14 @@ app.post('/video/play', function(req, res, next){
 		VideoPlayer.play({
 			fileName:	recordParams.getVideo(),
 			errorCB:	function(error){
-				console.log('video/play - errorCB');
+				console.log('/video/play - errorCB');
 				console.log(error);
 				res.status(500).json({
 					errors: ['Play failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('video/play - successCB');
+				console.log('/video/play - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -267,7 +281,7 @@ app.post('/video/play', function(req, res, next){
 	}
 });
 app.post('/video/stop', function(req, res, next){
-	console.log('video/stop');
+	console.log('/video/stop');
 	console.log(req.params);
 	if(styling){
 		res.json({
@@ -279,14 +293,14 @@ app.post('/video/stop', function(req, res, next){
 		VideoPlayer.stop({
 			fileName:	recordParams.getVideo(),
 			errorCB:	function(error){
-				console.log('video/stop - errorCB');
+				console.log('/video/stop - errorCB');
 				console.log(error);
 				res.status(500).json({
 					errors: ['Stop failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('video/stop - successCB');
+				console.log('/video/stop - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -297,7 +311,7 @@ app.post('/video/stop', function(req, res, next){
 	}
 });
 app.post('/video/delete', function(req, res, next){
-	console.log('video/delete');
+	console.log('/video/delete');
 	console.log(req.params);
 	if(styling){
 		res.json({
@@ -309,14 +323,14 @@ app.post('/video/delete', function(req, res, next){
 		VideoConverter.delete({
 			fileName:	recordParams.getVideo(),
 			errorCB:	function(error){
-				console.log('video/delete - errorCB');
+				console.log('/video/delete - errorCB');
 				console.log(error);
 				res.status(500).json({
 					errors: ['Delete failed'],
 				});
 			},
 			successCB:	function(){
-				console.log('video/delete - successCB');
+				console.log('/video/delete - successCB');
 				res.json({
 					data:	{
 						success:	true,
@@ -327,8 +341,8 @@ app.post('/video/delete', function(req, res, next){
 	}
 });
 app.post('/quit', function(req, res, next){
-	console.log('quit');
-	console.log(req.params);
+	console.log('/quit');
+	// console.log(req.params);
 	if(styling){
 		res.json({
 			data:	{
@@ -336,93 +350,23 @@ app.post('/quit', function(req, res, next){
 			}
 		});
 	}else{
-		var status	= {
-			camera:	{
-				finished:	null,
-				error:		null,
-			},
-			converter:	{
-				finished:	null,
-				error:		null,
-			},
-			player:		{
-				finished:	null,
-				error:		null,
-			},
-		};
-		console.log('status');
-		console.log(status);
-		Camera.quit({
+		Quitter.quit({
 			errorCB:	function(error){
-				console.log('quit - Camera.quit - errorCB');
+				console.log('/quit - errorCB');
 				console.log(error);
-				status.camera.finished		= true;
-				status.camera.error			= true;
-				quitFinished();
+				res.status(500).json({
+					errors: ['Quit failed'],
+				});
 			},
 			successCB:	function(){
-				console.log('quit - Camera.quit - successCB');
-				status.camera.finished		= true;
-				status.camera.error			= false;
-				quitFinished();
+				console.log('/quit - successCB');
+				res.json({
+					data:	{
+						success:	true,
+					}
+				});
 			}
 		});
-		VideoConverter.quit({
-			errorCB:	function(error){
-				console.log('quit - VideoConverter.quit - errorCB');
-				console.log(error);
-				status.converter.finished	= true;
-				status.converter.error		= true; 
-				quitFinished();
-			},
-			successCB:	function(){
-				console.log('quit - VideoConverter.quit - successCB');
-				status.converter.finished	= true;
-				status.converter.error		= false; 
-				quitFinished();
-			}
-		});
-		VideoPlayer.quit({
-			errorCB:	function(error){
-				console.log('quit - VideoPlayer.quit - errorCB');
-				console.log(error);
-				status.player.finished		= true;
-				status.player.error			= true;
-				quitFinished();
-			},
-			successCB:	function(){
-				console.log('quit - VideoPlayer.quit - successCB');
-				status.player.finished		= true;
-				status.player.error			= false;
-				quitFinished();
-			}
-		});
-		function quitFinished(){
-			console.log('quit - quitFinished');
-			if(
-					status.camera.finished		=== true
-				&&	status.converter.finished	=== true
-				&&	status.player.finished		=== true
-			){
-				if(
-						status.camera.error		=== false
-					&&	status.converter.error	=== false
-					&&	status.player.error		=== false
-				){
-					console.log('quit - success');
-					res.json({
-						data:	{
-							success:	true,
-						}
-					});
-				}else{
-					console.log('quit - error');
-					res.status(500).json({
-						errors: ['Quit failed'],
-					});
-				}
-			}
-		}
 	}
 });
 
@@ -461,4 +405,5 @@ var server = app.listen(port, function(){
 	var port = server.address().port
 	debug('Example app listening at http://%s:%s', host, port);
 });
+server.setTimeout(getTimeoutSeconds());
 module.exports = app, debug;

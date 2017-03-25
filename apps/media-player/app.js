@@ -7,6 +7,8 @@ var fs		= require('fs');
 var morgan	= require('morgan');
 var path	= require('path');
 var rfs		= require('rotating-file-stream');
+var timeout	= require('connect-timeout');
+var timeoutMins	= 10;
 var paths	= {
 	app:	'/app/',
 	models:	'/app/models/',
@@ -27,6 +29,7 @@ MediaPlayer.init();
 /**
  * App Settings
  */
+// socket.setTimeout(0);
 var port		= 5000
 var logger		= {
 	// debug:		true,
@@ -65,6 +68,17 @@ var accessLogStream = rfs(logger.stream.file, logger.stream.config)
 logger.options.stream = accessLogStream;
 // setup the logger
 app.use(morgan(logger.format, logger.options))
+// timeout
+app.use(timeout(getTimeoutSeconds()));
+// !!! must be last middleware !!!
+app.use(haltOnTimedout);
+function haltOnTimedout(req, res, next){
+	if(!req.timedout)
+		next();
+}
+function getTimeoutSeconds(){
+	return timeoutMins * 60 * 1000;
+}
 
 /**
  * Routes
@@ -238,4 +252,5 @@ var server = app.listen(port, function(){
 	var port = server.address().port
 	debug('Example app listening at http://%s:%s', host, port);
 });
+server.setTimeout(getTimeoutSeconds());
 module.exports = app, debug;

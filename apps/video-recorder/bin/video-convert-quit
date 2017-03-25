@@ -1,4 +1,0 @@
-#!/bin/bash
-echo "#bash - Video convert quit start"
-killall MP4Box
-echo "#bash - Video convert quit end"
