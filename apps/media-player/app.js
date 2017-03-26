@@ -86,6 +86,9 @@ function getTimeoutSeconds(){
 // static files
 app.use(express.static(path.join(__dirname, paths.web)));
 app.get('/', function(req, res, next){
+	// MediaPlayer.expressions.files.video.random();
+	// MediaPlayer.expressions.files.audio.random();
+	// res.send('foo');
 	res.sendFile(path.join(__dirname, paths.views, 'index.html'));
 });
 /** Expressions */

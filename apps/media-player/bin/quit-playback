@@ -1,5 +1,6 @@
 #!/bin/bash
 echo "#bash - Quit playback start"
+killall mpg123
 killall omxplayer
 killall omxplayer.bin
 echo "#bash - Quit playback end"

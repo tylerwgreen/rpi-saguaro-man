@@ -8,6 +8,7 @@ DISPLAY=5
 AUDIO_OUTPUT=local
 #AUDIO_OUTPUT=hdmi
 echo "#bash - killing playback"
+killall mpg123
 killall omxplayer
 killall omxplayer.bin
 echo "#bash - Playing $FILE"

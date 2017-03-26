@@ -57,6 +57,14 @@ var MediaPlayer		= {
 		callbacks:	{
 			error:		null,
 			success:	null,
+			callSuccess:	function(){
+				console.log('MediaPlayer.expressions.callbacks.callSuccess');
+				if(this.success != null){
+					this.success();
+					this.error		= null;
+					this.success	= null;
+				}
+			}
 		},
 		init:	function(){
 			console.log('MediaPlayer.expressions.init');
@@ -64,10 +72,7 @@ var MediaPlayer		= {
 		},
 		play:	function(params){
 			console.log('MediaPlayer.expressions.play');
-			if(
-					MediaPlayer.current.isCurrent(MediaPlayer.expressions.name)
-				// ||	MediaPlayer.quit.hasQuit()
-			)
+			if(MediaPlayer.current.isCurrent(MediaPlayer.expressions.name))
 				return;
 			MediaPlayer.current.set(MediaPlayer.expressions.name);
 			this.callbacks.error	= params.errorCB;
@@ -78,7 +83,6 @@ var MediaPlayer		= {
 		videoPlayer:	{
 			start:	function(){
 				console.log('MediaPlayer.expressions.videoPlayer.start');
-// return;
 				child	= execFile(
 					MediaPlayer.params.binDir + 'expressions-play-video',
 					[MediaPlayer.expressions.files.video.random()],
@@ -93,7 +97,7 @@ var MediaPlayer		= {
 							console.log('MediaPlayer.expressions.play.success.stdout');
 							console.log(stdout);
 							if(MediaPlayer.current.isPrevious(MediaPlayer.expressions.name))
-								MediaPlayer.expressions.callbacks.success();
+								MediaPlayer.expressions.callbacks.callSuccess();
 							else
 								MediaPlayer.expressions.videoPlayer.start();
 						}
@@ -104,7 +108,6 @@ var MediaPlayer		= {
 		audioPlayer:	{
 			start:	function(){
 				console.log('MediaPlayer.expressions.audioPlayer.start');
-// return;
 				child	= execFile(
 					MediaPlayer.params.binDir + 'expressions-play-audio',
 					[MediaPlayer.expressions.files.audio.random()],
@@ -119,7 +122,7 @@ var MediaPlayer		= {
 							console.log('MediaPlayer.expressions.play.success.stdout');
 							console.log(stdout);
 							if(MediaPlayer.current.isPrevious(MediaPlayer.expressions.name))
-								MediaPlayer.expressions.callbacks.success();
+								MediaPlayer.expressions.callbacks.callSuccess();
 							else
 								MediaPlayer.expressions.audioPlayer.start();
 						}
@@ -135,6 +138,7 @@ var MediaPlayer		= {
 			},
 			video: {
 				files:	[],
+				file:	null,
 				init:	function(){
 					console.log('MediaPlayer.expressions.files.video.init');
 					fs.readdir(MediaPlayer.params.videoDir, (err, files) => {
@@ -145,11 +149,16 @@ var MediaPlayer		= {
 				},
 				random:	function(){
 					console.log('MediaPlayer.expressions.files.video.random');
-					return this.files[Math.floor(Math.random() * this.files.length)];
+					var file	= this.files[Math.floor(Math.random() * this.files.length)];
+					if(file == this.file)
+						return MediaPlayer.expressions.files.audio.random();
+					this.file = file;
+					return file;
 				}
 			},
 			audio: {
 				files:	[],
+				file:	null,
 				init:	function(){
 					console.log('MediaPlayer.expressions.files.audio.init');
 					fs.readdir(MediaPlayer.params.audioDir, (err, files) => {
@@ -160,7 +169,11 @@ var MediaPlayer		= {
 				},
 				random:	function(){
 					console.log('MediaPlayer.expressions.files.audio.random');
-					return this.files[Math.floor(Math.random() * this.files.length)];
+					var file	= this.files[Math.floor(Math.random() * this.files.length)];
+					if(file == this.file)
+						return MediaPlayer.expressions.files.audio.random();
+					this.file = file;
+					return file;
 				}
 			},
 		}
