@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "Disk space available: "
+df -h /
+echo "Recordings space used: "
+du -h /home/pi/saguaro-man/assets/video/recordings/converted
+echo "Total recordings: "
+ls /home/pi/saguaro-man/assets/video/recordings/converted | wc -l
+$SHELL

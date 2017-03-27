@@ -7,10 +7,10 @@ DISPLAY=5
 #DISPLAY=4
 AUDIO_OUTPUT=local
 #AUDIO_OUTPUT=hdmi
-echo "#bash - killing playback"
+echo "#bash - Dusty loops killing playback"
 killall mpg123
 killall omxplayer
 killall omxplayer.bin
-echo "#bash - Playing $FILE"
+echo "#bash - Dusty loops playing $FILE"
 omxplayer -o $AUDIO_OUTPUT --display=$DISPLAY $FILE
 echo "#bash - Dusty loops end"

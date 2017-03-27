@@ -1,14 +1,13 @@
 /**
  * Include dependencies
  */
-var debug	= require('debug')('video_recorder');
 var express	= require('express');
 var fs		= require('fs');
 var morgan	= require('morgan');
 var path	= require('path');
 var rfs		= require('rotating-file-stream');
 var timeout	= require('connect-timeout');
-var timeoutMins	= 10;
+var timeoutMins	= 60;
 var paths	= {
 	app:	'/app/',
 	models:	'/app/models/',
@@ -91,8 +90,8 @@ var port		= 5000
 var logger		= {
 	// debug:		true,
 	debug:		false,
-	format:		'combined',	// DEFAULT - Standard Apache combined log output.
-	// format:		'tiny',		// The minimal output.
+	// format:		'combined',	// DEFAULT - Standard Apache combined log output.
+	format:		'tiny',		// The minimal output.
 	// format:		'dev',		// Concise output colored by response status for development use.
 	options:	{
 		skip: function(req, res){
@@ -130,10 +129,12 @@ app.use(timeout(getTimeoutSeconds()));
 // !!! must be last middleware !!!
 app.use(haltOnTimedout);
 function haltOnTimedout(req, res, next){
+	// console.log('haltOnTimedout', req.timedout);
 	if(!req.timedout)
 		next();
 }
 function getTimeoutSeconds(){
+	// console.log('getTimeoutSeconds');
 	return timeoutMins * 60 * 1000;
 }
 
@@ -154,29 +155,40 @@ app.post('/camera/preview/:consent', function(req, res, next){
 	if(styling){
 		setTimeout(function(){
 			console.log('/camera/preview - success');
-			res.json({
-				data:	{
-					success:	true,
-				}
-			});
+			if(res.headersSent){
+				res.end('{errors:"error"}');
+			}else{
+				res.json({
+					data:	{
+						success:	true,
+					}
+				});
+			}
 		}, 5000);
 	}else{
 		Camera.preview({
 			errorCB:	function(error){
 				console.log('/camera/preview - errorCB');
 				console.log(error);
-				throw new Error('Preview failed');
-				res.status(500).json({
-					errors: ['Preview failed']
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.status(500).json({
+						errors: ['Preview failed']
+					});
+				}
 			},
 			successCB:	function(){
 				console.log('/camera/preview - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}
 			}
 		});
 	}
@@ -187,29 +199,40 @@ app.post('/camera/record', function(req, res, next){
 	if(styling){
 		setTimeout(function(){
 			console.log('/camera/preview - success');
-			res.json({
-				data:	{
-					success:	true,
-				}
-			});
+			if(res.headersSent){
+					res.end('{errors:"error"}');
+			}else{
+				res.json({
+					data:	{
+						success:	true,
+					}
+				});
+			}
 		}, 7000);
 	}else{
 		Camera.record({
 			errorCB:	function(error){
 				console.log('/camera/record - errorCB');
 				console.log(error);
-				res.status(500).json({
-					errors: ['Record failed'],
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.status(500).json({
+						errors: ['Record failed'],
+					});
+				}
 			},
-			successCB:	function(fileName){
+			successCB:	function(){
 				console.log('/camera/record - successCB');
-				console.log(fileName);
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}
 			}
 		});
 	}
@@ -220,11 +243,15 @@ app.post('/video/convert', function(req, res, next){
 	if(styling){
 		setTimeout(function(){
 			console.log('/camera/preview - success');
-			res.json({
-				data:	{
-					success:	true,
+			if(res.headersSent){
+				res.end('{errors:"error"}');
+			}else{
+				res.json({
+					data:	{
+						success:	true,
+					}
+				});
 				}
-			});
 		}, 1000);
 	}else{
 		VideoConverter.convert({
@@ -232,17 +259,25 @@ app.post('/video/convert', function(req, res, next){
 			errorCB:	function(error){
 				console.log('/video/convert - errorCB');
 				console.log(error);
-				res.status(500).json({
-					errors: ['convert failed'],
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.status(500).json({
+						errors: ['convert failed'],
+					});
+				}
 			},
-			successCB:	function(fileName){
+			successCB:	function(){
 				console.log('/video/convert - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}
 			}
 		});
 	}
@@ -253,11 +288,15 @@ app.post('/video/play', function(req, res, next){
 	if(styling){
 		setTimeout(function(){
 			console.log('/camera/preview - success');
-			res.json({
-				data:	{
-					success:	true,
-				}
-			});
+			if(res.headersSent){
+				res.end('{errors:"error"}');
+			}else{
+				res.json({
+					data:	{
+						success:	true,
+					}
+				});
+			}
 		}, 5000);
 	}else{
 		VideoPlayer.play({
@@ -265,17 +304,25 @@ app.post('/video/play', function(req, res, next){
 			errorCB:	function(error){
 				console.log('/video/play - errorCB');
 				console.log(error);
-				res.status(500).json({
-					errors: ['Play failed'],
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.status(500).json({
+						errors: ['Play failed'],
+					});
+				}
 			},
 			successCB:	function(){
 				console.log('/video/play - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}
 			}
 		});
 	}
@@ -284,28 +331,40 @@ app.post('/video/stop', function(req, res, next){
 	console.log('/video/stop');
 	console.log(req.params);
 	if(styling){
-		res.json({
-			data:	{
-				success:	true,
-			}
-		});
+		if(res.headersSent){
+			res.end('{errors:"error"}');
+		}else{
+			res.json({
+				data:	{
+					success:	true,
+				}
+			});
+		}
 	}else{
 		VideoPlayer.stop({
 			fileName:	recordParams.getVideo(),
 			errorCB:	function(error){
 				console.log('/video/stop - errorCB');
 				console.log(error);
-				res.status(500).json({
-					errors: ['Stop failed'],
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.status(500).json({
+						errors: ['Stop failed'],
+					});
+				}
 			},
 			successCB:	function(){
 				console.log('/video/stop - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}
 			}
 		});
 	}
@@ -314,28 +373,40 @@ app.post('/video/delete', function(req, res, next){
 	console.log('/video/delete');
 	console.log(req.params);
 	if(styling){
-		res.json({
-			data:	{
-				success:	true,
-			}
-		});
+		if(res.headersSent){
+			res.end('{errors:"error"}');
+		}else{
+			res.json({
+				data:	{
+					success:	true,
+				}
+			});
+		}
 	}else{
 		VideoConverter.delete({
 			fileName:	recordParams.getVideo(),
 			errorCB:	function(error){
 				console.log('/video/delete - errorCB');
 				console.log(error);
-				res.status(500).json({
-					errors: ['Delete failed'],
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.status(500).json({
+						errors: ['Delete failed'],
+					});
+				}
 			},
 			successCB:	function(){
 				console.log('/video/delete - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}
 			}
 		});
 	}
@@ -344,27 +415,39 @@ app.post('/quit', function(req, res, next){
 	console.log('/quit');
 	// console.log(req.params);
 	if(styling){
-		res.json({
-			data:	{
-				success:	true,
-			}
-		});
+		if(res.headersSent){
+			res.end('{errors:"error"}');
+		}else{
+			res.json({
+				data:	{
+					success:	true,
+				}
+			});
+		}
 	}else{
 		Quitter.quit({
 			errorCB:	function(error){
 				console.log('/quit - errorCB');
 				console.log(error);
-				res.status(500).json({
-					errors: ['Quit failed'],
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.status(500).json({
+						errors: ['Quit failed'],
+					});
+				}
 			},
 			successCB:	function(){
 				console.log('/quit - successCB');
-				res.json({
-					data:	{
-						success:	true,
-					}
-				});
+				if(res.headersSent){
+					res.end('{errors:"error"}');
+				}else{
+					res.json({
+						data:	{
+							success:	true,
+						}
+					});
+				}
 			}
 		});
 	}
@@ -374,7 +457,7 @@ app.post('/quit', function(req, res, next){
  * 404's - forward to error handler
  */
 app.use(function(req, res, next){
-	// console.log(req.url);
+	console.log('404', req.url);
 	var err = new Error('Not Found:' + req.url);
 	err.status = 404;
 	next(err);
@@ -387,13 +470,21 @@ app.use(function(err, req, res, next){
 	console.log('Error: ' + err.message);
 	res.status(err.status || 500);
 	var msg = err.message || 'Unknown error';
-	// for json errors
-	if(req.xhr) {
-		res.json({
-			errors: [msg]
-		})
+	if(res.headersSent){
+		console.log('headersSent');
+		res.end('{errors:"' + err.message + '"}');
 	}else{
-		res.send('Error: ' + msg);
+		console.log('headersNotSent');
+		// for json errors
+		if(req.xhr) {
+			console.log('sendJSON');
+			res.json({
+				errors: [msg]
+			})
+		}else{
+			console.log('sendTEXT');
+			res.send('Error: ' + msg);
+		}
 	}
 });
 
@@ -401,9 +492,9 @@ app.use(function(err, req, res, next){
  * Server
  */
 var server = app.listen(port, function(){
+	console.log('Start server');
 	var host = server.address().address || 'localhost'
 	var port = server.address().port
-	debug('Example app listening at http://%s:%s', host, port);
 });
 server.setTimeout(getTimeoutSeconds());
-module.exports = app, debug;
+module.exports = app;

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Move Converted Videos
+Comment=Move Converted Videos
+Icon=/home/pi/saguaro-man/assets/icon/move-converted-videos-icon.png
+Exec=/home/pi/saguaro-man/bin/move-converted-videos
+Type=Application
+Encoding=UTF-8
+Terminal=true
+Categories=None;

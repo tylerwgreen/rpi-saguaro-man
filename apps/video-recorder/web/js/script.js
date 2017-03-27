@@ -3,16 +3,16 @@ jQuery(function($){
 		debug:	true,
 		params:	{
 			ajaxBase:	'http://127.0.0.1:5000/',
-			timeoutMins:	11, // +1 from server timeout
+			timeoutMins:	61, // +1 from server timeout
 			preview:	{
-				duration:	5,	// seconds
+				duration:	10,	// seconds
 			},
 			record:		{
-				duration:	7,	// seconds
+				duration:	9,	// seconds
 			},
 			finish:		{
 				wait:	{
-					duration:	5,	// seconds
+					duration:	10,	// seconds
 				}
 			}
 		},
@@ -26,23 +26,8 @@ jQuery(function($){
 			app.finish.init();
 			app.error.init();
 		},
-		reset:	function(){
-			console.log('reset');
-			app.consent.reset();
-			app.info.reset();
-			app.preview.reset();
-			app.record.reset();
-			app.convert.reset();
-			app.finish.reset();
-			app.error.reset();
-			// reset timers
-			app.utils.timerCountdown.reset();
-			app.utils.timer.reset();
-			// reset default ui
-			app.consent.events.show();
-		},
-		quit:	function(){
-			console.log('quit');
+		quit:	function(reset){
+			console.log('app.quit');
 			// reset timers
 			app.utils.timerCountdown.reset();
 			app.utils.timer.reset();
@@ -53,9 +38,19 @@ jQuery(function($){
 				timeout:	app.utils.getTimeoutSeconds(),
 			})
 				.done(function(data, textStatus, jqXHR){
-					console.log('data',	data);
-					if(!app.utils.isValidJqXHR(jqXHR))
+					console.log('app.data',	data);
+					if(app.utils.isValidJqXHR(jqXHR)){
+						if(
+								typeof reset !== 'undefined'
+							&&	reset === true
+						){
+							console.log('Quitting and resetting');
+							// reset app by refreshing the page
+							location.reload();
+						}
+					}else{
 						console.error('Invalid jqXHR');
+					}
 				})
 				.fail(function(jqXHR, textStatus, errorThrown){
 					console.error(app.utils.getJqXHRError(jqXHR));
@@ -65,10 +60,6 @@ jQuery(function($){
 			init:	function(){
 				console.log('consent.init');
 				this.ui.init();
-			},
-			reset:	function(){
-				console.log('consent.reset');
-				this.events.hide();
 			},
 			ui:	{
 				titleWrap:			null,
@@ -139,10 +130,6 @@ jQuery(function($){
 				console.log('info.init');
 				this.ui.init();
 			},
-			reset:	function(){
-				console.log('info.reset');
-				this.events.hide();
-			},
 			ui:	{
 				infoWrap:	null,
 				backBtn:	null,
@@ -178,7 +165,7 @@ jQuery(function($){
 				back:	function(event){
 					console.log('info.events.back');
 					app.utils.cancelDefaultEvent(event);
-					app.reset();
+					app.info.events.hide();
 				}
 			}
 		},
@@ -186,10 +173,6 @@ jQuery(function($){
 			init:	function(){
 				console.log('preview.init');
 				this.ui.init();
-			},
-			reset:	function(){
-				console.log('preview.reset');
-				this.events.hide();
 			},
 			ui:	{
 				wrap:			null,
@@ -264,10 +247,6 @@ jQuery(function($){
 				console.log('record.init');
 				this.ui.init();
 			},
-			reset:	function(){
-				console.log('record.reset');
-				this.events.hide();
-			},
 			ui:	{
 				wrap:			null,
 				countdownText:	null,
@@ -339,10 +318,6 @@ jQuery(function($){
 			init:	function(){
 				console.log('convert.init');
 				this.ui.init();
-			},
-			reset:	function(){
-				console.log('convert.reset');
-				this.events.hide();
 			},
 			ui:	{
 				wrap:		null,
@@ -416,11 +391,6 @@ jQuery(function($){
 				console.log('finish.init');
 				this.ui.init();
 			},
-			reset:	function(){
-				console.log('finish.reset');
-				this.events.hide();
-				// app.finish.ui.countdownText.text(0);
-			},
 			ui:	{
 				wrap:				null,
 				countdownText:		null,
@@ -434,6 +404,11 @@ jQuery(function($){
 						.on('click', app.finish.events.delete);
 					this.finishDoneBtn		= $('#finish-done-btn')
 						.on('click', app.finish.events.play.stop);
+				},
+				timer:	{
+					update:	function(text){
+						app.finish.ui.countdownText.text(text);
+					}
 				},
 				countdown:	{
 					update:	function(countdown){
@@ -455,8 +430,10 @@ jQuery(function($){
 				play:	{
 					start:	function(){
 						console.log('finish.events.play.start');
-						app.finish.reset();
 						app.finish.events.show();
+						app.utils.timer.start(
+							app.finish.events.updateTimer
+						);
 						$.ajax({
 							method:		'POST',
 							url:		app.params.ajaxBase + 'video/play',
@@ -495,12 +472,12 @@ jQuery(function($){
 					end:	function(){
 						console.log('finish.events.play.end');
 						app.finish.events.hide();
-						app.quit();
-						app.reset();
+						app.quit(true);
 					},
 				},
 				wait:	function(){
 					console.log('finish.events.wait');
+					app.utils.timer.reset();
 					app.utils.timerCountdown.start(
 						app.params.finish.wait.duration,
 						app.finish.events.updateCountdown
@@ -532,20 +509,20 @@ jQuery(function($){
 					console.log('finish.events.hide');
 					app.finish.ui.hide();
 				},
+				updateTimer:	function(text){
+					console.log('finish.events.updateTimer', text);
+					app.finish.ui.timer.update(text);
+				},
 				updateCountdown:	function(text){
 					console.log('finish.events.updateCountdown', text);
 					app.finish.ui.countdown.update(text);
-				}
+				},
 			}
 		},
 		error:		{
 			init:	function(){
 				console.log('error.init');
 				this.ui.init();
-			},
-			reset:	function(){
-				console.log('error.reset');
-				this.events.hide();
 			},
 			ui:	{
 				errorWrap:	null,
@@ -560,6 +537,7 @@ jQuery(function($){
 				},
 				msg:	{
 					update:	function(msg){
+						console.log('error.ui.msg.update', msg);
 						app.error.ui.errorMsg.text(msg);
 					},
 				},
@@ -576,7 +554,7 @@ jQuery(function($){
 				reset:	function(event){
 					console.log('error.events.reset');
 					app.utils.cancelDefaultEvent(event);
-					app.reset();
+					app.quit(true);
 				},
 				show:	function(msg){
 					console.log('error.events.show');
@@ -591,7 +569,15 @@ jQuery(function($){
 			raise:	function(msg){
 				console.error('error.raise', msg);
 				this.events.show(msg);
-				app.quit();
+				// allow app to auto-reset on timeout errors
+				if(
+						msg == 'Response timeout'
+					||	msg == 'timeout'
+				){
+					app.quit(true);
+				}else{
+					app.quit();
+				}
 			}
 		},
 		utils:	{
@@ -613,14 +599,18 @@ jQuery(function($){
 				) ? true : false;
 			},
 			getJqXHRError:	function(jqXHR){
+				console.log('utils.getJqXHRError', jqXHR);
 				if(
 					typeof jqXHR.responseJSON	!== 'undefined'
 					&& typeof jqXHR.responseJSON.errors	!== 'undefined'
 				)
 					return jqXHR.responseJSON.errors[0];
+				else if(typeof jqXHR.statusText	!== 'undefined')
+					return jqXHR.statusText;
 				return 'unknown error';
 			},
 			cancelDefaultEvent:	function(event){
+				console.log('utils.cancelDefaultEvent', event);
 				if(typeof event !== 'undefined'){
 					event.preventDefault();
 					event.stopPropagation();
@@ -664,7 +654,7 @@ jQuery(function($){
 				callback:	null,
 				counter:	null,
 				count:		0,
-				countMax:	10,
+				countMax:	120,
 				start:		function(callback){
 					console.log('app.utils.timer.start');
 					app.utils.timer.reset();

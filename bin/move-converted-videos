@@ -1,0 +1,17 @@
+#!/bin/bash
+CONVERTED_DIR=/home/pi/saguaro-man/assets/video/recordings/converted
+for FILE in $CONVERTED_DIR/*no-consent.h264; do
+	NAME=${FILE##*/}
+	NEW_FILE=/home/pi/saguaro-man/assets/video/recordings/no-consent/$NAME
+	echo "Moving no consent file: $FILE to $NEW_FILE"
+    mv $FILE $NEW_FILE
+done
+for FILE in /home/pi/saguaro-man/assets/video/recordings/converted/*consent.h264; do
+	NAME=${FILE##*/}
+	NEW_FILE=/home/pi/saguaro-man/assets/video/recordings/consent/$NAME
+	echo "Moving consent file: $FILE to $NEW_FILE"
+    mv $FILE $NEW_FILE
+done
+$SHELL
+
+#/home/pi/saguaro-man/assets/video/recordings/no-consent/

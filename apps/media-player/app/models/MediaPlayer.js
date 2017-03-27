@@ -14,6 +14,10 @@ var MediaPlayer		= {
 	current:		{
 		current:	null,
 		previous:	null,
+		reset:	function(){
+			this.previous	= null;
+			this.current	= null;
+		},
 		set:	function(app){
 			console.log('MediaPlayer.current.set', app);
 			this.previous	= this.current;
@@ -34,6 +38,8 @@ var MediaPlayer		= {
 	},
 	quit:		function(params){
 		console.log('MediaPlayer.quit');
+		MediaPlayer.current.reset();
+		MediaPlayer.expressions.quitter.quit();
 		child = execFile(
 			MediaPlayer.params.binDir + 'quit-playback',
 			[],
@@ -57,6 +63,14 @@ var MediaPlayer		= {
 		callbacks:	{
 			error:		null,
 			success:	null,
+			callError:		function(){
+				console.log('MediaPlayer.expressions.callbacks.callError');
+				if(this.error != null){
+					this.error();
+					this.error		= null;
+					this.success	= null;
+				}
+			},
 			callSuccess:	function(){
 				console.log('MediaPlayer.expressions.callbacks.callSuccess');
 				if(this.success != null){
@@ -70,10 +84,26 @@ var MediaPlayer		= {
 			console.log('MediaPlayer.expressions.init');
 			this.files.init();
 		},
+		quitter:	{
+			_quit:		false,
+			quit:		function(){
+				console.log('MediaPlayer.expressions.quitter.quit');
+				this._quit	= true;
+			},
+			reset:		function(){
+				console.log('MediaPlayer.expressions.quitter.reset');
+				this._quit	= false;
+			},
+			hasQuit:	function(){
+				console.log('MediaPlayer.expressions.quitter.hasQuit');
+				return this._quit;
+			}
+		},
 		play:	function(params){
 			console.log('MediaPlayer.expressions.play');
 			if(MediaPlayer.current.isCurrent(MediaPlayer.expressions.name))
 				return;
+			MediaPlayer.expressions.quitter.reset();
 			MediaPlayer.current.set(MediaPlayer.expressions.name);
 			this.callbacks.error	= params.errorCB;
 			this.callbacks.success	= params.successCB;
@@ -92,14 +122,20 @@ var MediaPlayer		= {
 							// console.log(error);
 							console.log('MediaPlayer.expressions.play.error.stderr');
 							console.log(stderr);
-							MediaPlayer.expressions.callbacks.error(error);
+							MediaPlayer.expressions.callbacks.callError(error);
 						}else{
 							console.log('MediaPlayer.expressions.play.success.stdout');
 							console.log(stdout);
-							if(MediaPlayer.current.isPrevious(MediaPlayer.expressions.name))
+							if(
+									MediaPlayer.current.isPrevious(MediaPlayer.expressions.name)
+								||	MediaPlayer.expressions.quitter.hasQuit()
+							){
+								console.log('Calling expressions success');
 								MediaPlayer.expressions.callbacks.callSuccess();
-							else
+							}else{
+								console.log('Playing another expressions video');
 								MediaPlayer.expressions.videoPlayer.start();
+							}
 						}
 					}
 				);
@@ -117,14 +153,20 @@ var MediaPlayer		= {
 							// console.log(error);
 							console.log('MediaPlayer.expressions.play.error.stderr');
 							console.log(stderr);
-							MediaPlayer.expressions.callbacks.error(error);
+							MediaPlayer.expressions.callbacks.callError(error);
 						}else{
 							console.log('MediaPlayer.expressions.play.success.stdout');
 							console.log(stdout);
-							if(MediaPlayer.current.isPrevious(MediaPlayer.expressions.name))
+							if(
+								MediaPlayer.current.isPrevious(MediaPlayer.expressions.name)
+								||	MediaPlayer.expressions.quitter.hasQuit()
+							){
+								console.log('Calling expressions success');
 								MediaPlayer.expressions.callbacks.callSuccess();
-							else
+							}else{
+								console.log('Playing another expressions audio');
 								MediaPlayer.expressions.audioPlayer.start();
+							}
 						}
 					}
 				);
@@ -151,7 +193,7 @@ var MediaPlayer		= {
 					console.log('MediaPlayer.expressions.files.video.random');
 					var file	= this.files[Math.floor(Math.random() * this.files.length)];
 					if(file == this.file)
-						return MediaPlayer.expressions.files.audio.random();
+						return MediaPlayer.expressions.files.video.random();
 					this.file = file;
 					return file;
 				}

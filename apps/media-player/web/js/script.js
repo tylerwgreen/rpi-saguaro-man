@@ -3,27 +3,18 @@ jQuery(function($){
 		debug:	true,
 		params:	{
 			ajaxBase:	'http://127.0.0.1:5000/',
+			timeoutMins:	61, // +1 from server timeout
 		},
 		init:	function(){
 			console.log('app.init');
 			app.selection.init();
 			app.info.init();
 			app.error.init();
-			app.reset();
-		},
-		reset:	function(){
-			console.log('app.reset');
-			app.apps.quit.reset();
-			app.selection.reset();
-			app.info.reset();
-			app.error.reset();
-			// reset default ui
 			app.selection.events.btnToggle(app.selection.ui.selectionBtnExpressions);
 			app.apps.expressions.init();
 		},
-		quit:	function(){
+		quit:	function(reset){
 			console.log('app.quit');
-			app.apps.quit.set();
 			// stop server processes
 			$.ajax({
 				method:		'POST',
@@ -31,9 +22,19 @@ jQuery(function($){
 				timeout:	app.utils.getTimeoutSeconds(),
 			})
 				.done(function(data, textStatus, jqXHR){
-					console.log('data',	data);
-					if(!app.utils.isValidJqXHR(jqXHR))
+					console.log('app.data',	data);
+					if(app.utils.isValidJqXHR(jqXHR)){
+						if(
+								typeof reset !== 'undefined'
+							&&	reset === true
+						){
+							console.log('Quitting and resetting');
+							// reset app by refreshing the page
+							location.reload();
+						}
+					}else{
 						console.error('Invalid jqXHR');
+					}
 				})
 				.fail(function(jqXHR, textStatus, errorThrown){
 					console.error(app.utils.getJqXHRError(jqXHR));
@@ -43,9 +44,6 @@ jQuery(function($){
 			init:	function(){
 				console.log('app.selection.init');
 				app.selection.ui.init();
-			},
-			reset:	function(){
-				console.log('app.selection.reset');
 			},
 			ui:	{
 				selectionBtnExpressions:	null,
@@ -109,10 +107,6 @@ jQuery(function($){
 				console.log('app.info.init');
 				app.info.ui.init();
 			},
-			reset:	function(){
-				console.log('app.info.reset');
-				app.info.events.hide();
-			},
 			ui:	{
 				infoWrap:	null,
 				backBtn:	null,
@@ -175,33 +169,11 @@ jQuery(function($){
 					return app == this.current	? true : false;
 				}
 			},
-			quit:	{
-				_quit:	null,
-				set:	function(){
-					console.log('app.apps.quit.set', this._quit);
-					app.apps.quit._quit = true;
-				},
-				hasQuit:	function(){
-					console.log('app.apps.quit.hasQuit', this._quit);
-					return app.apps.quit.get();
-				},
-				get:	function(){
-					console.log('app.apps.quit.get', this._quit);
-					return app.apps.quit._quit == false ? false : true;
-				},
-				reset:	function(){
-					console.log('app.apps.quit.reset', this._quit);
-					app.apps.quit._quit = false;
-				}
-			},
 			expressions:	{
 				name:	'expressions',
 				init:	function(){
 					console.log('app.apps.expressions.init');
-					if(
-							app.apps.current.isCurrent(app.apps.expressions.name)
-						||	app.apps.quit.hasQuit()
-					)
+					if(app.apps.current.isCurrent(app.apps.expressions.name))
 						return;
 					app.apps.current.set(app.apps.expressions.name);
 					$.ajax({
@@ -213,7 +185,7 @@ jQuery(function($){
 							console.log('app.data',	data);
 							if(app.utils.isValidJqXHR(jqXHR)){
 								if(!app.apps.current.isPrevious(app.apps.expressions.name))
-									app.reset();
+									app.quit(true);
 							}else{
 								app.error.raise('Invalid jqXHR');
 							}
@@ -227,10 +199,7 @@ jQuery(function($){
 				name:	'puppetPeople',
 				init:	function(){
 					console.log('app.apps.puppetPeople.init');
-					if(
-						app.apps.current.isCurrent(app.apps.puppetPeople.name)
-						||	app.apps.quit.hasQuit()
-					)
+					if(app.apps.current.isCurrent(app.apps.puppetPeople.name))
 						return;
 					app.apps.current.set(app.apps.puppetPeople.name);
 					$.ajax({
@@ -242,7 +211,7 @@ jQuery(function($){
 							console.log('app.data',	data);
 							if(app.utils.isValidJqXHR(jqXHR)){
 								if(!app.apps.current.isPrevious(app.apps.puppetPeople.name))
-									app.reset();
+									app.quit(true);
 							}else{
 								app.error.raise('Invalid jqXHR');
 							}
@@ -256,10 +225,7 @@ jQuery(function($){
 				name:	'dustyLoops',
 				init:	function(){
 					console.log('app.apps.dustyLoops.init');
-					if(
-						app.apps.current.isCurrent(app.apps.dustyLoops.name)
-						||	app.apps.quit.hasQuit()
-					)
+					if(app.apps.current.isCurrent(app.apps.dustyLoops.name))
 						return;
 					app.apps.current.set(app.apps.dustyLoops.name);
 					$.ajax({
@@ -271,7 +237,7 @@ jQuery(function($){
 							console.log('app.data',	data);
 							if(app.utils.isValidJqXHR(jqXHR)){
 								if(!app.apps.current.isPrevious(app.apps.dustyLoops.name))
-									app.reset();
+									app.quit(true);
 							}else{
 								app.error.raise('Invalid jqXHR');
 							}
@@ -286,10 +252,6 @@ jQuery(function($){
 			init:	function(){
 				console.log('app.error.init');
 				this.ui.init();
-			},
-			reset:	function(){
-				console.log('app.error.reset');
-				this.events.hide();
 			},
 			ui:	{
 				errorWrap:	null,
@@ -321,7 +283,7 @@ jQuery(function($){
 				reset:	function(event){
 					console.log('app.error.events.reset');
 					app.utils.cancelDefaultEvent(event);
-					app.reset();
+					app.quit(true);
 				},
 				show:	function(msg){
 					console.log('app.error.events.show');
@@ -336,7 +298,15 @@ jQuery(function($){
 			raise:	function(msg){
 				console.error('app.error.raise', msg);
 				this.events.show(msg);
-				app.quit();
+				// allow app to auto-reset on timeout errors
+				if(
+						msg == 'Response timeout'
+					||	msg == 'timeout'
+				){
+					app.quit(true);
+				}else{
+					app.quit();
+				}
 			}
 		},
 		utils:	{
@@ -364,6 +334,8 @@ jQuery(function($){
 					&& typeof jqXHR.responseJSON.errors	!== 'undefined'
 				)
 					return jqXHR.responseJSON.errors[0];
+				else if(typeof jqXHR.statusText	!== 'undefined')
+					return jqXHR.statusText;
 				return 'unknown error';
 			},
 			cancelDefaultEvent:	function(event){

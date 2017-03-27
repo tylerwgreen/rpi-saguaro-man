@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Check Disk Space
+Comment=Check Disk Space
+Icon=/home/pi/saguaro-man/assets/icon/check-disk-space-icon.png
+Exec=/home/pi/saguaro-man/bin/check-disk-space
+Type=Application
+Encoding=UTF-8
+Terminal=true
+Categories=None;

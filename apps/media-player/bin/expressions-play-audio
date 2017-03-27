@@ -5,9 +5,9 @@ FILE=$FILE_DIR/$1
 #FILE=$FILE_DIR/song-01.mp3
 AUDIO_OUTPUT=local
 #AUDIO_OUTPUT=hdmi
-echo "#bash - killing playback"
+echo "#bash - Expressions play audio killing playback"
 killall mpg123
 #killall mpg123.bin
-echo "#bash - Expressions playing audio $FILE"
+echo "#bash - Expressions play audio playing $FILE"
 mpg123 $FILE
 echo "#bash - Expressions play audio end"
