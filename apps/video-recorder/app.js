@@ -15,8 +15,8 @@ var paths	= {
 	logs:	'/logs/',
 	web:	'/web/',
 };
-var styling	= false;
-// var styling	= true;
+// var styling	= false;
+var styling	= true;
 
 /**
  * Global app functions and params (not framework related)
@@ -164,7 +164,7 @@ app.post('/camera/preview/:consent', function(req, res, next){
 					}
 				});
 			}
-		}, 5000);
+		}, 9000);
 	}else{
 		Camera.preview({
 			errorCB:	function(error){
@@ -208,7 +208,7 @@ app.post('/camera/record', function(req, res, next){
 					}
 				});
 			}
-		}, 7000);
+		}, 9000);
 	}else{
 		Camera.record({
 			errorCB:	function(error){
@@ -252,7 +252,7 @@ app.post('/video/convert', function(req, res, next){
 					}
 				});
 				}
-		}, 1000);
+		}, 5000);
 	}else{
 		VideoConverter.convert({
 			fileName:	recordParams.getVideo(),

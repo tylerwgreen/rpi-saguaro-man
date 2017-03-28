@@ -1,4 +1,23 @@
 #finish-wrap{
+	.finish-btn(
+		@colorBG:@blue;
+		@colorIcon:@blue-light;
+	){
+		.advanced-btn(
+			114px,
+			90px,
+			@colorBG,
+			@colorIcon
+		);
+		p{
+			i{
+				position:relative;
+				top:3px;
+				margin-right:15px;
+			}
+		}
+	}
+	/* END MIXINS */
 	@controls-height:55px;
 	z-index:-1;
 	.opacity(0);
@@ -12,65 +31,58 @@
 		z-index:2000;
 		.opacity(100);
 	}
-	#finish-info-wrap{
-		width:@display-width;
-		height:@controls-height;
-		line-height:@controls-height;
-		#finish-icon-wrap{
-			position:absolute;
-			top:0;
-			left:0;
-			padding-left:10px;
-			i#finish-icon{
-				font-size:70px;
-				position:relative;
-				top:-5px;
-				color:@green;
-			}
-		}
-		#finish-info-text-wrap{
-			width:@display-width;
-			height:@controls-height;
-			line-height:@controls-height;
-			position:absolute;
-			top:0;
-			font-size:30px;
-			#finish-info-text{
-				text-align:center;
-			}
-		}
-		#finish-countdown-wrap{
-			height:@controls-height;
-			line-height:@controls-height;
-			position:absolute;
-			top:0;
-			right:0;
-			padding-right:25px;
-			font-size:40px;
-		}
-	}
 	#finish-video-placeholder{
 		position:absolute;
 		width:@preview-width;
 		height:@preview-height;
-		top:(@display-height - @preview-height) / 2;;
+		top:0;
 		left:(@display-width - @preview-width) / 2;
 		background-color:@black-dark;
+		&.hidden{
+			display:none;
+		}
 	}
-	#finish-btns-wrap{
-		@height:55px;
+	#finish-countdown-wrap{
+		display:none;
+		@height:@preview-height;
+		position:absolute;
+		width:@display-width;
 		height:@height;
-		position: absolute;
-		bottom: 0;
-		width: 100%;
-		.clearfix();
-		.finish-btn-wrap{
-			width:50%;
-			float:left;
-			p{
-				margin-top:10px;
-				.basic-btn();
-			}
+		line-height:@height;
+		top:0;
+		left:0;
+		text-align:center;
+		#finish-countdown-text{
+			font-size:200px;
+		}
+		&.visible{
+			display:block;
+		}
+	}
+	#finish-btn-done-wrap-wrap{
+		position:absolute;
+		bottom:0;
+		left:0;
+		width:@display-width / 2;
+		height:@display-height - @preview-height;
+		#finish-btn-done-wrap{
+			.finish-btn(
+				@green,
+				@green-light
+			);
+		}
+	}
+	#finish-btn-delete-wrap-wrap{
+		position:absolute;
+		bottom:0;
+		right:0;
+		width:@display-width / 2;
+		height:@display-height - @preview-height;
+		#finish-btn-delete-wrap{
+			.finish-btn(
+				@red,
+				@red-light
+			);
 		}
 	}
 }

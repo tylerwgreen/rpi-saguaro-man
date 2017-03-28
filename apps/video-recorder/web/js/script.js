@@ -5,14 +5,14 @@ jQuery(function($){
 			ajaxBase:	'http://127.0.0.1:5000/',
 			timeoutMins:	61, // +1 from server timeout
 			preview:	{
-				duration:	10,	// seconds
+				duration:	9,	// seconds
 			},
 			record:		{
 				duration:	9,	// seconds
 			},
 			finish:		{
 				wait:	{
-					duration:	10,	// seconds
+					duration:	9,	// seconds
 				}
 			}
 		},
@@ -62,7 +62,6 @@ jQuery(function($){
 				this.ui.init();
 			},
 			ui:	{
-				titleWrap:			null,
 				consentBtnWrap:		null,
 				noConsentBtnWrap:	null,
 				infoBtnWrap:		null,
@@ -71,7 +70,6 @@ jQuery(function($){
 				infoBtn:			null,
 				init:	function(){
 					console.log('consent.ui.init');
-					this.titleWrap			= $('#title-wrap');
 					this.consentBtnWrap		= $('#consent-btn-wrap');
 					this.noConsentBtnWrap	= $('#no-consent-btn-wrap');
 					this.infoBtnWrap		= $('#info-btn-wrap');
@@ -84,14 +82,12 @@ jQuery(function($){
 				},
 				hide:	function(){
 					console.log('consent.ui.hide');
-					this.titleWrap.addClass('hidden');
 					this.consentBtnWrap.addClass('hidden');
 					this.noConsentBtnWrap.addClass('hidden');
 					this.infoBtnWrap.addClass('hidden');
 				},
 				show:	function(){
 					console.log('consent.ui.show');
-					this.titleWrap.removeClass('hidden');
 					this.consentBtnWrap.removeClass('hidden');
 					this.noConsentBtnWrap.removeClass('hidden');
 					this.infoBtnWrap.removeClass('hidden');
@@ -213,20 +209,18 @@ jQuery(function($){
 						})
 							.done(function(data, textStatus, jqXHR){
 								console.log('data',			data);
-								if(app.utils.isValidJqXHR(jqXHR))
-									app.preview.events.preview.end();
-								else
+								if(app.utils.isValidJqXHR(jqXHR)){
+									app.utils.timerCountdown.stop();
+									app.preview.events.hide();
+									app.record.events.record.start();
+								}else{
 									app.error.raise('Invalid jqXHR');
+								}
 							})
 							.fail(function(jqXHR, textStatus, errorThrown){
 								app.error.raise(app.utils.getJqXHRError(jqXHR));
 							});
 					},
-					end:	function(){
-						console.log('preview.events.preview.end');
-						app.preview.events.hide();
-						app.record.events.record.start();
-					}
 				},
 				show:	function(){
 					console.log('preview.events.show');
@@ -239,7 +233,11 @@ jQuery(function($){
 				updateCountdown:	function(text){
 					console.log('preview.events.updateCountdown', text);
 					app.preview.ui.countdown.update(text);
-				}
+				},
+				flashInfo:			function(){
+					console.log('preview.events.flashInfo');
+					app.preview.ui.info.flash();
+				},
 			},
 		},
 		record:		{
@@ -393,12 +391,16 @@ jQuery(function($){
 			},
 			ui:	{
 				wrap:				null,
+				videoPlaceholder:	null,
+				countdownWrap:		null,
 				countdownText:		null,
 				finishDeleteBtn:	null,
 				finishDoneBtn:		null,
 				init:	function(){
 					console.log('finish.ui.init');
 					this.wrap				= $('#finish-wrap');
+					this.videoPlaceholder	= $('#finish-video-placeholder');
+					this.countdownWrap		= $('#finish-countdown-wrap');
 					this.countdownText		= $('#finish-countdown-text');
 					this.finishDeleteBtn	= $('#finish-delete-btn')
 						.on('click', app.finish.events.delete);
@@ -424,6 +426,13 @@ jQuery(function($){
 				show:	function(){
 					console.log('finish.ui.show');
 					this.wrap.addClass('visible');
+					this.videoPlaceholder.removeClass('hidden');
+					this.countdownWrap.removeClass('visible');
+				},
+				hideVideo:	function(){
+					console.log('finish.ui.show');
+					this.videoPlaceholder.addClass('hidden');
+					this.countdownWrap.addClass('visible');
 				},
 			},
 			events:	{
@@ -431,9 +440,9 @@ jQuery(function($){
 					start:	function(){
 						console.log('finish.events.play.start');
 						app.finish.events.show();
-						app.utils.timer.start(
-							app.finish.events.updateTimer
-						);
+						// app.utils.timer.start(
+							// app.finish.events.updateTimer
+						// );
 						$.ajax({
 							method:		'POST',
 							url:		app.params.ajaxBase + 'video/play',
@@ -477,6 +486,7 @@ jQuery(function($){
 				},
 				wait:	function(){
 					console.log('finish.events.wait');
+					app.finish.events.hideVideo();
 					app.utils.timer.reset();
 					app.utils.timerCountdown.start(
 						app.params.finish.wait.duration,
@@ -509,10 +519,14 @@ jQuery(function($){
 					console.log('finish.events.hide');
 					app.finish.ui.hide();
 				},
-				updateTimer:	function(text){
+				hideVideo:	function(){
+					console.log('finish.events.hideVideo');
+					app.finish.ui.hideVideo();
+				},
+				/* updateTimer:	function(text){
 					console.log('finish.events.updateTimer', text);
 					app.finish.ui.timer.update(text);
-				},
+				}, */
 				updateCountdown:	function(text){
 					console.log('finish.events.updateCountdown', text);
 					app.finish.ui.countdown.update(text);

@@ -1,30 +1,14 @@
 #consent-wrap{
 	z-index:1000;
 	@transition-speed:0.3s;
-	#title-wrap{
-		@height:55px;
-		height:@height;
-		.clearfix();
-		h1{
-			line-height:@height;
-			text-align:center;
-			color:@white;
-			font-size:30px;
-		}
-		position:relative;
-		top:0;
-		.transition(@transition-speed);
-		&.hidden{
-			top:-55px;
-		}
-	}
 	#consent-btns-wrap{
 		.clearfix();
-		height:370px;
+		height:420px;
+		position:absolute;
+		top:0;
 		.btn-wrap{
 			width:400px;
-			float:left;
-			position:relative;
+			position:absolute;
 			.transition(@transition-speed);
 			&.consented{
 				left:0;
@@ -38,7 +22,7 @@
 							color:@green-light;
 						}
 					}
-					.text-wrap{
+					.consent-text-wrap{
 						i{
 							color:@green-light;
 						}
@@ -46,9 +30,9 @@
 				}
 			}
 			&.noconsent{
-				left:0;
+				left:400px;
 				&.hidden{
-					left:400px;
+					left:800px;
 				}
 				a{
 					background-color:@red;
@@ -56,8 +40,9 @@
 						i{
 							color:@red-light;
 						}
+						color:@red-light;
 					}
-					.text-wrap{
+					.consent-text-wrap{
 						i{
 							color:@red-light;
 						}
@@ -67,23 +52,22 @@
 			a{
 				&.btn{
 					width:360px;
-					height:360px;
-					margin:5px auto;
-					.rounded(15px);
+					height:380px;
+					margin:20px auto;
+					.rounded(25px);
 				}
 				.icon-wrap{
 					height:220px;
 					i{
 						position:relative;
-						top:-20px;
-						font-size:300px;
+						top:-40px;
+						font-size:320px;
 					}
 				}
-				.text-wrap{
-					@height:140px;
-					height:@height;
+				.consent-text-wrap{
+					height:80px;
 					p{
-						line-height:@height;
+						line-height:50px;
 						font-size:20px;
 						text-align:left;
 						padding-left:90px;
@@ -95,22 +79,28 @@
 						}
 					}
 				}
+				.explanation-text-wrap{
+					p{
+						line-height:50px;
+						font-size:20px;
+						text-align:center;
+					}
+				}
 			}
 		}
 	}
 	#info-btn-wrap{
-		.clearfix();
-		@height:55px;
-		height:@height;
-		position:relative;
-		top:0;
 		&.hidden{
-			top:55px;
+			bottom:-1 * 60px;
 		}
 		.transition(@transition-speed);
+		.basic-btn();
 		p{
-			margin-top:10px;
-			.basic-btn();
+			i{
+				position:relative;
+				top:3px;
+				margin-right:5px;
+			}
 		}
 	}
 }

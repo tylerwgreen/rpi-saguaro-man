@@ -1,69 +1,48 @@
 #convert-wrap{
-	@controls-height:55px;
 	z-index:-1;
 	.opacity(0);
 	position:absolute;
 	top:0;
 	width:@display-width;
 	height:@display-height;
+	text-align:center;
 	.transition(0.3s);
 	&.visible{
 		z-index:2000;
 		.opacity(100);
 	}
-	#convert-info-wrap{
-		width:@display-width;
-		height:@controls-height;
-		line-height:@controls-height;
-		#convert-icon-wrap{
-			position:absolute;
-			top:0;
-			left:0;
-			padding-left:10px;
-			i#convert-icon{
-				font-size:70px;
-				position:relative;
-				top:-5px;
-				color:@red;
-			}
-		}
-		#convert-info-text-wrap{
-			width:@display-width;
-			height:@controls-height;
-			line-height:@controls-height;
-			position:absolute;
-			top:0;
-			font-size:30px;
-			#convert-info-text{
-				text-align:center;
-			}
-		}
-		#convert-timer-wrap{
-			height:@controls-height;
-			line-height:@controls-height;
-			position:absolute;
-			top:0;
-			right:0;
-			padding-right:25px;
-			font-size:40px;
-		}
-	}
-	#convert-video-placeholder{
+	#convert-icon-wrap{
+		@height:200px;
 		position:absolute;
-		width:@preview-width;
-		height:@preview-height;
-		top:(@display-height - @preview-height) / 2;;
-		left:(@display-width - @preview-width) / 2;
-		background-color:@black-dark;
+		top:0;
+		left:0;
+		height:@display-height - @height;
+		width:@display-width / 2;
+		line-height:@display-height - @height;
+		i#convert-icon{
+			font-size:300px;
+			color:@green;
+		}
 	}
-	#convert-feedback-text-wrap{
+	#convert-timer-wrap{
+		@height:200px;
+		position:absolute;
+		top:0;
+		right:0;
+		height:@display-height - @height;
+		width:@display-width / 2;
+		line-height:@display-height - @height;
+		font-size:200px;
+	}
+	#convert-info-text-wrap{
+		@height:200px;
 		width:@display-width;
-		height:@controls-height;
-		line-height:@controls-height;
+		height:@height;
+		line-height:@height;
 		position:absolute;
 		bottom:0;
-		font-size:30px;
-		#convert-feedback-text{
+		font-size:130px;
+		#convert-info-text{
 			text-align:center;
 		}
 	}

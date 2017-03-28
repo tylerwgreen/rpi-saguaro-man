@@ -11,60 +11,48 @@
 		z-index:2000;
 		.opacity(100);
 	}
-	#record-info-wrap{
-		width:@display-width;
-		height:@controls-height;
-		line-height:@controls-height;
-		#record-icon-wrap{
-			position:absolute;
-			top:0;
-			left:0;
-			padding-left:10px;
-			i#record-icon{
-				font-size:70px;
-				position:relative;
-				top:-5px;
-				color:@red;
-			}
-		}
-		#record-info-text-wrap{
-			width:@display-width;
-			height:@controls-height;
-			line-height:@controls-height;
-			position:absolute;
-			top:0;
-			font-size:30px;
-			#record-info-text{
-				text-align:center;
-			}
-		}
-		#record-countdown-wrap{
-			height:@controls-height;
-			line-height:@controls-height;
-			position:absolute;
-			top:0;
-			right:0;
-			padding-right:25px;
-			font-size:40px;
+	#record-info-text-wrap{
+		@height:@display-height - @preview-height;
+		width:@preview-width;
+		height:@height;
+		line-height:@height;
+		position:absolute;
+		top:0;
+		font-size:130px;
+		text-align:center;
+	}
+	#record-icon-wrap{
+		@height:@display-height - @preview-height;
+		position:absolute;
+		top:10px;
+		right:0;
+		height:@height;
+		width:@display-width - @preview-width;
+		line-height:@height;
+		i#record-icon{
+			font-size:140px;
+			position:relative;
+			top:-20px;
+			color:@red;
 		}
 	}
 	#record-video-placeholder{
 		position:absolute;
 		width:@preview-width;
 		height:@preview-height;
-		top:(@display-height - @preview-height) / 2;;
-		left:(@display-width - @preview-width) / 2;
+		bottom:0;
+		left:0;
 		background-color:@black-dark;
 	}
-	#record-feedback-text-wrap{
-		width:@display-width;
-		height:@controls-height;
-		line-height:@controls-height;
+	#record-countdown-wrap{
+		@height:@preview-height;
 		position:absolute;
 		bottom:0;
-		font-size:30px;
-		#record-feedback-text{
-			text-align:center;
-		}
+		right:0;
+		width:@display-width - @preview-width;
+		height:@height;
+		line-height:@height;
+		font-size:200px;
+		text-align:center;
 	}
 }
