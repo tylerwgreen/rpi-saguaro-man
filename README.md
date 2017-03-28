@@ -39,9 +39,9 @@ Update to:
 
 ### Remove Bloatware
 
-[How To One](http://raspi.tv/2016/how-to-free-up-some-space-on-your-raspbian-sd-card-remove-wolfram-libreoffice)
+[How To A](http://raspi.tv/2016/how-to-free-up-some-space-on-your-raspbian-sd-card-remove-wolfram-libreoffice)
 
-[How To Two](https://project.altservice.com/issues/418)
+[How To B](https://project.altservice.com/issues/418)
 
 ```
 sudo apt-get remove --purge wolfram-engine libreoffice* penguinspuzzle
@@ -58,7 +58,7 @@ sudo apt-get install gpac
 
 ### Update NodeJS
 
-[How To Two](http://thisdavej.com/beginners-guide-to-installing-node-js-on-a-raspberry-pi/)
+[How To](http://thisdavej.com/beginners-guide-to-installing-node-js-on-a-raspberry-pi/)
 
 ```
 curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
