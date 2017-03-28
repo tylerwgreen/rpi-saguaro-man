@@ -15,14 +15,15 @@ var paths	= {
 	logs:	'/logs/',
 	web:	'/web/',
 };
-var styling	= false;
-// var styling	= true;
+// var styling	= false;
+var styling	= true;
 
 /**
  * Load models
  */
 var MediaPlayer		= require(path.join(__dirname, paths.models, 'MediaPlayer'));
-MediaPlayer.init();
+if(!styling)
+	MediaPlayer.init();
 
 // app settings
 /**

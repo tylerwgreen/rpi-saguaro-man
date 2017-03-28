@@ -14,32 +14,39 @@
 	}
 	#icon-error-wrap{
 		.clearfix();
+		height:330px;
 		h1{
-			height:160px;
 			i{
 				position:relative;
-				top:20px;
-				font-size:150px;
+				top:15px;
+				font-size:300px;
 				color:@red;
 			}
 		}
 	}
 	#error-msg-wrap{
 		.clearfix();
+		@height:70px;
+		line-height:@height;
+		height:@height;
 		h2{
-			@height:265px;
-			line-height:@height;
-			height:@height;
-			font-size:30px;
+			font-size:50px;
 			color:@red-light;
 		}
 	}
 	#reset-btn-wrap{
-		@height:55px;
-		height:@height;
-		.clearfix();
+		.basic-btn(
+			60px,
+			40px,
+			@red,
+			@red-light
+		);
 		p{
-			.basic-btn();
+			i{
+				position:relative;
+				top:3px;
+				margin-right:5px;
+			}
 		}
 	}
 }

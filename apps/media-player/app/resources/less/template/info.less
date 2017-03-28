@@ -10,22 +10,14 @@
 		z-index:2000;
 		.opacity(100);
 	}
-	#info-title-wrap{
-		@height:55px;
-		height:@height;
-		.clearfix();
-		h1{
-			line-height:@height;
-			text-align:center;
-			color:@white;
-			font-size:30px;
-		}
-	}
 	#info-text-wrap{
-		.clearfix();
-		height:370px;
-		padding:0 20px;
+		position:absolute;
+		top:0;
+		height:420px;
+		width:100%;
+		padding:20px;
 		overflow-y:scroll;
+		.clearfix();
 		h2{
 			font-size:25px;
 			margin:20px 0;
@@ -38,14 +30,17 @@
 		}
 		p{
 			margin:0 0 10px 20px;
+			line-height:25px;
 		}
 	}
 	#info-back-btn-wrap{
-		@height:55px;
-		height:@height;
-		.clearfix();
+		.basic-btn();
 		p{
-			.basic-btn();
+			i{
+				position:relative;
+				top:3px;
+				margin-right:5px;
+			}
 		}
 	}
 }
