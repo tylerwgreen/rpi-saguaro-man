@@ -1,7 +1,8 @@
 #!/bin/bash
 echo "#bash - Puppet people play start"
-FILE=/media/pi/TYLERTHUMB/puppet-people.mp4
-#FILE=/home/pi/saguaro-man/assets/video/recordings/converted/20170322-193216-no-consent.h264
+#FILE=/media/pi/TYLERTHUMB/puppet-people-10-secs.mp4
+#FILE=/media/pi/TYLERTHUMB/puppet-people-15-secs.mp4
+FILE=/media/pi/TYLERTHUMB/puppet-people-20-secs.mp4
 #DISPLAY: 5 = HDMI, 4 = LCD
 DISPLAY=5
 #DISPLAY=4

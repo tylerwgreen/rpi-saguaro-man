@@ -15,8 +15,8 @@ var paths	= {
 	logs:	'/logs/',
 	web:	'/web/',
 };
-// var styling	= false;
-var styling	= true;
+var styling	= false;
+// var styling	= true;
 
 /**
  * Global app functions and params (not framework related)

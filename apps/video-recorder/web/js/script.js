@@ -25,6 +25,8 @@ jQuery(function($){
 			app.convert.init();
 			app.finish.init();
 			app.error.init();
+// app.consent.events.hide();
+// app.preview.events.preview.start();
 		},
 		quit:	function(reset){
 			console.log('app.quit');

@@ -15,8 +15,8 @@ var paths	= {
 	logs:	'/logs/',
 	web:	'/web/',
 };
-// var styling	= false;
-var styling	= true;
+var styling	= false;
+// var styling	= true;
 
 /**
  * Load models
