@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "#bash - Expressions play audio start"
-FILE_DIR=/home/pi/saguaro-man/assets/audio/cody-loops
+FILE_DIR=/media/pi/TYLERTHUMB1/audio/media-player/music/
+#FILE_DIR=/media/pi/TYLERTHUMB1/audio/media-player/field-recordings/
 FILE=$FILE_DIR/$1
 #FILE=$FILE_DIR/song-01.mp3
 AUDIO_OUTPUT=local

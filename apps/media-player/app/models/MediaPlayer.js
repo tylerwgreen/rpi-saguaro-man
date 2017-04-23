@@ -5,7 +5,9 @@ var MediaPlayer		= {
 	params:	{
 		binDir:		'/home/pi/saguaro-man/apps/media-player/bin/',
 		videoDir:	'/home/pi/saguaro-man/assets/video/recordings/converted/',
-		audioDir:	'/home/pi/saguaro-man/assets/audio/cody-loops/',
+		audioDir:	'/media/pi/TYLERTHUMB1/audio/media-player/music/',
+		// audioDir:	'/media/pi/TYLERTHUMB1/audio/media-player/field-recordings/',
+		
 	},
 	init:	function(){
 		console.log('MediaPlayer.init');

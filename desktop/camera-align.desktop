@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Camera Align
+Comment=Camera Align
+Icon=/home/pi/saguaro-man/assets/icon/camera-align-icon.png
+Exec=/home/pi/saguaro-man/bin/camera-align
+Type=Application
+Encoding=UTF-8
+Terminal=true
+Categories=None;
