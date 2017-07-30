@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "#bash - Puppet people play start"
-#FILE=/media/pi/TYLERTHUMB1/video/puppet-people-10-secs.mp4
-FILE=/media/pi/TYLERTHUMB1/video/puppet-people-15-secs.mp4
+FILE=/media/pi/TYLERTHUMB1/video/puppet-people-10-secs.mp4
+#FILE=/media/pi/TYLERTHUMB1/video/puppet-people-15-secs.mp4
 #FILE=/media/pi/TYLERTHUMB1/video/puppet-people-20-secs.mp4
 #DISPLAY: 5 = HDMI, 4 = LCD
 DISPLAY=5
