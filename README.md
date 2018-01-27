@@ -37,6 +37,17 @@ Update to:
 @/home/pi/saguaro-man/startup
 ```
 
+### Set default display
+
+```sudo vim /boot/config.txt```
+
+```# TWG EDITS
+
+# make hdmi default
+#display_default_lcd=0
+#make lcd default
+display_default_lcd=1```
+
 ### Remove Bloatware
 
 [How To A](http://raspi.tv/2016/how-to-free-up-some-space-on-your-raspbian-sd-card-remove-wolfram-libreoffice)
